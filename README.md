@@ -142,3 +142,17 @@ Defaults to:
 Should support OPTIONS Preflight with Authorization header.
 
 # JWT
+
+# Additional Packages
+
+* tymon/jwt-auth - Provides JWT Functionality
+* phpseclib/phpseclib - Provides additional security features and algos
+* barryvdh/laravel-cors - Provides CORS functionality
+
+# Recommended Installs
+
+It is suggested you configure your server with the following:
+
+* ext-libsodium - Additional modern algos
+* ext-mcrypt - Speeds up some crypto operations
+* ext-gmp (GNU Multiple Precision) - Speeds up arbitrary precision integer calculations
