@@ -18,15 +18,11 @@ class ServerHeader
     {
         $response = $next($request);
 
-        $version = env('API_VERSION', 'dev');
+        $version = env('APP_VERSION', 'dev');
+        $name = env('APP_NAME', 'Strong Lumen');
 
-        $response->header('Server', 'Uniqode Services (staging)');
-        $response->header('X-Powered-By', 'Uniqode Services (staging)');
-
-        if (app()->environment('production')) {
-            $response->header('Server', sprintf('Uniqode Services (%s)', $version));
-            $response->header('X-Powered-By', sprintf('Uniqode Services (%s)', $version));
-        }
+        $response->header('Server', sprintf('%s (%s)', $name, $version));
+        $response->header('X-Powered-By', sprintf('%s (%s)', $name, $version));
 
         return $response;
     }

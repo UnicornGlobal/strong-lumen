@@ -7,7 +7,7 @@ use Closure;
 class ContentSecurityPolicyHeaders
 {
     /**
-     * Run the request filter.
+     * Stronger CSP
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next

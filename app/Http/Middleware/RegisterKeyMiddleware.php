@@ -8,7 +8,10 @@ use Closure;
 class RegisterKeyMiddleware
 {
     /**
-     * Run the request filter.
+     * Require a registration access key
+     *
+     * Ensure REGISTRATION_ACCESS_KEY in your .env
+     * Request with `Registration-Access-Key: your-key-here`
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next

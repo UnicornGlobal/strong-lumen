@@ -7,7 +7,7 @@ use Closure;
 class NoCache
 {
     /**
-     * Run the request filter.
+     * Destroy all caches
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next

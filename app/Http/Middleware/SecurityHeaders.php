@@ -7,7 +7,7 @@ use Closure;
 class SecurityHeaders
 {
     /**
-     * Run the request filter.
+     * Some common security headers
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
