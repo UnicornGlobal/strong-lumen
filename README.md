@@ -162,11 +162,6 @@ Make sure you set the appropriate variables in your .env
 You may use a symmetrical also but then you'll be relying on a secret instead
 of a keypair.
 
-# Migration
-
-There is a single migration that will setup the base user table and a password
-reset table.
-
 # UUIDs
 
 It is suggested to use UUIDs in your responses instead of IDs, which are
@@ -223,13 +218,30 @@ and should be used to indicate that the system has performed an action.
 Set the appropriate `created_by` and `updated_by` type fields when performing
 changes in the system using the system user.
 
+You must set `SYSTEM_USER_ID` and `SYSTEM_USER_EMAIL` in your .env
+
+# Migration
+
+There is a single migration that will setup the base user table and a password
+reset table.
+
+`php artisan migrate`
+
+# Seed
+
+There will be a system user added during this process.
+
+`php artisan db:seed`
+
+# Tests
+
 # Emails
 
-There are 3 included emailers
+There are 2 included emailers that form part of the registration and verification
+processes.
 
 * Confirm Account
 * Password Reset
-* Welcome
 
 # Additional Packages
 
@@ -249,6 +261,12 @@ These are the additional support packages in this project
 
 It is suggested that you use Redis for your cache.
 
+# .env file notes
+
+UUID requirements are indicated by `00000000-0000-0000-0000-000000000000`
+
+Please replace with actual UUIDs for your .env file
+
 # Recommended Installs
 
 It is suggested you configure your server with the following:
@@ -267,6 +285,12 @@ It is suggested you configure your server with the following:
 * Registered CORS and JWT Providers
 * Call CORS Config
 * Call Mail Config
+
+# Default Routes
+
+## Registration
+
+* 
 
 # Contributing
 
