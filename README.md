@@ -143,7 +143,28 @@ Should support OPTIONS Preflight with Authorization header.
 
 # JWT
 
+You should use a 512 bit, asymmetrical algo, with certificates.
+
+It is suggested that you use the `RS512` algo if you are unable to use `ES512`.
+
+You can make a `RS512` pair like this:
+
+```bash
+# DO NOT EVER COMMIT THE PRIVATE KEY
+# Make private key
+openssl genrsa -out rsa512-private.pem 4096
+# Make the corresponding public key
+openssl rsa -pubout -in rsa512-private.pem -out rsa512-public.pem
+```
+
+Make sure you set the appropriate variables in your .env
+
+You may use a symmetrical also but then you'll be relying on a secret instead
+of a keypair.
+
 # Additional Packages
+
+These are the additional support packages in this project
 
 * tymon/jwt-auth - Provides JWT Functionality
 * phpseclib/phpseclib - Provides additional security features and algos
