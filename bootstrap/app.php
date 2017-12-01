@@ -87,8 +87,18 @@ $app->routeMiddleware([
 */
 
 // $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+
+// JWTs
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+
+// CORS
+$app->register(Barryvdh\Cors\ServiceProvider::class);
+
+$app->register(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
+
+$app->configure('cors');
 
 /*
 |--------------------------------------------------------------------------
