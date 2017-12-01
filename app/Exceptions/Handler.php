@@ -45,6 +45,43 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+        $environment = env('APP_ENV');
+        $required = env('DEBUG_KEY');
+        $debugMode = env('APP_DEBUG');
+        $token = $request->header('Debug-Token');
+        if (
+            !is_null($token) &&
+            $token === $required &&
+            $environment !== 'production' &&
+            $debugMode === true)
+        {
+            return parent::render($request, $e);
+        }
+
+        $message = $e->getMessage();
+
+        if (!$message) {
+            $message = 'Internal Server Error';
+        }
+
+        if ($environment === 'production') {
+            return response()->json([
+                'error' => $message,
+            ], 500)
+                ->header('X-Content-Type-Options', 'nosniff')
+                ->header('X-Frame-Options', 'DENY')
+                ->header('X-XSS-Protection', '1; mode=block')
+                ->header('Strict-Transport-Security', 'max-age=7776000; includeSubDomains');
+        }
+
+        return response()->json([
+            'error' => $message,
+        ], 500)
+            ->header('X-Content-Type-Options', 'nosniff')
+            ->header('X-Frame-Options', 'DENY')
+            ->header('X-XSS-Protection', '1; mode=block')
+            ->header('Strict-Transport-Security', 'max-age=7776000; includeSubDomains')
+            ->header('Server', sprintf("Tabbs Services (%s)", $environment))
+            ->header('X-Powered-By', sprintf("Tabbs Services (%s)", $environment));
     }
 }
