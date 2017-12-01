@@ -96,9 +96,13 @@ $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 // CORS
 $app->register(Barryvdh\Cors\ServiceProvider::class);
 
+// Mail
+$app->register(\Illuminate\Mail\MailServiceProvider::class);
+
 $app->register(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 
 $app->configure('cors');
+$app->configure('mail');
 
 /*
 |--------------------------------------------------------------------------

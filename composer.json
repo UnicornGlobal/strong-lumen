@@ -11,7 +11,9 @@
         "tymon/jwt-auth": "^1.0.0-rc.1",
         "phpseclib/phpseclib": "^2.0",
         "barryvdh/laravel-cors": "^0.10.0",
-        "webpatser/laravel-uuid": "^3.0"
+        "webpatser/laravel-uuid": "^3.0",
+        "illuminate/mail": "^5.5",
+        "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

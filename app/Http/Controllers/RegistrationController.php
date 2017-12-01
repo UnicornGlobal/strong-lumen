@@ -46,6 +46,7 @@ class RegistrationController extends BaseController
             $newUserId = $this->createUser($details);
             return response()->json(['_id' => $newUserId], 201);
         } catch (\Exception $e) {
+            dd($e);
             return response()->json(['error' => 'Registration Failed'], 403);
         }
     }

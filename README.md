@@ -1,6 +1,6 @@
 # strong-lumen
 
-Lumen, but with a bunch of security-centric features
+Lumen, but with a bunch of security-centric features.
 
 LAST AUDIT: December 2017
 
@@ -162,6 +162,11 @@ Make sure you set the appropriate variables in your .env
 You may use a symmetrical also but then you'll be relying on a secret instead
 of a keypair.
 
+# Migration
+
+There is a single migration that will setup the base user table and a password
+reset table.
+
 # UUIDs
 
 It is suggested to use UUIDs in your responses instead of IDs, which are
@@ -218,6 +223,14 @@ and should be used to indicate that the system has performed an action.
 Set the appropriate `created_by` and `updated_by` type fields when performing
 changes in the system using the system user.
 
+# Emails
+
+There are 3 included emailers
+
+* Confirm Account
+* Password Reset
+* Welcome
+
 # Additional Packages
 
 These are the additional support packages in this project
@@ -226,6 +239,15 @@ These are the additional support packages in this project
 * phpseclib/phpseclib - Provides additional security features and algos
 * barryvdh/laravel-cors - Provides CORS functionality
 * webpatser/laravel-uuid - Provides the UUID functionality
+* illuminate/mail - For sending out confirm codes and password resets
+* guzzlehttp/guzzle - For network comms
+
+# Required Configuration
+
+* Cache - Used for the Throttle
+* Mail - Used for PW resets and Confirm codes
+
+It is suggested that you use Redis for your cache.
 
 # Recommended Installs
 
@@ -244,3 +266,13 @@ It is suggested you configure your server with the following:
 * Registered Middleware
 * Registered CORS and JWT Providers
 * Call CORS Config
+* Call Mail Config
+
+# Contributing
+
+Please feel free to contribute back.
+
+I'm sure there are hundereds of ways of improving upon this work. Let's make the
+internet a safer place, together.
+
+Security is everyones problem.
