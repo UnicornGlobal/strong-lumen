@@ -45,7 +45,7 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
      *  Request with `Registration-Access-Key: your-key-here`
      */
     $router->group(['prefix' => 'register', 'middleware' => ['register', 'throttle:3,1']], function () use ($router) {
-        $router->post('/email', 'UserRegistrationController@registerEmail');
+        $router->post('/email', 'RegistrationController@registerEmail');
     });
 
     /**
@@ -60,7 +60,7 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
      * Only allow 1 of these requests per minute.
      */
     $router->group(['middleware' => 'throttle:1,1'], function () use ($router) {
-        $router->get('/confirm/{token}', 'UserRegistrationController@confirmEmail');
+        $router->get('/confirm/{token}', 'RegistrationController@confirmEmail');
         $router->post('/reset', 'ResetController@postEmail');
         $router->post('/reset/{token}', 'ResetController@postReset');
     });
