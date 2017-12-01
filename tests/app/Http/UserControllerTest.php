@@ -24,7 +24,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('user', $resultObject->username);
 
         // Should have an email
-        $this->assertEquals('developer@localhost', $resultObject->email);
+        $this->assertEquals('developer@example.com', $resultObject->email);
 
         // Response should be a 200
         $this->assertEquals('200', $this->response->status());
@@ -46,7 +46,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('user', $resultObject->username);
 
         // Should have an email
-        $this->assertEquals('developer@localhost', $resultObject->email);
+        $this->assertEquals('developer@example.com', $resultObject->email);
 
         // Response should be a 200
         $this->assertEquals('200', $this->response->status());

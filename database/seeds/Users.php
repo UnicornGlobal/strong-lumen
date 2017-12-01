@@ -57,10 +57,10 @@ class Users extends Seeder
                 '_id' => '4BFE1010-C11D-4739-8C24-99E1468F08F6',
                 'api_key' => '653FDC8C-0FB7-4C72-98F2-2A3A565C7467',
                 'username' => 'user',
-                'password' => Hash::make('user'),
+                'password' => Hash::make('password'),
                 'first_name' => 'Test',
                 'last_name' => 'User',
-                'email' => 'developer@localhost',
+                'email' => 'developer@example.com',
                 'created_by' => 1,
                 'updated_by' => 1,
             ]);

@@ -57,9 +57,11 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
     });
 
     /**
-     * Only allow 1 of these requests per minute.
+     * Only allow x of these requests per minute.
+     *
+     * Production should be a low number
      */
-    $router->group(['middleware' => 'throttle:1,1'], function () use ($router) {
+    $router->group(['middleware' => 'throttle:10,1'], function () use ($router) {
         $router->get('/confirm/{token}', 'RegistrationController@confirmEmail');
         $router->post('/reset', 'ResetController@postEmail');
         $router->post('/reset/{token}', 'ResetController@postReset');

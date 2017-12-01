@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Cache;
 
 trait ValidationTrait
 {
-    public function validateRegex($value, $regex)
-    {
-        if (!preg_match($regex, $value)) {
-            throw new \Exception('Invalid Regex');
-        }
-    }
-
     private function isValidUserID($uuid)
     {
         $this->checkValid($uuid, User::class);
