@@ -22,9 +22,9 @@ before_install:
 - php artisan migrate
 - php artisan db:seed
 - vendor/bin/phpunit --coverage-clover=coverage.xml
-- rm .env
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+- rm .env
 - echo "Unicorn Time"
 deploy:
   - provider: script
