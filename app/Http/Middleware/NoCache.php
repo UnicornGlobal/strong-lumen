@@ -4,17 +4,22 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class ExampleMiddleware
+class NoCache
 {
     /**
-     * Handle an incoming request.
+     * Run the request filter.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
+     * @param  string  $role
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        $response = $next($request);
+
+        $response->header('Cache-Control', 'no-cache, must-revalidate');
+
+        return $response;
     }
 }
