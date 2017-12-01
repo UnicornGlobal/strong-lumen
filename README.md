@@ -2,6 +2,8 @@
 
 Lumen, but with a bunch of security-centric features.
 
+💪
+
 LAST AUDIT: December 2017
 
 # Middleware
@@ -234,6 +236,20 @@ There will be a system user added during this process.
 `php artisan db:seed`
 
 # Tests
+
+Run
+
+`./vendor/bin/phpunit`
+
+View the coverage in `/tests/coverage`
+
+# Travis
+
+You need to enable CodeCov and include your token as CODECOV_TOKEN _within_ Travis.
+
+Set an environment variable in Travis for this.
+
+Travis also requires additional environment variables if you want to auto deploy.
 
 # Emails
 
