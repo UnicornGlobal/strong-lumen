@@ -3,3 +3,5 @@
 Homestead.json
 Homestead.yaml
 .env
+clover.xml
+tests/coverage

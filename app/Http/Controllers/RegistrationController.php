@@ -71,6 +71,7 @@ class RegistrationController extends BaseController
             'password' => Hash::make($details['password']),
             'first_name' => $details['firstName'],
             'last_name' => $details['lastName'],
+            'email' => $details['email'],
             'created_by' => 1,
             'updated_by' => 1,
             'confirm_code' => Uuid::generate(4)

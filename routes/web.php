@@ -84,12 +84,9 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
         /**
          * Users
          */
+        $router->get('/me', 'UserController@getSelf');
         $router->post('/users/change-password', 'UserController@changePassword');
         $router->get('/users/{userId}', 'UserController@getUserById');
         $router->post('/users/{userId}', 'UserController@updateUserByUUID');
-
-        $router->group(['middleware' => 'cors'], function () use ($router) {
-            $router->get('/me', 'UserController@getSelf');
-        });
     });
 });
