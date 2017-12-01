@@ -162,6 +162,62 @@ Make sure you set the appropriate variables in your .env
 You may use a symmetrical also but then you'll be relying on a secret instead
 of a keypair.
 
+# UUIDs
+
+It is suggested to use UUIDs in your responses instead of IDs, which are
+generally enumerable.
+
+This will help mitigate some forms of enumeration attacks.
+
+It is suggested that you use UUID version 4, which is random.
+
+```php
+use Webpatser\Uuid\Uuid;
+UUID::generate(4);
+```
+
+# User Registration
+
+There is augmented functionality with the user models and registrations.
+
+An `_id` field has been added which should be used to obscure the internal
+id.
+
+You should use a UUID to protect against various attacks.
+
+Required fields are `username`, `password`, `first_name`, `last_name`, `email`.
+
+Additionally, users are assigned an `_id` and an `api_key` when getting created.
+
+Confirmation codes are sent out via email
+
+See the RegistrationController for full details.
+
+# Soft Deletes
+
+Soft Deletes are enabled by default.
+
+This is important for logging, compliance, and forensics should a destructive
+action be entered into the system.
+
+# Additional Audit Fields
+
+In addition to the usual `created_at` and `deleted_at` that come with timestamps,
+we've added some additional fields to help your API be more compliant.
+
+* `created_by`
+* `deleted_by`
+* `updated_by`
+* `updated_at`
+
+# System User
+
+There is a System User that must be seeded. This user is designed to unusable,
+and should be used to indicate that the system has performed an action.
+
+Set the appropriate `created_by` and `updated_by` type fields when performing
+changes in the system using the system user.
+
 # Additional Packages
 
 These are the additional support packages in this project
@@ -169,6 +225,7 @@ These are the additional support packages in this project
 * tymon/jwt-auth - Provides JWT Functionality
 * phpseclib/phpseclib - Provides additional security features and algos
 * barryvdh/laravel-cors - Provides CORS functionality
+* webpatser/laravel-uuid - Provides the UUID functionality
 
 # Recommended Installs
 
