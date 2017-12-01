@@ -177,3 +177,13 @@ It is suggested you configure your server with the following:
 * ext-libsodium - Additional modern algos
 * ext-mcrypt - Speeds up some crypto operations
 * ext-gmp (GNU Multiple Precision) - Speeds up arbitrary precision integer calculations
+
+# Other Changes
+
+## bootstrap/app.php
+
+* Enabled Facades
+* Enabled Eloquent
+* Registered Middleware
+* Registered CORS and JWT Providers
+* Call CORS Config

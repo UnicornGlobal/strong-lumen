@@ -23,9 +23,9 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-// $app->withFacades();
+$app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +63,17 @@ $app->singleton(
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'register' => App\Http\Middleware\RegisterKeyMiddleware::class,
+    'appid' => App\Http\Middleware\AppIdMiddleware::class,
+    'throttle' => App\Http\Middleware\ThrottleRequests::class,
+    'nocache' => App\Http\Middleware\NoCache::class,
+    'hideserver' => App\Http\Middleware\ServerHeader::class,
+    'security' => App\Http\Middleware\SecurityHeaders::class,
+    'csp' => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
+    'cors' => \Barryvdh\Cors\HandleCors::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
