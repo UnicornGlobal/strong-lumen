@@ -74,31 +74,53 @@ After Limit you get a `429 Too Many Requests`, and the Response Body contains
 Too many consecutive attempts. Try again in 5s
 ```
 
-## Content Security Policy
+## Common Security Headers
 
-Includes a sane CSP, wrapping the entire application.
+Includes a set of Common security headers for browsers that support them.
 
-Currently adds
+Useful for defense against many different types of common attacks.
+
+The aim is to support the [OWASP Secure Headers Project Specification](https://www.owasp.org/index.php/OWASP_Secure_Headers_Project)
+
+### Content Security Policy
+
+A good Content Security Policy helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks.
+
+Content Security Policy (CSP) requires careful tuning and precise definition of the policy. If enabled, CSP has significant impact on the way browser renders pages (e.g., inline JavaScript disabled by default and must be explicitly allowed in policy). CSP prevents a wide range of attacks, including Cross-site scripting and other cross-site injections.
 
 ```
 Content-Security-Policy: default-src 'none', connect-src 'self', 'upgrade-insecure-requests';
 ```
 
-## Common Security Headers
+### X-Cotent-Type-Options
 
-Includes a set of Common security headers for browsers that support them.
-
-Usefult for defense against XSS, Clickjacking, Content Type attacks,
-Framable responses, and UI Redressing.
-
-Also enables strict TLS.
-
-Currently adds
+Setting this header will prevent the browser from interpreting files as something else than declared by the content type in the HTTP headers.
 
 ```
 X-Content-Type-Options: nosniff
+```
+
+### X-Frame-Options
+
+X-Frame-Options response header improve the protection of web applications against Clickjacking. It declares a policy communicated from a host to the client browser on whether the browser must not display the transmitted content in frames of other web pages.
+
+```
 X-Frame-Options: DENY
+```
+
+### X-XSS-Protection
+
+This header enables the Cross-site scripting (XSS) filter in your browser.
+
+```
 X-XSS-Protection: 1; mode=block
+```
+
+### HTTP Strict Transport Security (HSTS)
+
+HTTP Strict Transport Security (HSTS) is a web security policy mechanism which helps to protect websites against protocol downgrade attacks and cookie hijacking. It allows web servers to declare that web browsers (or other complying user agents) should only interact with it using secure HTTPS connections, and never via the insecure HTTP protocol.
+
+```
 Strict-Transport-Security: max-age=7776000; includeSubDomains
 ```
 
@@ -114,8 +136,9 @@ Cache-Control: no-cache, must-revalidate
 
 Adds information about the server.
 
-Useful for overriding and obscuring the name of the technology running the web
-server.
+Useful for overriding and obscuring the name of the technology running
+the web server, e.g. making Apache look like nginx, or for announcing
+the application name and version.
 
 ```
 Server: APP_NAME (APP_VERSION)
@@ -133,12 +156,12 @@ See `config/cors.php` for all options.
 Defaults to:
 
 ```
-    'supportsCredentials' => true,
-    'allowedOrigins' => ['*'],
-    'allowedHeaders' => ['Content-Type', 'Content-Length', 'Origin', 'X-Requested-With', 'Debug-Token', 'Registration-Access-Key', 'X-CSRF-Token', 'App', 'User-Agent', 'Authorization'],
-    'allowedMethods' => ['GET', 'POST', 'PUT',  'DELETE', 'OPTIONS'],
-    'exposedHeaders' => ['Authorization'],
-    'maxAge' => 0,
+'supportsCredentials' => true,
+'allowedOrigins' => ['*'],
+'allowedHeaders' => ['Content-Type', 'Content-Length', 'Origin', 'X-Requested-With', 'Debug-Token', 'Registration-Access-Key', 'X-CSRF-Token', 'App', 'User-Agent', 'Authorization'],
+'allowedMethods' => ['GET', 'POST', 'PUT',  'DELETE', 'OPTIONS'],
+'exposedHeaders' => ['Authorization'],
+'maxAge' => 0,
 ```
 
 Should support OPTIONS Preflight with Authorization header.
@@ -147,9 +170,19 @@ Should support OPTIONS Preflight with Authorization header.
 
 You should use a 512 bit, asymmetrical algo, with certificates.
 
-It is suggested that you use the `RS512` algo if you are unable to use `ES512`.
+It is suggested that you use `ES512`, or the `RS512` algo if you are unable to use `ES512`.
 
-You can make a `RS512` pair like this:
+You can make a `ECDSA 512 (ES512)` pair like this:
+
+```
+# DO NOT EVER COMMIT THE PRIVATE KEY
+# Make private key
+openssl ecparam -genkey -name secp521r1 -noout -out ecdsa-p521-private.pem
+# Make the corresponding public key
+openssl ec -in ecdsa-p521-private.pem -pubout -out ecdsa-p521-public.pem
+```
+
+You can make a `RSA 512 (RS512)` pair like this:
 
 ```bash
 # DO NOT EVER COMMIT THE PRIVATE KEY
@@ -161,8 +194,7 @@ openssl rsa -pubout -in rsa512-private.pem -out rsa512-public.pem
 
 Make sure you set the appropriate variables in your .env
 
-You may use a symmetrical also but then you'll be relying on a secret instead
-of a keypair.
+You may use a symmetrical also but then you'll be relying on a secret instead of a keypair. This is not recommended.
 
 # UUIDs
 
@@ -214,18 +246,19 @@ we've added some additional fields to help your API be more compliant.
 
 # System User
 
-There is a System User that must be seeded. This user is designed to unusable,
-and should be used to indicate that the system has performed an action.
+There is a System User that must be seeded. This user is designed to be
+unusable, and should be used to indicate that the system has performed an
+action.
 
-Set the appropriate `created_by` and `updated_by` type fields when performing
-changes in the system using the system user.
+Set the appropriate `created_by` and `updated_by` type fields when
+performing changes in the system using the system user.
 
 You must set `SYSTEM_USER_ID` and `SYSTEM_USER_EMAIL` in your .env
 
 # Migration
 
-There is a single migration that will setup the base user table and a password
-reset table.
+There is a single migration that will setup the base user table and a
+password reset table.
 
 `php artisan migrate`
 
@@ -253,8 +286,8 @@ Travis also requires additional environment variables if you want to auto deploy
 
 # Emails
 
-There are 2 included emailers that form part of the registration and verification
-processes.
+There are 2 included emailers that form part of the registration and
+verification processes.
 
 * Confirm Account
 * Password Reset
@@ -291,6 +324,10 @@ It is suggested you configure your server with the following:
 * ext-mcrypt - Speeds up some crypto operations
 * ext-gmp (GNU Multiple Precision) - Speeds up arbitrary precision integer calculations
 
+# Sessions
+
+In case you're wondering, this is stateless. There are no sessions.
+
 # Other Changes
 
 ## bootstrap/app.php
@@ -306,13 +343,29 @@ It is suggested you configure your server with the following:
 
 ## Registration
 
-* 
+# Roadmap
+
+These features have not been included yet, but are planned.
+
+## Secure Headers
+
+* Public Key Pinning Extension for HTTP (HPKP)
+* X-Permitted-Cross-Domain-Policies
+* Referrer-Policy
+* Expect-CT (Certificate Transparency)
 
 # Contributing
 
-Please feel free to contribute back.
+Please be brutally critical of this in the interest of improving the
+security.
 
-I'm sure there are hundereds of ways of improving upon this work. Let's make the
-internet a safer place, together.
+Feel free to contribute back.
+
+I'm sure there are hundereds of ways of improving upon this work. Let's 
+make the internet a safer place, together.
 
 Security is everyones problem.
+
+# Acknowledgements
+
+* [Brian Maiyo](https://github.com/kiproping)

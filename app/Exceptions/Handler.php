@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -64,14 +66,12 @@ class Handler extends ExceptionHandler
             $message = 'Internal Server Error';
         }
 
-        if ($environment === 'production') {
-            return response()->json([
-                'error' => $message,
-            ], 500)
-                ->header('X-Content-Type-Options', 'nosniff')
-                ->header('X-Frame-Options', 'DENY')
-                ->header('X-XSS-Protection', '1; mode=block')
-                ->header('Strict-Transport-Security', 'max-age=7776000; includeSubDomains');
+        $user = Auth::user();
+
+        if (isset($user->_id)) {
+            Log::error(sprintf('Exception Message: %s - User: %s', $message, $user->_id));
+        } else {
+            Log::error(sprintf('Exception Message: %s', $message));
         }
 
         return response()->json([
@@ -80,8 +80,6 @@ class Handler extends ExceptionHandler
             ->header('X-Content-Type-Options', 'nosniff')
             ->header('X-Frame-Options', 'DENY')
             ->header('X-XSS-Protection', '1; mode=block')
-            ->header('Strict-Transport-Security', 'max-age=7776000; includeSubDomains')
-            ->header('Server', sprintf("Tabbs Services (%s)", $environment))
-            ->header('X-Powered-By', sprintf("Tabbs Services (%s)", $environment));
+            ->header('Strict-Transport-Security', 'max-age=7776000; includeSubDomains');
     }
 }
