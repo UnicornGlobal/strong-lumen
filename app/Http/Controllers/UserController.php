@@ -98,4 +98,9 @@ class UserController extends Controller
 
         return response('OK', 200);
     }
+
+    public function getUserRoles(Request $request, $userId)
+    {
+        return response()->json(User::where('_id', $userId)->first()->roles());
+    }
 }
