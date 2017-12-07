@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Role;
 use App\User;
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 Class RolesMiddleware
 {
@@ -19,9 +20,10 @@ Class RolesMiddleware
      * @param $role
      * @return mixed
      */
-    public function handle($request, Closure $next, int $id, $role)
+    public function handle($request, Closure $next, $role)
     {
-        $user = new UserController();
-       if(!isNull($request->id) && App->user()::roles->
+        if(Auth::user()->hasRole($role)){
+            return $next($request);
+        }
     }
 }

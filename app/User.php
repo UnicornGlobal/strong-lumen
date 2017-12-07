@@ -3,7 +3,9 @@
 namespace App;
 
 use App\Mail\PasswordResetMessage;
+use function GuzzleHttp\Psr7\_parse_request_uri;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
@@ -100,5 +102,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'user_roles')->using('App\UserRole');
+    }
+
+    public function hasRole($role){
+        return $this->roles()->get()->containsStrict($role);
     }
 }
