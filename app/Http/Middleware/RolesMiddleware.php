@@ -25,5 +25,6 @@ Class RolesMiddleware
         if(Auth::user()->hasRole($role)){
             return $next($request);
         }
+        return response()->json(['error' => 'Incorrect Role'], 401);
     }
 }
