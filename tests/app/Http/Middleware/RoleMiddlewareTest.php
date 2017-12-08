@@ -10,14 +10,14 @@ class RoleMiddlewareTest extends TestCase
 
         $router = new \Laravel\Lumen\Routing\Router($this->createApplication());
         $router->group(['middleware' => ['roles:admin']], function () use ($router) {
-            $router->get('/_test/roles', 'RoleMiddlewareTest@testAdmin');
+            $router->get('/_test/roles', 'RoleMiddlewareTest@adminTest');
         });
 
     }
 
     public function testRole()
     {
-        $user = new \App\User(['name' => 'Admin']);
+        $user = new \App\User(['roles' => ['admin']]);
         $this->be($user);
         try {
             $this->get('/_test/roles');
