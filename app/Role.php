@@ -12,4 +12,8 @@ class Role extends Model
     {
         return $this->belongsToMany('App\User', 'user_roles')->withTimestamps()->using('App\UserRole');
     }
+
+    public function addRole($role){
+        Role::save(['name' => $role]);
+    }
 }
