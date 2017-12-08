@@ -55,8 +55,7 @@ class Handler extends ExceptionHandler
             !is_null($token) &&
             $token === $required &&
             $environment !== 'production' &&
-            $debugMode === true)
-        {
+            $debugMode === true) {
             return parent::render($request, $e);
         }
 
