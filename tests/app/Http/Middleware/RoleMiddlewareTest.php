@@ -8,18 +8,27 @@ class RoleMiddlewareTest extends TestCase
     {
         parent::setUp();
 
-        \Route::middleware('roles:admin')->any('/_test/roles', function () {
-            return 'OK';
+        $router = new \Laravel\Lumen\Routing\Router($this->createApplication());
+        $router->group(['middleware' => ['roles:admin']], function () use ($router) {
+            $router->get('/_test/roles', 'RoleMiddlewareTest@testAdmin');
         });
+
     }
 
     public function testRole()
     {
+        $user = new \App\User(['name' => 'Admin']);
+        $this->be($user);
         try {
-            $response = $this->get('/_test/roles');
+            $this->get('/_test/roles');
+            $this->assertResponseStatus(201);
         } catch (HttpException $e) {
             $this->assertEquals(401, $e->getStatusCode());
             $this->assertEquals('Incorrect Role', $e->getMessage());
         }
+    }
+
+    public function adminTest(){
+        return 'OK';
     }
 }
