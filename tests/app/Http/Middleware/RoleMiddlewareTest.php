@@ -17,15 +17,12 @@ class RoleMiddlewareTest extends TestCase
 
     public function testRole()
     {
-        $user = new \App\User(['roles' => ['admin']]);
+        $user = new \App\User(['roles' => ['user']]);
         $this->be($user);
-        try {
-            $this->get('/_test/roles');
-            $this->assertResponseStatus(201);
-        } catch (HttpException $e) {
-            $this->assertEquals(401, $e->getStatusCode());
-            $this->assertEquals('Incorrect Role', $e->getMessage());
-        }
+
+        $this->get('/_test/roles');
+        //$this->assertResponseStatus(201);
+        dd($this->response);
     }
 
     public function adminTest(){
