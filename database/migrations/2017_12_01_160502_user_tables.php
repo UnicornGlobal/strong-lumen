@@ -40,7 +40,6 @@ class UserTables extends Migration
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
     }
 
     /**
