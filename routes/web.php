@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,20 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
         $router->get('/confirm/{token}', 'RegistrationController@confirmEmail');
         $router->post('/reset', 'ResetController@postEmail');
         $router->post('/reset/{token}', 'ResetController@postReset');
+    });
+
+    $router->group(['middleware' => ['roles:admin']], function () use ($router) {
+        $router->get('/test/roles', function () {
+            return 'OK';
+        });
+
+    });
+
+    $router->group(['middleware' => []], function () use ($router) {
+        $router->post('/test/addRole/{name}', function ($name) {
+            //dd(Auth::user());
+            Auth::user()->addRole($name);
+        });
     });
 
     /**

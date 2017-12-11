@@ -2,48 +2,39 @@
 
 use App\Role;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Webpatser\Uuid\Uuid;
 
 class RoleMiddlewareTest extends TestCase
 {
+    //To keep DB clean
     use \Laravel\Lumen\Testing\DatabaseTransactions;
-    //protected $router;
     public function setUp()
     {
-
         parent::setUp();
-        $router = new \Laravel\Lumen\Routing\Router($this->createApplication());;
-
-        $router->group(['middleware' => ['roles:admin']], function () use ($router) {
-            $router->get('/test/roles', function () {
-                return 'OK';
-            });
-        });
-        $this->app->router = $router;
+        $this->post('/login', [
+            'username' => 'user',
+            'password' => 'password',
+        ], [ 'Debug-Token' => env('DEBUG_TOKEN')]);
     }
 
-    public function testRole()
+    public function testBadRole()
     {
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
-
-        if(is_null($user->role)){
-            //dd($user->role);
-            $user->roles()->syncWithoutDetaching(
-                Role::where('name', 'admin')->first(),
-                                [
-                    'created_by' => $user->id,
-                    'updated_by' => $user->id,
-                ]
-            );
-        }
-
+        //before adding admin role
+        $user = Auth::user();
 
         $this->actingAs($user)->get('/test/roles', ['Debug-Token' => env('DEBUG_TOKEN')]);
-        //$this->assertResponseStatus(201);
-        dd($this->response);
+        $this->assertResponseStatus(401);
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
 
-    public function adminTest(){
-        return 'OK';
+    public function testAddRole()
+    {
+        $this->actingAs(Auth::user())->post('/test/addRole/admin');
+
+        $this->actingAs(Auth::user())->get('/test/roles', ['Debug-Token' => env('DEBUG_TOKEN')]);
+        //Check to see if the role was checked successfully
+        $this->assertEquals('OK', $this->response->getContent());
+
     }
 }

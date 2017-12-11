@@ -16,4 +16,8 @@ class Role extends Model
     public function addRole($role){
         Role::save(['name' => $role]);
     }
+
+    public function getName(){
+        return $this->name;
+    }
 }

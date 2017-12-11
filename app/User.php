@@ -105,6 +105,27 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     public function hasRole($role){
-        return $this->roles()->get()->containsStrict($role);
+        foreach(Auth::user()->roles()->get() as $userRole){
+            if($userRole->getName() === $role){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function addRole($role)
+    {
+        if (!Auth::user()->hasRole($role)) {
+            Auth::user()->roles()->syncWithoutDetaching(
+                [
+                Role::where('name', 'admin')->first()->id
+                    =>
+                    [
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ]
+                ]
+            );
+        }
     }
 }
