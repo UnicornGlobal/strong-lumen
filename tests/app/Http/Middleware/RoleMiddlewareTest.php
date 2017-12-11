@@ -24,14 +24,20 @@ class RoleMiddlewareTest extends TestCase
 
     public function testRole()
     {
-        $user = factory('App\User')->make();
+        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+
+        if(is_null($user->role)){
+            //dd($user->role);
+            $user->roles()->syncWithoutDetaching(
+                Role::where('name', 'admin')->first(),
+                                [
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
+                ]
+            );
+        }
 
 
-
-        $user->roles()->attach('admin');
-
-
-        //dd($this->router);
         $this->actingAs($user)->get('/test/roles', ['Debug-Token' => env('DEBUG_TOKEN')]);
         //$this->assertResponseStatus(201);
         dd($this->response);

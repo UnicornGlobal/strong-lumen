@@ -10,7 +10,7 @@ class Role extends Model
 
     public function users()
     {
-        return $this->belongsToMany('App\User', 'user_roles')->withTimestamps()->using('App\UserRole');
+        return $this->belongsToMany('App\User', 'user_role')->withTimestamps()->using('App\UserRole');
     }
 
     public function addRole($role){

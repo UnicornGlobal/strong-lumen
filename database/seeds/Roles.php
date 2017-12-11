@@ -1,11 +1,11 @@
 <?php
 
+use App\Role;
 use App\UserRole;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webpatser\Uuid\Uuid;
-use App\Role;
 
 class Roles extends Seeder
 {
@@ -18,8 +18,9 @@ class Roles extends Seeder
     {
         Model::unguard();
 
-        DB::table('roles')->delete();
-
+        if (app()->environment('local')) {
+            DB::table('roles')->delete();
+        }
         Role::create([
             'id' => 1,
             '_id' => Uuid::generate(4),
@@ -28,7 +29,9 @@ class Roles extends Seeder
             'updated_by' => 1,
         ]);
 
-        DB::table('user_roles')->delete();
+        if (app()->environment('local')) {
+            DB::table('user_role')->delete();
+        }
         UserRole::create([
             'user_id' => 1,
             'role_id' => 1,

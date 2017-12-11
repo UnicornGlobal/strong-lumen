@@ -17,9 +17,12 @@ class AddRolesTables extends Migration
             $table->bigIncrements('id');
             $table->uuid('_id')->unique();
             $table->string('name')->unique();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
+            $table->timestamps();
         });
 
-        Schema::create('user_roles', function (Blueprint $table) {
+        Schema::create('user_role', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('created_by');
