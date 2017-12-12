@@ -73,18 +73,23 @@ class RoleMiddlewareTest extends TestCase
 
     }
 
-    public function testEmptyRoles()
-    {
-
-    }
-
-    public function testMultipleRoles()
-    {
-
-    }
-
-    public function testIncorrectRole(){
-
-    }
+//    public function testInactiveRole()
+//    {
+//
+//    }
+//
+//    public function testEmptyRoles()
+//    {
+//
+//    }
+//
+//    public function testMultipleRoles()
+//    {
+//
+//    }
+//
+//    public function testIncorrectRole(){
+//
+//    }
 
 }

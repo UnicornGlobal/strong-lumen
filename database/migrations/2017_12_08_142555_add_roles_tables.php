@@ -20,6 +20,7 @@ class AddRolesTables extends Migration
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('user_role', function (Blueprint $table) {
@@ -38,6 +39,7 @@ class AddRolesTables extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('roles');
+        Schema::dropIfExists('user_role');
     }
 }

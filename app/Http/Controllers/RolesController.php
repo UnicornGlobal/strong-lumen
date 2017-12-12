@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Role;
 use App\User;
+use Illuminate\Support\Facades\Auth;
+use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
@@ -25,6 +28,11 @@ class RolesController extends Controller
     }
 
     public function createRole($name){
-        Role::save();
+        $role = new Role();
+        $role->name = $name;
+        $role->_id = Uuid::generate(4);
+        $role->created_by = Auth::user()->id;
+        $role->updated_by = Auth::user()->id;
+        $role->save();
     }
 }
