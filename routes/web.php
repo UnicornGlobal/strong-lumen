@@ -75,6 +75,8 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
         $router->post('/revokeRole/{id}/{role}', 'RolesController@revokeRole');
         $router->post('/createRole/{name}', 'RolesController@createRole');
         $router->post('/deleteRole/{name}', 'RolesController@deleteRole');
+        $router->post('/activate/{name}', 'RolesController@activateRole');
+        $router->post('/deactivate/{name}', 'RolesController@deactivateRole');
     });
 
     /**
