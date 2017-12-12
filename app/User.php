@@ -106,7 +106,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function hasRole($role){
         foreach($this->roles()->get() as $userRole){
-            if($userRole->name === $role && $userRole->active === 1){
+            if($userRole->name === $role){
                 return true;
             }
         }

@@ -20,8 +20,15 @@ Class RolesMiddleware
      * @param $role
      * @return mixed
      */
-    public function handle($request, Closure $next, $role)
+    public function handle($request, Closure $next, $role = null)
     {
+        if(is_null($role)){
+            if (Auth::user()->roles->count() != 0){
+                return $next($request);
+            }
+        }
+
+        //when implementing extra loop, add check for active role
         if(Auth::user()->hasRole($role)){
             return $next($request);
         }
