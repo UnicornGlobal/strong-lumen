@@ -21,6 +21,7 @@ class Roles extends Seeder
         if (app()->environment('local')) {
             DB::table('roles')->delete();
         }
+
         Role::create([
             'id' => 1,
             '_id' => Uuid::generate(4),
@@ -32,8 +33,13 @@ class Roles extends Seeder
         if (app()->environment('local')) {
             DB::table('user_role')->delete();
         }
+
         UserRole::create([
             'user_id' => 1,
+            'role_id' => 1,
+        ]);
+        UserRole::create([
+            'user_id' => 3,
             'role_id' => 1,
         ]);
     }

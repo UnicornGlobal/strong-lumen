@@ -105,7 +105,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     public function hasRole($role){
-        foreach(Auth::user()->roles()->get() as $userRole){
+        foreach($this->roles()->get() as $userRole){
             if($userRole->getName() === $role){
                 return true;
             }
@@ -115,16 +115,24 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function addRole($role)
     {
-        if (!Auth::user()->hasRole($role)) {
-            Auth::user()->roles()->syncWithoutDetaching(
+        if (!$this->hasRole($role)) {
+            $this->roles()->syncWithoutDetaching(
                 [
-                Role::where('name', 'admin')->first()->id
+                Role::where('name', $role)->first()->id
                     =>
                     [
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ]
                 ]
+            );
+        }
+    }
+
+    public function removeRole($role){
+        if ($this->hasRole($role)) {
+            $this->roles()->detach(
+                Role::where('name', $role)->first()->id
             );
         }
     }
