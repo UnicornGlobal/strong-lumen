@@ -113,7 +113,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return false;
     }
 
-    public function addRole($role)
+    public function assignRole($role)
     {
         if (!$this->hasRole($role)) {
             $this->roles()->syncWithoutDetaching(
@@ -129,7 +129,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
     }
 
-    public function removeRole($role){
+    public function revokeRole($role){
         if ($this->hasRole($role)) {
             $this->roles()->detach(
                 Role::where('name', $role)->first()->id

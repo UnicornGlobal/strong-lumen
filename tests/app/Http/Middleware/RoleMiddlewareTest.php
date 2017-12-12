@@ -30,7 +30,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testAddRole()
     {
-        $this->actingAs(Auth::user())->post('roles/addRole/2/admin');
+        $this->actingAs(Auth::user())->post('roles/assignRole/2/admin');
 
         $this->actingAs(Auth::user())->get('/roles/2', ['Debug-Token' => env('DEBUG_TOKEN')]);
         //Check to see if the role was assigned successfully
@@ -42,7 +42,7 @@ class RoleMiddlewareTest extends TestCase
     {
         $testUser = User::where('id', 2)->first();
 
-        $this->actingAs(Auth::user())->post('roles/addRole/2/admin'); //Add user_role
+        $this->actingAs(Auth::user())->post('roles/assignRole/2/admin'); //Add user_role
 
         $this->actingAs($testUser)
                ->get('/roles/2', ['Debug-Token' => env('DEBUG_TOKEN')]);
@@ -50,10 +50,40 @@ class RoleMiddlewareTest extends TestCase
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name); // Ensure we added the role correctly
 
-        $this->actingAs(Auth::user())->post('roles/removeRole/2/admin'); //remove the role
+        $this->actingAs(Auth::user())->post('roles/revokeRole/2/admin'); //remove the role
 
         $this->actingAs($testUser)->get('/roles/2', ['Debug-Token' => env('DEBUG_TOKEN')]);
         $this->assertResponseStatus(401); //ensure we get access denied error
+    }
+
+    public function testCreateRole()
+    {
+        $this->actingAs(Auth::user())->post('/roles/createRole/intern');
+
+        $testUser = User::where('id', 2)->first();
+        $this->actingAs(Auth::user())->post('roles/assignRole/2/intern'); //Assign new role
+        $this->actingAs(Auth::user())->get('/roles/2', ['Debug-Token' => env('DEBUG_TOKEN')]);
+        $roles = json_decode($this->response->getContent());
+        $this->assertEquals('intern', $roles[0]->name);
+
+    }
+
+    public function testDeleteRole()
+    {
+
+    }
+
+    public function testEmptyRoles()
+    {
+
+    }
+
+    public function testMultipleRoles()
+    {
+
+    }
+
+    public function testIncorrectRole(){
 
     }
 

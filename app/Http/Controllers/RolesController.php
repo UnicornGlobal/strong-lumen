@@ -12,15 +12,19 @@ class RolesController extends Controller
         return User::where('id', $id)->first()->roles;
     }
 
-    public function addRole($id, $role)
+    public function assignRole($id, $role)
     {
-        User::where('id', $id)->first()->addRole($role);
+        User::where('id', $id)->first()->assignRole($role);
         return response('OK', 200);
     }
 
-    public function removeRole($id, $role)
+    public function revokeRole($id, $role)
     {
-        User::where('id', $id)->first()->removeRole($role);
+        User::where('id', $id)->first()->revokeRole($role);
         return response('OK', 200);
+    }
+
+    public function createRole($name){
+        Role::save();
     }
 }
