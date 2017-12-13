@@ -14,7 +14,8 @@ class RolesController extends Controller
         return Role::where('name', $name)->first();
     }
 
-    public function getRoles(){
+    public function getRoles()
+    {
         return Role::all();
     }
 
@@ -31,7 +32,7 @@ class RolesController extends Controller
 
     public function deleteRole($name)
     {
-        if(Role::where('name', $name)->first()->users->isEmpty()){
+        if (Role::where('name', $name)->first()->users->isEmpty()) {
             Role::where('name', $name)->delete();
             return response(200, 'OK');
         }
