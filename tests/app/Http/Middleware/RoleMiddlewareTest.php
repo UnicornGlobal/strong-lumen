@@ -20,7 +20,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testBadRole()
     {
-        //before adding admin role
+        // before adding admin role
         $user = User::where('id', 2)->first();
 
         $this->actingAs($user)->get('/roles/getUserRoles/1', ['Debug-Token' => env('DEBUG_TOKEN')]);
