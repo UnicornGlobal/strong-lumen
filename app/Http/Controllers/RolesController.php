@@ -19,6 +19,10 @@ class RolesController extends Controller
         return Role::where('name', $name)->first();
     }
 
+    public function getRoles(){
+        return Role::all();
+    }
+
     public function assignRole($id, $role)
     {
         User::where('id', $id)->first()->assignRole($role);
