@@ -211,6 +211,6 @@ class RoleMiddlewareTest extends TestCase
     {
         $this->actingAs(Auth::user())->get('/roles/getUsers/admin');
         $users = json_decode($this->response->getContent());
-        $this->assertEquals('5FFA95F4-5EB4-46FB-94F1-F2B27254725B', $users[1]->_id);
+        $this->assertEquals('5FFA95F4-5EB4-46FB-94F1-F2B27254725B', $users[0]->_id);
     }
 }
