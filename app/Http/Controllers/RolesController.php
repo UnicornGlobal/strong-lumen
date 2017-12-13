@@ -51,4 +51,10 @@ class RolesController extends Controller
         $role->active = true;
         $role->save();
     }
+
+    public function getUserForRole($name)
+    {
+        $users = Role::where('name', $name)->first()->users;
+        return $users;
+    }
 }
