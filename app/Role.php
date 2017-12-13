@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -21,11 +20,13 @@ class Role extends Model
         return $this->belongsToMany('App\User', 'user_role')->withTimestamps()->using('App\UserRole');
     }
 
-    public function getName(){
+    public function getName()
+    {
         return $this->name;
     }
     
-    public function isActive(){
+    public function isActive()
+    {
         return $this->active;
     }
 }

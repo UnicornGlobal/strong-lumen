@@ -8,7 +8,7 @@ use App\User;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-Class RolesMiddleware
+class RolesMiddleware
 {
 
     /**
@@ -21,19 +21,18 @@ Class RolesMiddleware
      */
     public function handle($request, Closure $next, ...$requiredRoles)
     {
-        if(empty($requiredRoles)){
-            if (Auth::user()->roles->count() != 0){
+        if (empty($requiredRoles)) {
+            if (Auth::user()->roles->count() != 0) {
                 return $next($request);
             }
         }
 
-        foreach ($requiredRoles as $role){
-            if(empty(Role::where('name', $role)->first())){
+        foreach ($requiredRoles as $role) {
+            if (empty(Role::where('name', $role)->first())) {
                 return response()->json(['error' => 'Undefined role on route'], 500);
             }
-            if(Role::where('name', $role)->first()->isActive()
-                && Auth::user()->hasRole($role))
-            {
+            if (Role::where('name', $role)->first()->isActive()
+                && Auth::user()->hasRole($role)) {
                 return $next($request);
             }
         }

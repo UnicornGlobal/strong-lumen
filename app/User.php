@@ -104,9 +104,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->belongsToMany('App\Role', 'user_role')->using('App\UserRole')->withTimestamps();
     }
 
-    public function hasRole($role){
-        foreach($this->roles()->get() as $userRole){
-            if($userRole->name === $role){
+    public function hasRole($role)
+    {
+        foreach ($this->roles()->get() as $userRole) {
+            if ($userRole->name === $role) {
                 return true;
             }
         }
@@ -116,8 +117,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function assignRole($role)
     {
         if (!empty(Role::where('name', $role)->first())
-            && !$this->hasRole($role))
-        {
+            && !$this->hasRole($role)) {
             $this->roles()->syncWithoutDetaching(
                 [
                 Role::where('name', $role)->first()->id
@@ -131,7 +131,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
     }
 
-    public function revokeRole($role){
+    public function revokeRole($role)
+    {
         if ($this->hasRole($role)) {
             $this->roles()->detach(
                 Role::where('name', $role)->first()->id

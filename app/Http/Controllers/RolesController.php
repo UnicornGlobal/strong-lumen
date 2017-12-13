@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Role;
 use App\User;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +31,8 @@ class RolesController extends Controller
         return response('OK', 200);
     }
 
-    public function createRole($name){
+    public function createRole($name)
+    {
         $role = new Role();
         $role->name = $name;
         $role->_id = Uuid::generate(4);
@@ -42,17 +42,20 @@ class RolesController extends Controller
         $role->save();
     }
 
-    public function deleteRole($name){
+    public function deleteRole($name)
+    {
         Role::where('name', $name)->delete();
     }
 
-    public function deactivateRole($name){
+    public function deactivateRole($name)
+    {
         $role = Role::where('name', $name)->first();
         $role->active = false;
         $role->save();
     }
 
-    public function activateRole($name){
+    public function activateRole($name)
+    {
         $role = Role::where('name', $name)->first();
         $role->active = true;
         $role->save();
