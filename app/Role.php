@@ -10,7 +10,7 @@ class Role extends Model
     use SoftDeletes;
 
     protected $attributes = [
-        'active' => true //Roles are active on creation
+        'active' => true
     ];
 
     protected $dates = ['deleted_at'];

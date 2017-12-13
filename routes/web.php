@@ -70,16 +70,15 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
     });
 
     $router->group(['prefix' => 'roles', 'middleware' => ['roles:admin']], function () use ($router) {
-        $router->get('/getUserRoles/{id}', 'RolesController@getUserRoles');
+        $router->get('/getUserRoles/{id}', 'UserController@getUserRoles');
         $router->get('/getRole/{name}', 'RolesController@getRole');
         $router->get('/getAllRoles', 'RolesController@getRoles');
-        $router->post('/assignRole/{id}/{role}', 'RolesController@assignRole');
-        $router->post('/revokeRole/{id}/{role}', 'RolesController@revokeRole');
+        $router->post('/assignRole/{id}/{role}', 'UserController@assignRole');
+        $router->post('/revokeRole/{id}/{role}', 'UserController@revokeRole');
         $router->post('/createRole/{name}', 'RolesController@createRole');
         $router->post('/deleteRole/{name}', 'RolesController@deleteRole');
         $router->post('/activate/{name}', 'RolesController@activateRole');
         $router->post('/deactivate/{name}', 'RolesController@deactivateRole');
-
     });
 
     /**

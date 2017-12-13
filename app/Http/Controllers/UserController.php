@@ -98,4 +98,21 @@ class UserController extends Controller
 
         return response('OK', 200);
     }
+
+    public function getUserRoles($id)
+    {
+        return User::where('id', $id)->first()->roles;
+    }
+
+    public function assignRole($id, $role)
+    {
+        User::where('id', $id)->first()->assignRole($role);
+        return response('OK', 200);
+    }
+
+    public function revokeRole($id, $role)
+    {
+        User::where('id', $id)->first()->revokeRole($role);
+        return response('OK', 200);
+    }
 }

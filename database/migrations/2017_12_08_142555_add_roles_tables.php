@@ -17,7 +17,7 @@ class AddRolesTables extends Migration
             $table->bigIncrements('id');
             $table->uuid('_id')->unique();
             $table->string('name')->unique();
-            $table->boolean('active');
+            $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();

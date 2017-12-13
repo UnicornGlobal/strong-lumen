@@ -30,9 +30,10 @@ class RoleMiddlewareTest extends TestCase
 
     public function testAssignRole()
     {
-        $this->actingAs(Auth::user())->post('roles/assignRole/2/admin');
+        $this->actingAs(Auth::user())->post('/roles/assignRole/2/admin');
 
-        $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
+        $this->actingAs(Auth::user())->get('/roles/getUserRoles/2', ['Debug-Token' => env('DEBUG_TOKEN')]);
+
         //Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name);
@@ -42,25 +43,31 @@ class RoleMiddlewareTest extends TestCase
     {
         $testUser = User::where('id', 2)->first();
 
-        $this->actingAs(Auth::user())->post('roles/assignRole/2/admin'); //Add user_role
+        // Add user_role
+        $this->actingAs(Auth::user())->post('roles/assignRole/2/admin');
 
         $this->actingAs($testUser)
                ->get('/roles/getUserRoles/2');
 
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals('admin', $roles[0]->name); // Ensure we added the role correctly
 
-        $this->actingAs(Auth::user())->post('roles/revokeRole/2/admin'); //remove the role
+        // Ensure we added the role correctly
+        $this->assertEquals('admin', $roles[0]->name);
+
+        //remove the role
+        $this->actingAs(Auth::user())->post('roles/revokeRole/2/admin');
 
         $this->actingAs($testUser)->get('/roles/getUserRoles/2');
-        $this->assertResponseStatus(401); //ensure we get access denied error
+
+        //ensure we get access denied error
+        $this->assertResponseStatus(401);
     }
 
     public function testCreateRole()
     {
         $this->actingAs(Auth::user())->post('/roles/createRole/intern');
 
-        $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern'); //Assign new role
+        $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('intern', $roles[0]->name);
@@ -102,7 +109,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testActivateRole(){
         $this->actingAs(Auth::user())->post('/roles/createRole/intern');
-        $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern'); //Assign new role
+        $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals(1, $roles[0]->active);
@@ -141,8 +148,8 @@ class RoleMiddlewareTest extends TestCase
                 return 'Test';
             });
         });
-        $this->actingAs(Auth::user())->post('/roles/createRole/intern'); //Admin user
-        $this->actingAs(Auth::user())->post('/roles/createRole/system');//Admin user
+        $this->actingAs(Auth::user())->post('/roles/createRole/intern');
+        $this->actingAs(Auth::user())->post('/roles/createRole/system');
 
         //Fail
         $this->actingAs(User::where('id', 2)->first())->get('/test');
@@ -150,21 +157,21 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
 
         //Only 1st role
-        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern'); //Admin user
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern');
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
 
         //Only 2nd role
-        $this->actingAs(User::where('id', 3)->first())->post('/roles/revokeRole/2/intern'); //Admin user
-        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/system'); //Admin user
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/revokeRole/2/intern');
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/system');
 
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
 
         //both roles
-        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern'); //Admin user
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern');
 
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);

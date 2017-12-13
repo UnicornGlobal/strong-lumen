@@ -9,11 +9,6 @@ use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
-    public function getUserRoles($id)
-    {
-        return User::where('id', $id)->first()->roles;
-    }
-
     public function getRole($name)
     {
         return Role::where('name', $name)->first();
@@ -21,18 +16,6 @@ class RolesController extends Controller
 
     public function getRoles(){
         return Role::all();
-    }
-
-    public function assignRole($id, $role)
-    {
-        User::where('id', $id)->first()->assignRole($role);
-        return response('OK', 200);
-    }
-
-    public function revokeRole($id, $role)
-    {
-        User::where('id', $id)->first()->revokeRole($role);
-        return response('OK', 200);
     }
 
     public function createRole($name)
