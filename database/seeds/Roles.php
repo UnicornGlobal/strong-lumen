@@ -26,7 +26,7 @@ class Roles extends Seeder
             'id' => 1,
             '_id' => Uuid::generate(4),
             'name' => 'admin',
-            'active' => true,
+            'is_active' => true,
             'created_by' => 5,
             'updated_by' => 4,
         ]);
