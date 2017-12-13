@@ -72,7 +72,6 @@ class RoleMiddlewareTest extends TestCase
         $roles = json_decode($this->response->getContent());
         //dd($this->response);
         $this->assertEquals('intern', $roles[0]->name);
-
     }
 
     public function testDeleteRole()
@@ -108,7 +107,8 @@ class RoleMiddlewareTest extends TestCase
         $this->assertResponseStatus(401);
     }
 
-    public function testActivateRole(){
+    public function testActivateRole()
+    {
         $this->actingAs(Auth::user())->post('/roles/createRole/intern');
         $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
@@ -126,7 +126,7 @@ class RoleMiddlewareTest extends TestCase
     {
         $router = $this->app->router;
         $this->app->router->group(['middleware' => ['roles']], function () use ($router) {
-            $router->get('/test', function() {
+            $router->get('/test', function () {
                 return "Test";
             });
         });
@@ -145,7 +145,7 @@ class RoleMiddlewareTest extends TestCase
     {
         $router = $this->app->router;
         $this->app->router->group(['middleware' => ['roles:system,intern']], function () use ($router) {
-            $router->get('/test', function() {
+            $router->get('/test', function () {
                 return 'Test';
             });
         });
@@ -177,13 +177,13 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
-
     }
 
-    public function testIncorrectRole(){
+    public function testIncorrectRole()
+    {
         $router = $this->app->router;
         $this->app->router->group(['middleware' => ['roles:system,intern']], function () use ($router) {
-            $router->get('/test', function() {
+            $router->get('/test', function () {
                 return 'Test';
             });
         });
@@ -194,7 +194,8 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('{"error":"Undefined role on route"}', $this->response->getContent());
     }
 
-    public function testGetRoles(){
+    public function testGetRoles()
+    {
         $this->actingAs(Auth::user())->get('/roles/getAllRoles');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name);
@@ -206,7 +207,8 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('intern', $roles[1]->name);
     }
 
-    public function testGetUserForRole(){
+    public function testGetUserForRole()
+    {
         $this->actingAs(Auth::user())->get('/roles/getUsers/admin');
         $users = json_decode($this->response->getContent());
         $this->assertEquals('d4dfe321-1a4e-42c5-a181-6d84fad2d176', $users[0]->_id);
