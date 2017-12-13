@@ -16,21 +16,26 @@ Class RolesMiddleware
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
-     * @param int $id
-     * @param $role
+     * @param array $requiredRoles
      * @return mixed
      */
-    public function handle($request, Closure $next, $role = null)
+    public function handle($request, Closure $next, ...$requiredRoles)
     {
-        if(is_null($role)){
+        if(empty($requiredRoles)){
             if (Auth::user()->roles->count() != 0){
                 return $next($request);
             }
         }
 
-        //when implementing extra loop, add check for active role
-        if(Auth::user()->hasRole($role)){
-            return $next($request);
+        foreach ($requiredRoles as $role){
+            if(empty(Role::where('name', $role)->first())){
+                return response()->json(['error' => 'Undefined role on route'], 500);
+            }
+            if(Role::where('name', $role)->first()->isActive()
+                && Auth::user()->hasRole($role))
+            {
+                return $next($request);
+            }
         }
         return response()->json(['error' => 'Incorrect Role'], 401);
     }

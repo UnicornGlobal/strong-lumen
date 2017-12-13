@@ -26,6 +26,6 @@ class Role extends Model
     }
     
     public function isActive(){
-        return boolValue($this->active);
+        return $this->active;
     }
 }

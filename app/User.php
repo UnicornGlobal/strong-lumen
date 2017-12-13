@@ -115,7 +115,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function assignRole($role)
     {
-        if (!$this->hasRole($role)) {
+        if (!empty(Role::where('name', $role)->first())
+            && !$this->hasRole($role))
+        {
             $this->roles()->syncWithoutDetaching(
                 [
                 Role::where('name', $role)->first()->id

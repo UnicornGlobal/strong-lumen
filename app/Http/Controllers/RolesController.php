@@ -10,9 +10,14 @@ use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
-    public function getRoles($id)
+    public function getUserRoles($id)
     {
         return User::where('id', $id)->first()->roles;
+    }
+
+    public function getRole($name)
+    {
+        return Role::where('name', $name)->first();
     }
 
     public function assignRole($id, $role)

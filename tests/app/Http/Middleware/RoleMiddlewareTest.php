@@ -123,14 +123,57 @@ class RoleMiddlewareTest extends TestCase
         $this->assertResponseStatus(401);
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
-//
-//    public function testMultipleRoles()
-//    {
-//
-//    }
-//
-//    public function testIncorrectRole(){
-//
-//    }
 
+    public function testMultipleRoles()
+    {
+        $router = $this->app->router;
+        $this->app->router->group(['middleware' => ['roles:system,intern']], function () use ($router) {
+            $router->get('/test', function() {
+                return 'Test';
+            });
+        });
+        $this->actingAs(Auth::user())->post('/roles/createRole/intern'); //Admin user
+        $this->actingAs(Auth::user())->post('/roles/createRole/system');//Admin user
+
+        //Fail
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+        $this->assertResponseStatus(401);
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
+
+        //Only 1st role
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern'); //Admin user
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+        $this->assertResponseStatus(200);
+        $this->assertEquals('Test', $this->response->getContent());
+
+        //Only 2nd role
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/revokeRole/2/intern'); //Admin user
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/system'); //Admin user
+
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+        $this->assertResponseStatus(200);
+        $this->assertEquals('Test', $this->response->getContent());
+
+        //both roles
+        $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/2/intern'); //Admin user
+
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+        $this->assertResponseStatus(200);
+        $this->assertEquals('Test', $this->response->getContent());
+
+    }
+
+    public function testIncorrectRole(){
+        $router = $this->app->router;
+        $this->app->router->group(['middleware' => ['roles:system,intern']], function () use ($router) {
+            $router->get('/test', function() {
+                return 'Test';
+            });
+        });
+        $this->actingAs(Auth::user())->get('/roles/getRole/intern');
+        $this->assertNull(json_decode($this->response->getContent()));
+        $this->actingAs(Auth::user())->get('/test');
+        $this->assertResponseStatus(500);
+        $this->assertEquals('{"error":"Undefined role on route"}', $this->response->getContent());
+    }
 }
