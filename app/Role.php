@@ -9,6 +9,10 @@ class Role extends Model
 {
     use SoftDeletes;
 
+    protected $attributes = [
+        'is_active' => true
+    ];
+
     protected $dates = ['deleted_at'];
 
     public function users()
@@ -23,6 +27,6 @@ class Role extends Model
     
     public function isActive()
     {
-        return $this->active;
+        return boolval($this->is_active);
     }
 }

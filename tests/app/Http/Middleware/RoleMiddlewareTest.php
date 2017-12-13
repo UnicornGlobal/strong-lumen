@@ -70,6 +70,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
         $roles = json_decode($this->response->getContent());
+        //dd($this->response);
         $this->assertEquals('intern', $roles[0]->name);
 
     }
@@ -96,7 +97,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testInactiveRole()
     {
-        $this->assertEquals(1, Role::where('name', 'admin')->first()->active);
+        $this->assertEquals(1, Role::where('name', 'admin')->first()->isActive());
 
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/3');
         $this->assertResponseStatus(200);
@@ -112,13 +113,13 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('/roles/assignRole/2/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/2');
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals(1, $roles[0]->active);
+        $this->assertEquals(1, $roles[0]->is_active);
 
         $this->actingAs(Auth::user())->post('/roles/deactivate/intern');
 
         $this->actingAs(Auth::user())->get('roles/getUserRoles/2');
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals(0, $roles[0]->active);
+        $this->assertEquals(0, $roles[0]->is_active);
     }
 
     public function testEmptyRoles()

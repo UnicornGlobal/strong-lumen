@@ -31,7 +31,7 @@ class RolesMiddleware
             if (empty(Role::where('name', $role)->first())) {
                 return response()->json(['error' => 'Undefined role on route'], 500);
             }
-
+            $tmp = Role::where('name', $role)->first()->isActive();
             if (Role::where('name', $role)->first()->isActive()
                 && Auth::user()->hasRole($role)) {
                 return $next($request);

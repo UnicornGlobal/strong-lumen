@@ -24,7 +24,7 @@ class RolesController extends Controller
         $role = new Role();
         $role->name = $name;
         $role->_id = Uuid::generate(4);
-        $role->active = true;
+        $role->is_active = true;
         $role->created_by = Auth::user()->id;
         $role->updated_by = Auth::user()->id;
         $role->save();
@@ -42,14 +42,14 @@ class RolesController extends Controller
     public function deactivateRole($name)
     {
         $role = Role::where('name', $name)->first();
-        $role->active = false;
+        $role->is_active = false;
         $role->save();
     }
 
     public function activateRole($name)
     {
         $role = Role::where('name', $name)->first();
-        $role->active = true;
+        $role->is_active = true;
         $role->save();
     }
 
