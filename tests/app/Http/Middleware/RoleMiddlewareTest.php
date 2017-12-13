@@ -78,6 +78,15 @@ class RoleMiddlewareTest extends TestCase
         $this->assertNotNull(Role::withTrashed()->where('name', 'intern')->first());
     }
 
+    public function testDeleteRoleFail()
+    {
+        $this->actingAs(Auth::user())->post('/roles/createRole/intern');
+        $this->assertNotNull(Role::where('name', 'intern')->first());
+        $this->actingAs(Auth::user())->post('roles/assignRole/2/intern');
+        $this->actingAs(Auth::user())->post('/roles/deleteRole/intern');
+        $this->assertNotNull(Role::where('name', 'intern')->first());
+    }
+
     public function testInactiveRole()
     {
         $this->assertEquals(1, Role::where('name', 'admin')->first()->active);
@@ -87,8 +96,8 @@ class RoleMiddlewareTest extends TestCase
 
         $this->actingAs(Auth::user())->post('/roles/deactivate/admin');
 
-//        $this->actingAs(Auth::user())->get('/roles/3');
-//        $this->assertResponseStatus(401);
+        $this->actingAs(Auth::user())->get('/roles/3');
+        $this->assertResponseStatus(401);
     }
 
     public function testActivateRole(){

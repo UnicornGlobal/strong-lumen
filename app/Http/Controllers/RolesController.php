@@ -44,7 +44,11 @@ class RolesController extends Controller
 
     public function deleteRole($name)
     {
-        Role::where('name', $name)->delete();
+        if(Role::where('name', $name)->first()->users->isEmpty()){
+            Role::where('name', $name)->delete();
+            return response(200, 'OK');
+        }
+        return response(500, 'Role has assigned users');
     }
 
     public function deactivateRole($name)
