@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
 
 class BaseModel extends Model
@@ -30,7 +29,8 @@ class BaseModel extends Model
         return $id;
     }
 
-    public static function getRoleIdFromName($name){
+    public static function getRoleIdFromName($name)
+    {
         $class  = get_called_class();
         $model = new $class;
         $model->checkEmptyName($name);
@@ -38,7 +38,6 @@ class BaseModel extends Model
 
         $id = $model::where('name', $name)->first()->id;
         return $id;
-
     }
 
     public function checkNameExists($name, $class)
