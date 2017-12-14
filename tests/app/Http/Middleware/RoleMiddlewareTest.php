@@ -193,10 +193,10 @@ class RoleMiddlewareTest extends TestCase
             });
         });
         $this->actingAs(Auth::user())->get('/roles/getRole/intern');
-        $this->assertNull(json_decode($this->response->getContent()));
+        $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
         $this->actingAs(Auth::user())->get('/test');
         $this->assertResponseStatus(500);
-        $this->assertEquals('{"error":"Undefined role on route"}', $this->response->getContent());
+        $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
     }
 
     public function testGetRoles()

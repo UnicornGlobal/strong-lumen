@@ -20,7 +20,8 @@ class BaseModel extends Model
     public static function loadRoleFromName($name)
     {
         $id = self::getRoleIdFromName($name);
-        return Role::where('id', $id);
+        $role = Role::where('id', $id)->first();
+        return $role;
     }
 
     private static function getIdFromUuid($uuid, $model)
@@ -42,7 +43,7 @@ class BaseModel extends Model
 
     public function checkNameExists($name, $class)
     {
-        if (!$class::where('name', $uuid)->first()) {
+        if (!$class::where('name', $name)->first()) {
             $this->throwExceptionMessage('Invalid', $class);
         }
     }
