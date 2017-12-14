@@ -11,7 +11,8 @@ class RolesController extends Controller
 {
     public function getRole($name)
     {
-        return Role::where('name', $name)->first();
+        $role = Role::loadRoleFromName($name);
+        return $role;
     }
 
     public function getRoles()
@@ -32,8 +33,9 @@ class RolesController extends Controller
 
     public function deleteRole($name)
     {
-        if (Role::where('name', $name)->first()->users->isEmpty()) {
-            Role::where('name', $name)->delete();
+        $role = $this->getRole($name);
+        if ($role->users->isEmpty()) {
+            $role->delete();
             return response(200, 'OK');
         }
         return response(500, 'Role has assigned users');
@@ -41,21 +43,22 @@ class RolesController extends Controller
 
     public function deactivateRole($name)
     {
-        $role = Role::where('name', $name)->first();
+        $role = $this->getRole($name);
         $role->is_active = false;
         $role->save();
     }
 
     public function activateRole($name)
     {
-        $role = Role::where('name', $name)->first();
+        $role = $this->getRole($name);
         $role->is_active = true;
         $role->save();
     }
 
     public function getUserForRole($name)
     {
-        $users = Role::where('name', $name)->first()->users;
+        $role = $this->getRole($name);
+        $users = $role->users;
         return $users;
     }
 }

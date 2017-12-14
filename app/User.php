@@ -3,12 +3,10 @@
 namespace App;
 
 use App\Mail\PasswordResetMessage;
-use function GuzzleHttp\Psr7\_parse_request_uri;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Auth\Authorizable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
@@ -17,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, AuthenticatableUserContract
+class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, AuthenticatableUserContract
 {
     use Authenticatable, Authorizable, SoftDeletes, CanResetPassword;
 
@@ -116,12 +114,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function assignRole($role)
     {
-        if (!empty(Role::where('name', $role)->first())
-            && !$this->hasRole($role)) {
+        $role = Role::loadRoleFromName($role);
+
+        if (!empty($role)
+            && !$this->hasRole($role->name)) {
             $this->roles()->syncWithoutDetaching(
                 [
-                Role::where('name', $role)->first()->id
-                    =>
+                $role->id =>
                     [
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
@@ -131,11 +130,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
     }
 
-    public function revokeRole($role)
+    public function revokeRole($name)
     {
-        if ($this->hasRole($role)) {
+        $role = Role::loadRoleFromName($name);
+        if ($this->hasRole($name)) {
             $this->roles()->detach(
-                Role::where('name', $role)->first()->id
+                $role->id
             );
         }
     }
