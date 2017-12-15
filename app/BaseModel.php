@@ -8,6 +8,12 @@ class BaseModel extends Model
 {
     use ValidationTrait;
 
+    /**
+     * Returns a model with the given UUID
+     *
+     * @param $uuid
+     * @return mixed
+     */
     public static function loadFromUuid($uuid)
     {
         $class  = get_called_class();
@@ -17,30 +23,26 @@ class BaseModel extends Model
         return $class::where('id', $id)->first();
     }
 
-    public static function loadRoleFromName($name)
-    {
-        $id = self::getRoleIdFromName($name);
-        $role = Role::where('id', $id)->first();
-        return $role;
-    }
-
+    /**
+     * Get true ID from UUID for a given model
+     *
+     * @param $uuid
+     * @param $model
+     * @return mixed
+     */
     private static function getIdFromUuid($uuid, $model)
     {
         $id = $model::where('_id', $uuid)->first()->id;
         return $id;
     }
 
-    public static function getRoleIdFromName($name)
-    {
-        $class  = get_called_class();
-        $model = new $class;
-        $model->checkEmptyName($name);
-        $model->checkNameExists($name, $class);
-
-        $id = $model::where('name', $name)->first()->id;
-        return $id;
-    }
-
+    /**
+     * Validate the given name exists in the DB
+     *
+     * @param $name
+     * @param $class
+     * @throws \Exception
+     */
     public function checkNameExists($name, $class)
     {
         if (!$class::where('name', $name)->first()) {
@@ -48,6 +50,12 @@ class BaseModel extends Model
         }
     }
 
+    /**
+     * Ensure $name is not empty
+     *
+     * @param $name
+     * @throws \Exception
+     */
     public function checkEmptyName($name)
     {
         if (empty($name || !isset($name) || is_null($name))) {

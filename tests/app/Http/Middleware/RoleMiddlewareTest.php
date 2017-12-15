@@ -101,7 +101,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testInactiveRole()
     {
-        $this->assertEquals(1, Role::where('name', 'admin')->first()->isActive());
+        $this->assertEquals(1, Role::where('name', 'admin')->first()->is_active);
 
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/5FFA95F4-5EB4-46FB-94F1-F2B27254725B');
         $this->assertResponseStatus(200);

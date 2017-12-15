@@ -9,17 +9,34 @@ use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
+    /**
+     * Get Role from name
+     *
+     * @param $name
+     * @return Role
+     */
     public function getRole($name)
     {
         $role = Role::loadRoleFromName($name);
         return $role;
     }
 
+    /**
+     * Get all roles in the DB
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function getRoles()
     {
         return Role::all();
     }
 
+
+    /**
+     * Create a new role
+     *
+     * @param $name
+     */
     public function createRole($name)
     {
         $role = new Role();
@@ -31,6 +48,13 @@ class RolesController extends Controller
         $role->save();
     }
 
+    /**
+     * Delete a given role
+     * Only if the role is not assigned to any users
+     *
+     * @param $name
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
     public function deleteRole($name)
     {
         $role = $this->getRole($name);
@@ -41,6 +65,12 @@ class RolesController extends Controller
         return response(500, 'Role has assigned users');
     }
 
+
+    /**
+     * Deactivate a given role
+     *
+     * @param $name
+     */
     public function deactivateRole($name)
     {
         $role = $this->getRole($name);
@@ -48,6 +78,11 @@ class RolesController extends Controller
         $role->save();
     }
 
+    /**
+     * Activate a given role
+     *
+     * @param $name
+     */
     public function activateRole($name)
     {
         $role = $this->getRole($name);
@@ -55,6 +90,12 @@ class RolesController extends Controller
         $role->save();
     }
 
+    /**
+     * Get all the users assigned to a given role
+     *
+     * @param $name
+     * @return mixed
+     */
     public function getUsersForRole($name)
     {
         $role = $this->getRole($name);

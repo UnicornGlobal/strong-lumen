@@ -102,6 +102,13 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         return $this->belongsToMany('App\Role', 'user_role')->using('App\UserRole')->withTimestamps();
     }
 
+
+    /**
+     * Check if the user has a specified role
+     *
+     * @param $role
+     * @return bool
+     */
     public function hasRole($role)
     {
         foreach ($this->roles()->get() as $userRole) {
@@ -112,6 +119,11 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         return false;
     }
 
+    /**
+     * Assign a role to this user
+     *
+     * @param $role
+     */
     public function assignRole($role)
     {
         $role = Role::loadRoleFromName($role);
@@ -130,6 +142,11 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         }
     }
 
+    /**
+     * Remove a role from this user
+     *
+     * @param $name
+     */
     public function revokeRole($name)
     {
         $role = Role::loadRoleFromName($name);

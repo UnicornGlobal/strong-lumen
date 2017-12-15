@@ -9,10 +9,6 @@ class Role extends BaseModel
 {
     use SoftDeletes;
 
-    protected $attributes = [
-        'is_active' => true
-    ];
-
     protected $dates = ['deleted_at'];
 
     public function users()
@@ -20,13 +16,33 @@ class Role extends BaseModel
         return $this->belongsToMany('App\User', 'user_role')->withTimestamps()->using('App\UserRole');
     }
 
-    public function getName()
+    /**
+     * Load the model from a given name
+     *
+     * @param $name
+     * @return mixed
+     */
+    public static function loadRoleFromName($name)
     {
-        return $this->name;
+        $id = self::getRoleIdFromName($name);
+        $role = Role::where('id', $id)->first();
+        return $role;
     }
-    
-    public function isActive()
+
+    /**
+     * Find true ID from name, with validation
+     *
+     * @param $name
+     * @return mixed
+     */
+    public static function getRoleIdFromName($name)
     {
-        return boolval($this->is_active);
+        $class  = get_called_class();
+        $model = new $class;
+        $model->checkEmptyName($name);
+        $model->checkNameExists($name, $class);
+
+        $id = $model::where('name', $name)->first()->id;
+        return $id;
     }
 }

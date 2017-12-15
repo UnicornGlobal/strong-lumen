@@ -29,11 +29,8 @@ class RolesMiddleware
 
         foreach ($requiredRoles as $role) {
             $model = Role::loadRoleFromName($role);
-            if (empty($model)) {
-                return response()->json(['error' => 'Undefined role on route'], 500);
-            }
 
-            if ($model->isActive() && Auth::user()->hasRole($role)) {
+            if ($model->is_active && Auth::user()->hasRole($role)) {
                 return $next($request);
             }
         }
