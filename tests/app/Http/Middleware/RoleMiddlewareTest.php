@@ -77,6 +77,9 @@ class RoleMiddlewareTest extends TestCase
         $roles = json_decode($this->response->getContent());
 
         $this->assertEquals('intern', $roles[0]->name);
+        $this->actingAs(Auth::user())->post('/roles/createRole/mm');
+        $this->assertEquals('Role name invalid', $this->response->getContent());
+
     }
 
     public function testDeleteRole()

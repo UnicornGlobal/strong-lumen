@@ -36,16 +36,23 @@ class RolesController extends Controller
      * Create a new role
      *
      * @param $name
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function createRole($name)
+    public function createRole(string $name)
     {
-        $role = new Role();
-        $role->name = $name;
-        $role->_id = Uuid::generate(4);
-        $role->is_active = true;
-        $role->created_by = Auth::user()->id;
-        $role->updated_by = Auth::user()->id;
-        $role->save();
+        $role = Role::where('name', $name)->first();
+        if(preg_match("/[a-z]{4,}/", $name) && is_null($role)){
+            $role = new Role();
+            $role->name = $name;
+            $role->_id = Uuid::generate(4);
+            $role->is_active = true;
+            $role->created_by = Auth::user()->id;
+            $role->updated_by = Auth::user()->id;
+            $role->save();
+        }
+        else{
+            return response('Role name invalid', 500);
+        }
     }
 
     /**
@@ -62,7 +69,7 @@ class RolesController extends Controller
             $role->delete();
             return response(200, 'OK');
         }
-        return response(500, 'Role has assigned users');
+        return response('Role has assigned users', 500);
     }
 
 
