@@ -196,6 +196,30 @@ Make sure you set the appropriate variables in your .env
 
 You may use a symmetrical also but then you'll be relying on a secret instead of a keypair. This is not recommended.
 
+#Roles
+There is support for user roles. Specify for a route using :
+```
+middleware => ['roles:user,admin']
+```
+Or for a user to have any role to access a route
+```
+middleware => ['roles']
+```
+
+##Role endpoints
+- `/roles/getUsers/{role}`
+- `/roles/getRole/{name}`
+- `/roles/getAllRoles`
+- `/roles/createRole/{name}`
+- `/roles/deleteRole/{name}`
+- `/roles/activate/{name}`
+- `/roles/deactivate/{name}`
+
+##Assigning roles to users
+- `/roles/getUserRoles/{userId}`
+- `/roles/assignRole/{userId}/{role}`
+- `/roles/revokeRole/{userId}/{role}`
+
 # UUIDs
 
 It is suggested to use UUIDs in your responses instead of IDs, which are
