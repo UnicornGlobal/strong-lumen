@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
     use ValidationTrait;
+
     public static function loadFromUuid($uuid)
     {
         $class  = get_called_class();

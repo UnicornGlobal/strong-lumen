@@ -71,7 +71,7 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
 
     $router->group(['prefix' => 'roles', 'middleware' => ['roles:admin']], function () use ($router) {
         $router->get('/getUserRoles/{userId}', 'UserController@getUserRoles');
-        $router->get('/getUsers/{role}', 'RolesController@getUserForRole');
+        $router->get('/getUsers/{role}', 'RolesController@getUsersForRole');
         $router->get('/getRole/{name}', 'RolesController@getRole');
         $router->get('/getAllRoles', 'RolesController@getRoles');
         $router->post('/assignRole/{userId}/{role}', 'UserController@assignRole');

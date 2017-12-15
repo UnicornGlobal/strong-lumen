@@ -7,7 +7,7 @@ use Webpatser\Uuid\Uuid;
 
 class RoleMiddlewareTest extends TestCase
 {
-    //To keep DB clean
+    // To keep DB clean
     use \Laravel\Lumen\Testing\DatabaseTransactions;
     private $testUserId;
     public function setUp()
@@ -39,7 +39,7 @@ class RoleMiddlewareTest extends TestCase
 
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/' . $this->testUserId);
 
-        //Check to see if the role was assigned successfully
+        // Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name);
     }
@@ -59,12 +59,12 @@ class RoleMiddlewareTest extends TestCase
         // Ensure we added the role correctly
         $this->assertEquals('admin', $roles[0]->name);
 
-        //remove the role
+        // remove the role
         $this->actingAs(Auth::user())->post('roles/revokeRole/' . $this->testUserId .'/admin');
 
         $this->actingAs($testUser)->get('/roles/getUserRoles/' . $this->testUserId);
 
-        //ensure we get access denied error
+        // ensure we get access denied error
         $this->assertResponseStatus(401);
     }
 
@@ -75,7 +75,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('/roles/assignRole/' . $this->testUserId . '/intern');
         $this->actingAs(Auth::user())->get('/roles/getUserRoles/' . $this->testUserId);
         $roles = json_decode($this->response->getContent());
-        //dd($this->response);
+
         $this->assertEquals('intern', $roles[0]->name);
     }
 
@@ -157,18 +157,18 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('/roles/createRole/intern');
         $this->actingAs(Auth::user())->post('/roles/createRole/system');
 
-        //Fail
+        // Fail
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(401);
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
 
-        //Only 1st role
+        // Only 1st role
         $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/' . $this->testUserId .'/intern');
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
 
-        //Only 2nd role
+        // Only 2nd role
         $this->actingAs(User::where('id', 3)->first())->post('/roles/revokeRole/' . $this->testUserId . '/intern');
         $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/' . $this->testUserId . '/system');
 
@@ -176,7 +176,7 @@ class RoleMiddlewareTest extends TestCase
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
 
-        //both roles
+        // both roles
         $this->actingAs(User::where('id', 3)->first())->post('/roles/assignRole/' . $this->testUserId . '/intern');
 
         $this->actingAs(User::where('id', 2)->first())->get('/test');

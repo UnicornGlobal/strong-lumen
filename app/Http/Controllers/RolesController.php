@@ -55,7 +55,7 @@ class RolesController extends Controller
         $role->save();
     }
 
-    public function getUserForRole($name)
+    public function getUsersForRole($name)
     {
         $role = $this->getRole($name);
         $users = $role->users;

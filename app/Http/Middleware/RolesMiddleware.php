@@ -22,7 +22,7 @@ class RolesMiddleware
     public function handle($request, Closure $next, ...$requiredRoles)
     {
         if (empty($requiredRoles)) {
-            if (Auth::user()->roles->count() !== 0) {
+            if (!Auth::user()->roles->isEmpty()) {
                 return $next($request);
             }
         }
