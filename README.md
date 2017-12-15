@@ -207,18 +207,18 @@ middleware => ['roles']
 ```
 
 ##Role endpoints
-- `/roles/getUsers/{role}`
-- `/roles/getRole/{name}`
-- `/roles/getAllRoles`
-- `/roles/createRole/{name}`
-- `/roles/deleteRole/{name}`
-- `/roles/activate/{name}`
-- `/roles/deactivate/{name}`
+- `GET` `/roles/getUsers/{role}`
+- `GET` `/roles/getRole/{name}`
+- `GET` `/roles/getAllRoles`
+- `POST` `/roles/createRole/{name}`
+- `POST` `/roles/deleteRole/{name}`
+- `POST` `/roles/activate/{name}`
+- `POST` `/roles/deactivate/{name}`
 
 ##Assigning roles to users
-- `/roles/getUserRoles/{userId}`
-- `/roles/assignRole/{userId}/{role}`
-- `/roles/revokeRole/{userId}/{role}`
+- `GET` `/roles/getUserRoles/{userId}`
+- `POST` `/roles/assignRole/{role}/{userId}`
+- `POST` `/roles/revokeRole/{role}/{userId}`
 
 # UUIDs
 
