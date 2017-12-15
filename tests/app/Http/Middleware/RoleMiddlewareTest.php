@@ -209,7 +209,7 @@ class RoleMiddlewareTest extends TestCase
 
         $this->actingAs(Auth::user())->get('/roles/getAllRoles');
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals('intern', $roles[1]->name);
+        $this->assertEquals('intern', $roles[3]->name);
     }
 
     public function testGetUserForRole()
