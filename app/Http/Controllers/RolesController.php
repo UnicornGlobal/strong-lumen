@@ -41,7 +41,7 @@ class RolesController extends Controller
     public function createRole(string $name)
     {
         $role = Role::where('name', $name)->first();
-        if(preg_match("/[a-z]{4,}/", $name) && is_null($role)){
+        if (preg_match("/[a-z]{4,}/", $name) && is_null($role)) {
             $role = new Role();
             $role->name = $name;
             $role->_id = Uuid::generate(4);
@@ -49,8 +49,7 @@ class RolesController extends Controller
             $role->created_by = Auth::user()->id;
             $role->updated_by = Auth::user()->id;
             $role->save();
-        }
-        else{
+        } else {
             return response('Role name invalid', 500);
         }
     }
