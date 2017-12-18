@@ -49,6 +49,15 @@ class Roles extends Seeder
             'updated_by' => 1,
         ]);
 
+        Role::create([
+            'id' => 4,
+            '_id' => Uuid::generate(4),
+            'name' => 'developer',
+            'is_active' => true,
+            'created_by' => 1,
+            'updated_by' => 1,
+        ]);
+
         if (app()->environment('local')) {
             DB::table('user_role')->delete();
         }

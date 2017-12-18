@@ -65,6 +65,15 @@ class RoleMiddlewareTest extends TestCase
         // Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name);
+
+        $this->actingAs(Auth::user())->post(
+            '/users/'
+            . $this->testUserId
+            . '/roles/assign/'
+            . Uuid::generate(4)
+        );
+
+        $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
     }
 
     public function testRevokeRole()
@@ -86,12 +95,22 @@ class RoleMiddlewareTest extends TestCase
         // Ensure we added the role correctly
         $this->assertEquals('admin', $roles[0]->name);
 
+        // removing a non-existent role
+        $this->actingAs(Auth::user())->post(
+            '/users/'
+            . $this->testUserId
+            . '/roles/revoke/'
+            . Uuid::generate(4)
+        );
+        $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
+
         // remove the role
         $this->actingAs(Auth::user())->post(
             '/users/'
           . $this->testUserId
           . '/roles/revoke/'
-          . $this->adminId);
+          . $this->adminId
+        );
 
         $this->actingAs($testUser)->get('/users/' . $this->testUserId . '/roles');
 
@@ -113,6 +132,9 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('/roles/mm');
         $this->assertEquals('Role name invalid', $this->response->getContent());
 
+        $this->actingAs(Auth::user())->post('/roles/intern');
+
+        $this->assertEquals('Role name invalid', $this->response->getContent());
     }
 
     public function testDeleteRole()
@@ -136,6 +158,12 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->post('users/' . $this->testUserId . '/roles/assign/' . $internId);
         $this->actingAs(Auth::user())->delete('/roles/' . $internId);
         $this->assertNotNull(Role::where('name', 'intern')->first());
+    }
+
+    public function testEmptyRole()
+    {
+        $this->actingAs(Auth::user())->get('/roles/');
+        dd($this->response->getContent());
     }
 
     public function testInactiveRole()
@@ -228,6 +256,19 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(User::where('id', 2)->first())->get('/test');
         $this->assertResponseStatus(200);
         $this->assertEquals('Test', $this->response->getContent());
+
+        // both assigned, 1 inactive
+        $this->actingAs(User::where('id', 3)->first())->post('roles/' . $internId . '/deactivate');
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+        $this->assertResponseStatus(200);
+        $this->assertEquals('Test', $this->response->getContent());
+
+        // both assigned, both inactive
+        $this->actingAs(User::where('id', 3)->first())->post('roles/' . $this->systemId . '/deactivate');
+        $this->actingAs(User::where('id', 2)->first())->get('/test');
+
+        $this->assertResponseStatus(401);
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
 
     public function testIncorrectRole()
@@ -255,7 +296,7 @@ class RoleMiddlewareTest extends TestCase
 
         $this->actingAs(Auth::user())->get('/roles');
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals('intern', $roles[3]->name);
+        $this->assertEquals('intern', $roles[4]->name);
     }
 
     public function testGetUserForRole()
