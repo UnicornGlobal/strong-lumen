@@ -70,7 +70,6 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
     });
 
     $router->group(['prefix' => 'roles', 'middleware' => ['roles:admin']], function () use ($router) {
-
         $router->get('/{roleId}/users', 'RolesController@getUsersForRole');
         $router->get('/{roleId}', 'RolesController@getRole');
         $router->get('/', 'RolesController@getRoles');
@@ -81,9 +80,9 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
     });
 
     $router->group(['prefix' => 'users', 'middleware' => ['roles:admin']], function () use ($router) {
-        $router->get('/{userId}/roles', 'UserController@getUserRoles');
-        $router->post('/{userId}/roles/assign/{roleId}', 'UserController@assignRole');
-        $router->post('/{userId}/roles/revoke/{roleId}', 'UserController@revokeRole');
+        $router->get('/{id}/roles', 'UserController@getUserRoles');
+        $router->post('/{id}/roles/assign/{roleId}', 'UserController@assignRole');
+        $router->post('/{id}/roles/revoke/{roleId}', 'UserController@revokeRole');
     });
 
     /**

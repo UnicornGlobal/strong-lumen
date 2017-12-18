@@ -44,12 +44,12 @@ class RolesController extends Controller
         if (preg_match("/[a-z]{4,}/", $name) && is_null($role)) {
             $role = new Role();
             $role->name = $name;
-            $role->_id = Uuid::generate(4);
+            $role->_id = Uuid::generate(4)->string;
             $role->is_active = true;
             $role->created_by = Auth::user()->id;
             $role->updated_by = Auth::user()->id;
             $role->save();
-            return response()->json(['uuid' => (string)$role->_id]);
+            return response()->json(['_id' => $role->_id]);
         } else {
             return response('Role name invalid', 500);
         }

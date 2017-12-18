@@ -20,7 +20,8 @@ class RoleMiddlewareTest extends TestCase
             'username' => 'admin',
             'password' => 'admin',
         ], [ 'Debug-Token' => env('DEBUG_TOKEN')]);
-        $this->testUserId = '4BFE1010-C11D-4739-8C24-99E1468F08F6';
+
+        $this->testUserId = User::where('id', 2)->first()->_id;
         $this->actingAs(Auth::user())->get('/roles');
         $roles = json_decode($this->response->getContent());
 
@@ -34,9 +35,7 @@ class RoleMiddlewareTest extends TestCase
                     break;
                 case 'system':
                     $this->systemId = $role->_id;
-
             }
-
         }
     }
 
@@ -46,7 +45,8 @@ class RoleMiddlewareTest extends TestCase
         $user = User::loadFromUuid($this->testUserId);
 
         $this->actingAs($user)->get(
-            '/users/' . $this->testUserId . '/roles',
+            sprintf('%s/$s/%s', '/users/', $this->testUserId, '/roles')
+            ,
             ['Debug-Token' => env('DEBUG_TOKEN')]
         );
         $this->assertResponseStatus(401);
@@ -56,23 +56,29 @@ class RoleMiddlewareTest extends TestCase
     public function testAssignRole()
     {
         $this->actingAs(Auth::user())->post(
-            '/users/'
-          . $this->testUserId
-          . '/roles/assign/'
-          . $this->adminId
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/assign',
+                $this->adminId
+            )
+
         );
 
-        $this->actingAs(Auth::user())->get('/users/' . $this->testUserId . '/roles');
+        $this->actingAs(Auth::user())->get(sprintf('%s/$s/%s', 'users', $this->testUserId, 'roles'));
 
         // Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('admin', $roles[0]->name);
 
         $this->actingAs(Auth::user())->post(
-            '/users/'
-            . $this->testUserId
-            . '/roles/assign/'
-            . Uuid::generate(4)
+            sprintf('%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/assign',
+                Uuid::generate(4)->string
+                )
         );
 
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
@@ -84,13 +90,17 @@ class RoleMiddlewareTest extends TestCase
 
         // Add user_role
         $this->actingAs(Auth::user())->post(
-            '/users/'
-          . $this->testUserId . '/roles/assign/'
-          . $this->adminId
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/assign',
+                $this->adminId
+            )
         );
 
         $this->actingAs($testUser)
-               ->get('/users/' . $this->testUserId . '/roles');
+               ->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
 
         $roles = json_decode($this->response->getContent());
 
@@ -99,22 +109,30 @@ class RoleMiddlewareTest extends TestCase
 
         // removing a non-existent role
         $this->actingAs(Auth::user())->post(
-            '/users/'
-            . $this->testUserId
-            . '/roles/revoke/'
-            . Uuid::generate(4)
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/revoke',
+                Uuid::generate(4)->string
+            )
+
         );
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
 
         // remove the role
         $this->actingAs(Auth::user())->post(
-            '/users/'
-          . $this->testUserId
-          . '/roles/revoke/'
-          . $this->adminId
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/revoke',
+                $this->adminId
+            )
+
         );
 
-        $this->actingAs($testUser)->get('/users/' . $this->testUserId . '/roles');
+        $this->actingAs($testUser)->get(sprintf('%s/%s/%s', '/users/', $this->testUserId, '/roles'));
 
         // ensure we get access denied error
         $this->assertResponseStatus(401);
@@ -124,10 +142,16 @@ class RoleMiddlewareTest extends TestCase
     {
         $this->actingAs(Auth::user())->post('/roles/intern');
 
-        $internId = json_decode($this->response->getContent())->uuid;
+        $internId = json_decode($this->response->getContent())->_id;
 
-        $this->actingAs(Auth::user())->post('/users/' . $this->testUserId . '/roles/assign/' . $internId);
-        $this->actingAs(Auth::user())->get('/users/' . $this->testUserId . '/roles');
+        $this->actingAs(Auth::user())->post(
+            sprintf('%s/%s/%s/%s',
+                'users',
+                $this->testUserId,
+                'roles/assign',
+                $internId));
+
+        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
         $roles = json_decode($this->response->getContent());
 
         $this->assertEquals('intern', $roles[0]->name);
@@ -142,11 +166,11 @@ class RoleMiddlewareTest extends TestCase
     public function testDeleteRole()
     {
         $this->actingAs(Auth::user())->post('/roles/intern');
-        $internId = json_decode($this->response->getContent())->uuid;
+        $internId = json_decode($this->response->getContent())->_id;
 
         $this->assertNotNull(Role::where('name', 'intern')->first());
 
-        $this->actingAs(Auth::user())->delete('/roles/' . $internId);
+        $this->actingAs(Auth::user())->delete(sprintf('%s/%s', 'roles', $internId);
         $this->assertNull(Role::where('name', 'intern')->first());
 
         $this->assertNotNull(Role::withTrashed()->where('name', 'intern')->first());
@@ -154,11 +178,19 @@ class RoleMiddlewareTest extends TestCase
 
     public function testDeleteRoleFail()
     {
-        $this->actingAs(Auth::user())->post('/roles/intern');
-        $internId = json_decode($this->response->getContent())->uuid;
+        $this->actingAs(Auth::user())->post('roles/intern');
+        $internId = json_decode($this->response->getContent())->_id;
         $this->assertNotNull(Role::where('name', 'intern')->first());
-        $this->actingAs(Auth::user())->post('users/' . $this->testUserId . '/roles/assign/' . $internId);
-        $this->actingAs(Auth::user())->delete('/roles/' . $internId);
+        $this->actingAs(Auth::user())->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->testUserId, 'roles/assign',
+                $internId
+            )
+        );
+
+        $this->actingAs(Auth::user())->delete(sprintf('%s/%s', 'roles', $internId));
         $this->assertNotNull(Role::where('name', 'intern')->first());
     }
 
@@ -169,7 +201,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->get('/users/5FFA95F4-5EB4-46FB-94F1-F2B27254725B/roles');
         $this->assertResponseStatus(200);
 
-        $this->actingAs(Auth::user())->post('/roles/' . $this->adminId . '/deactivate');
+        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $this->adminId, 'deactivate'));
 
         $this->actingAs(Auth::user())->get('/users/5FFA95F4-5EB4-46FB-94F1-F2B27254725B/roles');
         $this->assertResponseStatus(401);
@@ -178,8 +210,16 @@ class RoleMiddlewareTest extends TestCase
     public function testActivateRole()
     {
         $this->actingAs(Auth::user())->post('/roles/intern');
-        $internId = json_decode($this->response->getContent())->uuid;
-        $this->actingAs(Auth::user())->post('/users/' . $this->testUserId . '/roles/assign/' . $internId);
+        $internId = json_decode($this->response->getContent())->_id;
+        $this->actingAs(Auth::user())->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                '/users/',
+                $this->testUserId,
+                '/roles/assign/',
+                $internId
+            )
+        );
         $this->actingAs(Auth::user())->get('/users/' . $this->testUserId . '/roles');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals(1, $roles[0]->is_active);
@@ -225,7 +265,7 @@ class RoleMiddlewareTest extends TestCase
             });
         });
         $this->actingAs(Auth::user())->post('/roles/intern');
-        $internId = json_decode($this->response->getContent())->uuid;
+        $internId = json_decode($this->response->getContent())->_id;
 
         // Fail
         $this->actingAs(User::where('id', 2)->first())->get('/test');
