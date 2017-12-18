@@ -207,11 +207,11 @@ middleware => ['roles']
 ```
 
 ##Role endpoints
-- `GET` `/roles/{role}/users`
-- `GET` `/roles/{name}`
+- `GET` `/roles/{roleId}/users`
+- `GET` `/roles/{Id}`
 - `GET` `/roles/`
 - `POST` `/roles/{name}`
-- `DELETE` `/roles/{name}`
+- `DELETE` `/roles/{roleId}`
 - `POST` `/roles/{name}/activate`
 - `POST` `/roles/{name}/deactivate`
 

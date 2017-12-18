@@ -15,9 +15,9 @@ class RolesController extends Controller
      * @param $name
      * @return Role
      */
-    public function getRole($name)
+    public function getRole($roleId)
     {
-        $role = Role::loadRoleFromName($name);
+        $role = Role::loadFromUuid($roleId);
         return $role;
     }
 
@@ -49,6 +49,7 @@ class RolesController extends Controller
             $role->created_by = Auth::user()->id;
             $role->updated_by = Auth::user()->id;
             $role->save();
+            return response()->json(['uuid' => (string)$role->_id]);
         } else {
             return response('Role name invalid', 500);
         }
@@ -61,9 +62,9 @@ class RolesController extends Controller
      * @param $name
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function deleteRole($name)
+    public function deleteRole($roleId)
     {
-        $role = $this->getRole($name);
+        $role = $this->getRole($roleId);
         if ($role->users->isEmpty()) {
             $role->delete();
             return response(200, 'OK');
@@ -77,9 +78,9 @@ class RolesController extends Controller
      *
      * @param $name
      */
-    public function deactivateRole($name)
+    public function deactivateRole($roleId)
     {
-        $role = $this->getRole($name);
+        $role = $this->getRole($roleId);
         $role->is_active = false;
         $role->save();
     }
@@ -89,9 +90,9 @@ class RolesController extends Controller
      *
      * @param $name
      */
-    public function activateRole($name)
+    public function activateRole($roleId)
     {
-        $role = $this->getRole($name);
+        $role = $this->getRole($roleId);
         $role->is_active = true;
         $role->save();
     }
@@ -102,9 +103,9 @@ class RolesController extends Controller
      * @param $name
      * @return mixed
      */
-    public function getUsersForRole($name)
+    public function getUsersForRole($roleId)
     {
-        $role = $this->getRole($name);
+        $role = $this->getRole($roleId);
         $users = $role->users;
         return $users;
     }

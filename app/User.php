@@ -109,10 +109,10 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
      * @param $role
      * @return bool
      */
-    public function hasRole($role)
+    public function hasRole($roleId)
     {
         foreach ($this->roles()->get() as $userRole) {
-            if ($userRole->name === $role) {
+            if ($userRole->_id === $roleId) {
                 return true;
             }
         }
@@ -124,12 +124,12 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
      *
      * @param $role
      */
-    public function assignRole($role)
+    public function assignRole($roleId)
     {
-        $role = Role::loadRoleFromName($role);
+        $role = Role::loadFromUuid($roleId);
 
         if (!empty($role)
-            && !$this->hasRole($role->name)) {
+            && !$this->hasRole($role->_id)) {
             $this->roles()->syncWithoutDetaching(
                 [
                 $role->id =>
@@ -147,10 +147,10 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
      *
      * @param $name
      */
-    public function revokeRole($name)
+    public function revokeRole($roleId)
     {
-        $role = Role::loadRoleFromName($name);
-        if ($this->hasRole($name)) {
+        $role = Role::loadFromUuid($roleId);
+        if ($this->hasRole($roleId)) {
             $this->roles()->detach(
                 $role->id
             );

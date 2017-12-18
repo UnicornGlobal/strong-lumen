@@ -137,9 +137,9 @@ class UserController extends Controller
      * @param $role
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function assignRole($role, $userId)
+    public function assignRole($roleId, $userId)
     {
-        User::loadFromUuid($userId)->assignRole($role);
+        User::loadFromUuid($userId)->assignRole($roleId);
         return response('OK', 200);
     }
 
@@ -150,9 +150,9 @@ class UserController extends Controller
      * @param $role
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function revokeRole($role, $userId)
+    public function revokeRole($roleId, $userId)
     {
-        User::loadFromUuid($userId)->revokeRole($role);
+        User::loadFromUuid($userId)->revokeRole($roleId);
         return response('OK', 200);
     }
 }

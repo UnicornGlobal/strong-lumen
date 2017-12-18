@@ -71,19 +71,19 @@ $router->group(['prefix' => '', 'middleware' => ['nocache', 'hideserver', 'secur
 
     $router->group(['prefix' => 'roles', 'middleware' => ['roles:admin']], function () use ($router) {
 
-        $router->get('/{role}/users', 'RolesController@getUsersForRole');
-        $router->get('/{name}', 'RolesController@getRole');
+        $router->get('/{roleId}/users', 'RolesController@getUsersForRole');
+        $router->get('/{roleId}', 'RolesController@getRole');
         $router->get('/', 'RolesController@getRoles');
-        $router->post('/{name}', 'RolesController@createRole');
-        $router->delete('/{name}', 'RolesController@deleteRole');
-        $router->post('/{name}/activate', 'RolesController@activateRole');
-        $router->post('/{name}/deactivate', 'RolesController@deactivateRole');
+        $router->post('/{roleId}', 'RolesController@createRole');
+        $router->delete('/{roleId}', 'RolesController@deleteRole');
+        $router->post('/{roleId}/activate', 'RolesController@activateRole');
+        $router->post('/{roleId}/deactivate', 'RolesController@deactivateRole');
     });
 
     $router->group(['prefix' => 'users', 'middleware' => ['roles:admin']], function () use ($router) {
         $router->get('/{userId}/roles', 'UserController@getUserRoles');
-        $router->post('/{userId}/roles/assign/{role}', 'UserController@assignRole');
-        $router->post('/{userId}/roles/revoke/{role}', 'UserController@revokeRole');
+        $router->post('/{userId}/roles/assign/{roleId}', 'UserController@assignRole');
+        $router->post('/{userId}/roles/revoke/{roleId}', 'UserController@revokeRole');
     });
 
     /**

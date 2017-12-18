@@ -23,21 +23,21 @@ class Roles extends Seeder
         }
 
         Role::create([
-            'id' => 1,
+            'id' => 2,
             '_id' => Uuid::generate(4),
             'name' => 'admin',
             'is_active' => true,
-            'created_by' => 5,
-            'updated_by' => 4,
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
 
         Role::create([
-            'id' => 2,
+            'id' => 1,
             '_id' => Uuid::generate(4),
             'name' => 'system',
             'is_active' => true,
-            'created_by' => 5,
-            'updated_by' => 4,
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
 
         Role::create([
@@ -45,8 +45,8 @@ class Roles extends Seeder
             '_id' => Uuid::generate(4),
             'name' => 'user',
             'is_active' => true,
-            'created_by' => 5,
-            'updated_by' => 4,
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
 
         if (app()->environment('local')) {
@@ -55,12 +55,16 @@ class Roles extends Seeder
 
         UserRole::create([
             'user_id' => 3,
-            'role_id' => 1,
+            'role_id' => 2,
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
 
         UserRole::create([
             'user_id' => 1,
-            'role_id' => 2,
+            'role_id' => 1,
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
     }
 }

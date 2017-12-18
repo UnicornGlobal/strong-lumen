@@ -28,9 +28,9 @@ class RolesMiddleware
         }
 
         foreach ($requiredRoles as $role) {
-            $model = Role::loadRoleFromName($role);
+            $model = Role::where('name', $role)->first();
 
-            if ($model->is_active && Auth::user()->hasRole($role)) {
+            if (!is_null($model) && $model->is_active && Auth::user()->hasRole($model->_id)) {
                 return $next($request);
             }
         }

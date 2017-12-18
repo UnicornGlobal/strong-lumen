@@ -35,31 +35,4 @@ class BaseModel extends Model
         $id = $model::where('_id', $uuid)->first()->id;
         return $id;
     }
-
-    /**
-     * Validate the given name exists in the DB
-     *
-     * @param $name
-     * @param $class
-     * @throws \Exception
-     */
-    public function checkNameExists($name, $class)
-    {
-        if (!$class::where('name', $name)->first()) {
-            $this->throwExceptionMessage('Invalid', $class);
-        }
-    }
-
-    /**
-     * Ensure $name is not empty
-     *
-     * @param $name
-     * @throws \Exception
-     */
-    public function checkEmptyName($name)
-    {
-        if (empty($name || !isset($name) || is_null($name))) {
-            $this->throwExceptionMessage('Empty', $name);
-        }
-    }
 }
