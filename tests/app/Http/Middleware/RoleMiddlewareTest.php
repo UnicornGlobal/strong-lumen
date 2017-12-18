@@ -9,8 +9,10 @@ class RoleMiddlewareTest extends TestCase
 {
     // To keep DB clean
     use \Laravel\Lumen\Testing\DatabaseTransactions;
+
     private $testUserId;
     private $adminId, $userId, $systemId;
+
     public function setUp()
     {
         parent::setUp();
