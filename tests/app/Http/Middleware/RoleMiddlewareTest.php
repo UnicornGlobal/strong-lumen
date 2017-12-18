@@ -160,12 +160,6 @@ class RoleMiddlewareTest extends TestCase
         $this->assertNotNull(Role::where('name', 'intern')->first());
     }
 
-    public function testEmptyRole()
-    {
-        $this->actingAs(Auth::user())->get('/roles/');
-        dd($this->response->getContent());
-    }
-
     public function testInactiveRole()
     {
         $this->assertEquals(1, Role::loadFromUuid($this->adminId)->is_active);
