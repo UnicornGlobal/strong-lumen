@@ -37,7 +37,8 @@ class ConfigControllerTest extends TestCase
         $this->get('/config/app');
 
         $this->assertEquals(
-            '{"error":"There was a problem validating the request."}', $this->response->getContent()
+            '{"error":"There was a problem validating the request."}',
+            $this->response->getContent()
         );
 
         $this->assertEquals('500', $this->response->status());

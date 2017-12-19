@@ -25,7 +25,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(Auth::user())->get('/roles');
         $roles = json_decode($this->response->getContent());
 
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             switch ($role->name) {
                 case 'admin':
                     $this->adminId = $role->_id;
@@ -45,8 +45,7 @@ class RoleMiddlewareTest extends TestCase
         $user = User::loadFromUuid($this->testUserId);
 
         $this->actingAs($user)->get(
-            sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles')
-            ,
+            sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'),
             ['Debug-Token' => env('DEBUG_TOKEN')]
         );
         $this->assertResponseStatus(401);
@@ -63,7 +62,6 @@ class RoleMiddlewareTest extends TestCase
                 'roles/assign',
                 $this->adminId
             )
-
         );
 
         $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
@@ -73,12 +71,13 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('admin', $roles[0]->name);
 
         $this->actingAs(Auth::user())->post(
-            sprintf('%s/%s/%s/%s',
+            sprintf(
+                '%s/%s/%s/%s',
                 'users',
                 $this->testUserId,
                 'roles/assign',
                 Uuid::generate(4)->string
-                )
+            )
         );
 
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
@@ -116,7 +115,6 @@ class RoleMiddlewareTest extends TestCase
                 'roles/revoke',
                 Uuid::generate(4)->string
             )
-
         );
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
 
@@ -129,7 +127,6 @@ class RoleMiddlewareTest extends TestCase
                 'roles/revoke',
                 $this->adminId
             )
-
         );
 
         $this->actingAs($testUser)->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
@@ -145,11 +142,14 @@ class RoleMiddlewareTest extends TestCase
         $internId = json_decode($this->response->getContent())->_id;
 
         $this->actingAs(Auth::user())->post(
-            sprintf('%s/%s/%s/%s',
+            sprintf(
+                '%s/%s/%s/%s',
                 'users',
                 $this->testUserId,
                 'roles/assign',
-                $internId));
+                $internId
+            )
+        );
 
         $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
         $roles = json_decode($this->response->getContent());
@@ -300,7 +300,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(User::where('id', 3)->first())->post(
             sprintf(
                 '%s/%s/%s/%s',
-            'users',
+                'users',
                 $this->testUserId,
                 'roles/assign',
                 $this->systemId
@@ -315,7 +315,7 @@ class RoleMiddlewareTest extends TestCase
         $this->actingAs(User::where('id', 3)->first())->post(
             sprintf(
                 '%s/%s/%s/%s',
-            'users',
+                'users',
                 $this->testUserId,
                 'roles/assign',
                 $internId

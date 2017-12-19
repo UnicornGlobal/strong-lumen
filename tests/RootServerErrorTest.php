@@ -15,7 +15,8 @@ class RootServerErrorTest extends TestCase
         $this->get('/');
 
         $this->assertEquals(
-            '{"error":"Internal Server Error"}', $this->response->getContent()
+            '{"error":"Internal Server Error"}',
+            $this->response->getContent()
         );
     }
 
@@ -24,7 +25,8 @@ class RootServerErrorTest extends TestCase
         $this->get('/api/users/me');
 
         $this->assertEquals(
-            'Unauthorized.', $this->response->getContent()
+            'Unauthorized.',
+            $this->response->getContent()
         );
     }
 
@@ -33,11 +35,13 @@ class RootServerErrorTest extends TestCase
         $this->post('/login');
 
         $this->assertEquals(
-            'Unauthorized.', $this->response->getContent()
+            'Unauthorized.',
+            $this->response->getContent()
         );
 
         $this->assertEquals(
-            '401', $this->response->status()
+            '401',
+            $this->response->status()
         );
     }
 
@@ -46,11 +50,13 @@ class RootServerErrorTest extends TestCase
         $this->post('/register/email');
 
         $this->assertEquals(
-            '{"error":"Missing Registration Key"}', $this->response->getContent()
+            '{"error":"Missing Registration Key"}',
+            $this->response->getContent()
         );
 
         $this->assertEquals(
-            '401', $this->response->status()
+            '401',
+            $this->response->status()
         );
     }
 
@@ -59,11 +65,13 @@ class RootServerErrorTest extends TestCase
         $this->delete('/config/app');
 
         $this->assertEquals(
-            '{"error":"Internal Server Error"}', $this->response->getContent()
+            '{"error":"Internal Server Error"}',
+            $this->response->getContent()
         );
 
         $this->assertEquals(
-            '500', $this->response->status()
+            '500',
+            $this->response->status()
         );
     }
 
@@ -72,7 +80,8 @@ class RootServerErrorTest extends TestCase
         $this->get('/api');
 
         $this->assertEquals(
-            'Unauthorized.', $this->response->getContent()
+            'Unauthorized.',
+            $this->response->getContent()
         );
 
         $user = factory('App\User')->make();
@@ -80,11 +89,13 @@ class RootServerErrorTest extends TestCase
         $this->actingAs($user)->get('/api');
 
         $this->assertEquals(
-            'Lumen (5.5.2) (Laravel Components 5.5.*)', $this->response->getContent()
+            'Lumen (5.5.2) (Laravel Components 5.5.*)',
+            $this->response->getContent()
         );
 
         $this->assertEquals(
-            '200', $this->response->status()
+            '200',
+            $this->response->status()
         );
     }
 }
