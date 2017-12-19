@@ -18,7 +18,10 @@ class ContentSecurityPolicyHeaders
     {
         $response = $next($request);
 
-        $response->header('Content-Security-Policy', "default-src 'none', connect-src 'self', 'upgrade-insecure-requests';");
+        $response->header(
+            'Content-Security-Policy',
+            "default-src 'none', connect-src 'self', 'upgrade-insecure-requests';"
+        );
 
         return $response;
     }
