@@ -15,7 +15,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
 
-class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, AuthenticatableUserContract
+class User extends BaseModel implements
+    AuthenticatableContract,
+    AuthorizableContract,
+    CanResetPasswordContract,
+    AuthenticatableUserContract
 {
     use Authenticatable, Authorizable, SoftDeletes, CanResetPassword;
 

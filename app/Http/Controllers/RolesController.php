@@ -50,9 +50,8 @@ class RolesController extends Controller
             $role->updated_by = Auth::user()->id;
             $role->save();
             return response()->json(['_id' => $role->_id]);
-        } else {
-            return response('Role name invalid', 500);
         }
+        return response('Role name invalid', 500);
     }
 
     /**

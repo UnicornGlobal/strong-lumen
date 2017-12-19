@@ -58,7 +58,8 @@ class UserController extends Controller
         ]);
 
         if (Auth::user()->_id !== $userId) {
-            throw new \Exception('Illegal attempt to adjust another users details. The suspicious action has been logged.');
+            throw new \Exception('Illegal attempt to adjust another users details. '
+                . 'The suspicious action has been logged.');
         }
 
         $this->isValidUserID($userId);
