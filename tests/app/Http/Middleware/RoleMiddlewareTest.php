@@ -11,7 +11,9 @@ class RoleMiddlewareTest extends TestCase
     use \Laravel\Lumen\Testing\DatabaseTransactions;
 
     private $testUserId;
-    private $adminId, $userId, $systemId;
+    private $adminId;
+    private $userId;
+    private $systemId;
 
     public function setUp()
     {
@@ -333,7 +335,14 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('Test', $this->response->getContent());
 
         // both assigned, both inactive
-        $this->actingAs(User::where('id', 3)->first())->post(sprintf('%s/%s/%s', 'roles', $this->systemId, 'deactivate'));
+        $this->actingAs(User::where('id', 3)->first())->post(
+            sprintf(
+                '%s/%s/%s',
+                'roles',
+                $this->systemId,
+                'deactivate'
+            )
+        );
         $this->actingAs(User::where('id', 2)->first())->get('/test');
 
         $this->assertResponseStatus(401);
