@@ -218,8 +218,8 @@ middleware => ['roles']
 
 ##Assigning roles to users
 - `GET` `/users/{id}/roles`
-- `POST` `/users/{id}/roles/assign/{role}`
-- `POST` `/users/{id}/roles/revoke/{role}`
+- `POST` `/users/{id}/roles/assign/{roleId}`
+- `POST` `/users/{id}/roles/revoke/{roleId}`
 
 # UUIDs
 
