@@ -23,18 +23,18 @@ class Roles extends Seeder
         }
 
         Role::create([
-            'id' => 2,
+            'id' => 1,
             '_id' => Uuid::generate(4),
-            'name' => 'admin',
+            'name' => 'system',
             'is_active' => true,
             'created_by' => 1,
             'updated_by' => 1,
         ]);
 
         Role::create([
-            'id' => 1,
+            'id' => 2,
             '_id' => Uuid::generate(4),
-            'name' => 'system',
+            'name' => 'admin',
             'is_active' => true,
             'created_by' => 1,
             'updated_by' => 1,
@@ -62,6 +62,11 @@ class Roles extends Seeder
             DB::table('user_role')->delete();
         }
 
+        /**
+         * Create relations between roles and users
+         */
+
+        // Assign user 3 as admin
         UserRole::create([
             'user_id' => 3,
             'role_id' => 2,
@@ -69,6 +74,7 @@ class Roles extends Seeder
             'updated_by' => 1,
         ]);
 
+        // Assign system user to system role
         UserRole::create([
             'user_id' => 1,
             'role_id' => 1,
