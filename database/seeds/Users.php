@@ -64,6 +64,19 @@ class Users extends Seeder
                 'created_by' => 1,
                 'updated_by' => 1,
             ]);
+
+            User::create([
+                'id' => 3,
+                '_id' => '5FFA95F4-5EB4-46FB-94F1-F2B27254725B',
+                'api_key' => 'C87A9108-1568-4CBB-88E1-B90B5A451C67',
+                'username' => 'admin',
+                'password' => Hash::make('admin'),
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'email' => 'admin@example.com',
+                'created_by' => 1,
+                'updated_by' => 1,
+            ]);
         }
     }
 }

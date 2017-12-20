@@ -51,12 +51,10 @@ class Handler extends ExceptionHandler
         $required = env('DEBUG_KEY');
         $debugMode = env('APP_DEBUG');
         $token = $request->header('Debug-Token');
-        if (
-            !is_null($token) &&
+        if (!is_null($token) &&
             $token === $required &&
             $environment !== 'production' &&
-            $debugMode === true)
-        {
+            $debugMode === true) {
             return parent::render($request, $e);
         }
 

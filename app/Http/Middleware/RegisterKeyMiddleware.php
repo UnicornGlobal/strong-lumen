@@ -23,7 +23,8 @@ class RegisterKeyMiddleware
         $registrationAccessKey = env('REGISTRATION_ACCESS_KEY');
 
         // Ensure that the requesting device has a registration access key
-        if (!is_null($registrationAccessKey) && ($registrationAccessKey === $request->header('Registration-Access-Key'))) {
+        if (!is_null($registrationAccessKey) &&
+            ($registrationAccessKey === $request->header('Registration-Access-Key'))) {
             return $next($request);
         }
 

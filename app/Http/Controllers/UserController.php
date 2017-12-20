@@ -7,12 +7,19 @@ use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Webpatser\Uuid\Uuid;
 
 class UserController extends Controller
 {
     use ValidationTrait;
 
+    /**
+     * Get a user by their UUID
+     *
+     * @param Request $request
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function getUserById(Request $request, $userId)
     {
         if (!$userId) {
@@ -26,6 +33,11 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    /**
+     * Returns model with current users UUID
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSelf()
     {
         $userId = Auth::user()->_id;
@@ -46,7 +58,8 @@ class UserController extends Controller
         ]);
 
         if (Auth::user()->_id !== $userId) {
-            throw new \Exception('Illegal attempt to adjust another users details. The suspicious action has been logged.');
+            throw new \Exception('Illegal attempt to adjust another users details. ' .
+                'The suspicious action has been logged.');
         }
 
         $this->isValidUserID($userId);
@@ -72,6 +85,13 @@ class UserController extends Controller
         return response('OK', 200);
     }
 
+    /**
+     * Change the users password
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     * @throws \Exception
+     */
     public function changePassword(Request $request)
     {
         $this->validate($request, [
@@ -96,6 +116,44 @@ class UserController extends Controller
         $user->updated_by = Auth::user()->id;
         $user->save();
 
+        return response('OK', 200);
+    }
+
+    /**
+     * Get the roles of a user
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public function getUserRoles($userId)
+    {
+        $user = User::loadFromUuid($userId);
+        return $user->roles;
+    }
+
+    /**
+     * Assign a new role to a user
+     *
+     * @param $userId
+     * @param $role
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function assignRole($roleId, $userId)
+    {
+        User::loadFromUuid($userId)->assignRole($roleId);
+        return response('OK', 200);
+    }
+
+    /**
+     * Revoke a role from a user
+     *
+     * @param $userId
+     * @param $role
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function revokeRole($roleId, $userId)
+    {
+        User::loadFromUuid($userId)->revokeRole($roleId);
         return response('OK', 200);
     }
 }

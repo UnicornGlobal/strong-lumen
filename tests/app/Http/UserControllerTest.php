@@ -126,7 +126,10 @@ class UserControllerTest extends TestCase
             'lastName' => 'Changed',
         ]);
 
-        $this->assertEquals('{"error":"Illegal attempt to adjust another users details. The suspicious action has been logged."}', $this->response->getContent());
+        $this->assertEquals(
+            '{"error":"Illegal attempt to adjust another users details. The suspicious action has been logged."}',
+            $this->response->getContent()
+        );
 
         $this->assertEquals('500', $this->response->status());
     }

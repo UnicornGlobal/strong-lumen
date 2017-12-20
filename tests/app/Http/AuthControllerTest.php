@@ -181,7 +181,6 @@ class AuthControllerTest extends TestCase
             'password' => 'password',
             'newpassword' => 'password',
         ], [
-            'Debug-Token' => env('DEBUG_KEY'),
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 

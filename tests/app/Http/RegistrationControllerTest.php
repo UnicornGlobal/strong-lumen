@@ -78,6 +78,9 @@ class RegistrationControllerTest extends TestCase
         $this->assertEquals(1, count((array)$result));
 
         // Response is a UUID
-        $this->assertRegExp('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/', $result->_id);
+        $this->assertRegExp(
+            '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+            $result->_id
+        );
     }
 }

@@ -20,7 +20,10 @@ class ConfigControllerTest extends TestCase
 
         $this->assertEquals(4, count((array)$result));
 
-        $this->assertRegExp('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/', $result->app_id);
+        $this->assertRegExp(
+            '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+            $result->app_id
+        );
 
         $this->assertObjectHasAttribute('app_id', $result);
         $this->assertObjectHasAttribute('api_url', $result);
@@ -37,7 +40,8 @@ class ConfigControllerTest extends TestCase
         $this->get('/config/app');
 
         $this->assertEquals(
-            '{"error":"There was a problem validating the request."}', $this->response->getContent()
+            '{"error":"There was a problem validating the request."}',
+            $this->response->getContent()
         );
 
         $this->assertEquals('500', $this->response->status());
