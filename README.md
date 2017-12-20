@@ -207,18 +207,19 @@ middleware => ['roles']
 ```
 
 ##Role endpoints
+`roleId` refers to the UUID of the role, accessible through `GET` `/roles`
 - `GET` `/roles/{roleId}/users`
-- `GET` `/roles/{Id}`
+- `GET` `/roles/{roleId}`
 - `GET` `/roles/`
 - `POST` `/roles/{name}`
 - `DELETE` `/roles/{roleId}`
-- `POST` `/roles/{name}/activate`
-- `POST` `/roles/{name}/deactivate`
+- `POST` `/roles/{roleId}/activate`
+- `POST` `/roles/{roleId}/deactivate`
 
 ##Assigning roles to users
-- `GET` `/users/{userId}/roles`
-- `POST` `/users/{userId}/roles/assign/{role}`
-- `POST` `/users/{userId}/roles/revoke/{role}`
+- `GET` `/users/{id}/roles`
+- `POST` `/users/{id}/roles/assign/{role}`
+- `POST` `/users/{id}/roles/revoke/{role}`
 
 # UUIDs
 
