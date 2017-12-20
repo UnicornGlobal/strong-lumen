@@ -35,22 +35,22 @@ $router->group(
      * Different routes have different combinations based on use case.
      */
 
-    /**
-     *  Ensures that retrieving config is allowed with the correct app id
-     *
-     *  Ensure APP_ID in your .env
-     *  Request with `App: your-key-here`
-     */
+        /**
+         *  Ensures that retrieving config is allowed with the correct app id
+         *
+         *  Ensure APP_ID in your .env
+         *  Request with `App: your-key-here`
+         */
         $router->group(['middleware' => ['throttle:10,1', 'appid']], function () use ($router) {
             $router->get('/config/app', 'ConfigController@getAppConfig');
         });
 
-    /**
-     *  Ensures that registration is only possible if you know the token.
-     *
-     *  Ensure REGISTRATION_ACCESS_KEY in your .env
-     *  Request with `Registration-Access-Key: your-key-here`
-     */
+        /**
+         *  Ensures that registration is only possible if you know the token.
+         *
+         *  Ensure REGISTRATION_ACCESS_KEY in your .env
+         *  Request with `Registration-Access-Key: your-key-here`
+         */
         $router->group(
             [
                 'prefix' => 'register',
@@ -61,19 +61,19 @@ $router->group(
             }
         );
 
-    /**
-     * 10 Login and Logouts per minute
-     */
+        /**
+         * 10 Login and Logouts per minute
+         */
         $router->group(['middleware' => 'throttle:10,1'], function () use ($router) {
             $router->post('/login', 'AuthController@postLogin');
             $router->post('/logout', 'AuthController@logout');
         });
 
-    /**
-     * Only allow x of these requests per minute.
-     *
-     * Production should be a low number
-     */
+        /**
+         * Only allow x of these requests per minute.
+         *
+         * Production should be a low number
+         */
         $router->group(['middleware' => 'throttle:10,1'], function () use ($router) {
             $router->get('/confirm/{token}', 'RegistrationController@confirmEmail');
             $router->post('/reset', 'ResetController@postEmail');
@@ -96,25 +96,25 @@ $router->group(
             $router->post('/{id}/roles/revoke/{roleId}', 'UserController@revokeRole');
         });
 
-    /**
-     * What you set this throttle to depends on your use case.
-     * JWT refresh
-     */
+        /**
+         * What you set this throttle to depends on your use case.
+         * JWT refresh
+         */
         $router->group(['middleware' => ['jwt.refresh', 'throttle:10,1']], function () use ($router) {
             $router->post('/refresh', 'AuthController@refresh');
         });
 
-    /**
-     * Authenticated Routes
-     */
+        /**
+         * Authenticated Routes
+         */
         $router->group(['prefix' => 'api', 'middleware' => ['auth:api', 'throttle']], function () use ($router) {
             $router->get('/', function () use ($router) {
                 return $router->app->version();
             });
 
-        /**
-         * Users
-         */
+            /**
+             * Users
+             */
             $router->get('/me', 'UserController@getSelf');
             $router->post('/users/change-password', 'UserController@changePassword');
             $router->get('/users/{userId}', 'UserController@getUserById');
