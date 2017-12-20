@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Role;
-use App\User;
+
 use Illuminate\Support\Facades\Auth;
 use Webpatser\Uuid\Uuid;
 

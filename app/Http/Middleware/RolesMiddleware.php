@@ -2,9 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\UserController;
 use App\Role;
-use App\User;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
