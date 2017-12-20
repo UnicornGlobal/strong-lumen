@@ -393,3 +393,4 @@ Security is everyones problem.
 # Acknowledgements
 
 * [Brian Maiyo](https://github.com/kiproping)
+* [Fergus Strangways-Dixon](https://github.com/fergusdixon)
