@@ -19,7 +19,7 @@ class BaseModel extends Model
         $class  = get_called_class();
         $model = new $class;
         $model->checkValid($uuid, $class);
-        $classId = self::getIdFromUuid($uuid, $model);
+        $classId = $model->getIdFromUuid($uuid, $model);
         return $class::where('id', $classId)->first();
     }
 
@@ -30,7 +30,7 @@ class BaseModel extends Model
      * @param $model
      * @return mixed
      */
-    private static function getIdFromUuid($uuid, $model)
+    private function getIdFromUuid($uuid, $model)
     {
         $classId = $model::where('_id', $uuid)->first()->id;
         return $classId;
