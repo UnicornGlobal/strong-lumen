@@ -41,7 +41,7 @@ App: 8A53A5C5-8B3D-4624-ACFA-C14945EC4F88
 
 Use this to limit access to registration endpoints to add a layer of annoyance.
 
-This is useful for allowing endpoints for newsletter signups etc to know a key
+This is useful for allowing endpoints for newsletter signups, etc., to know a key
 before being able to submit.
 
 Set `REGISTRATION_ACCESS_KEY` in your .env and wrap your route in the middleware.
@@ -62,7 +62,7 @@ This is useful for mitigating DDoS, Brute Force, and Flooding style attacks.
 
 Certain common routes have default throttles.
 
-Responds with headers indicting how manuy requests are left on these routes,
+Responds with headers indicating how many requests are left on these routes,
 and information about when bans expire.
 
 Before Limit:
@@ -90,7 +90,7 @@ The aim is to support the [OWASP Secure Headers Project Specification](https://w
 
 A good Content Security Policy helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks.
 
-Content Security Policy (CSP) requires careful tuning and precise definition of the policy. If enabled, CSP has significant impact on the way browser renders pages (e.g., inline JavaScript disabled by default and must be explicitly allowed in policy). CSP prevents a wide range of attacks, including Cross-site scripting and other cross-site injections.
+Content Security Policy (CSP) requires careful tuning and precise definition of the policy. If enabled, CSP has significant impact on the way the browser renders pages (e.g., inline JavaScript disabled by default and must be explicitly allowed in policy). CSP prevents a wide range of attacks, including Cross-site scripting and other cross-site injections.
 
 ```
 Content-Security-Policy: default-src 'none', connect-src 'self', 'upgrade-insecure-requests';
@@ -178,7 +178,7 @@ It is suggested that you use `ES512`, or the `RS512` algo if you are unable to u
 
 You can make a `ECDSA 512 (ES512)` pair like this:
 
-```
+```bash
 # DO NOT EVER COMMIT THE PRIVATE KEY
 # Make private key
 openssl ecparam -genkey -name secp521r1 -noout -out ecdsa-p521-private.pem
@@ -198,7 +198,7 @@ openssl rsa -pubout -in rsa512-private.pem -out rsa512-public.pem
 
 Make sure you set the appropriate variables in your .env
 
-You may use a symmetrical also but then you'll be relying on a secret instead of a keypair. This is not recommended.
+You may use a symmetrical algo, but then you'll be relying on a secret instead of a keypair. This is not recommended.
 
 # Roles
 
