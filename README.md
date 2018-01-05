@@ -96,7 +96,7 @@ Content Security Policy (CSP) requires careful tuning and precise definition of 
 Content-Security-Policy: default-src 'none', connect-src 'self', 'upgrade-insecure-requests';
 ```
 
-### X-Cotent-Type-Options
+### X-Content-Type-Options
 
 Setting this header will prevent the browser from interpreting files as something else than declared by the content type in the HTTP headers.
 
