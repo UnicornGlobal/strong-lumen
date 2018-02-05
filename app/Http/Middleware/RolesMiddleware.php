@@ -13,24 +13,17 @@ class RolesMiddleware
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
-     * @param array $requiredRoles
+     * @param $requiredRole
      * @return mixed
      */
-    public function handle($request, Closure $next, ...$requiredRoles)
+    public function handle($request, Closure $next, $requiredRole)
     {
-        if (empty($requiredRoles)) {
-            if (!Auth::user()->roles->isEmpty()) {
-                return $next($request);
-            }
+        $model = Role::where('name', $requiredRole)->first();
+
+        if (!is_null($model) && $model->is_active && Auth::user()->hasRole($model->_id)) {
+            return $next($request);
         }
 
-        foreach ($requiredRoles as $role) {
-            $model = Role::where('name', $role)->first();
-
-            if (!is_null($model) && $model->is_active && Auth::user()->hasRole($model->_id)) {
-                return $next($request);
-            }
-        }
         return response()->json(['error' => 'Incorrect Role'], 401);
     }
 }
