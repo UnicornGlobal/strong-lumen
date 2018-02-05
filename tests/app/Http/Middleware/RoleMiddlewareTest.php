@@ -263,7 +263,7 @@ class RoleMiddlewareTest extends TestCase
             });
         });
 
-        $this->actingAs(Auth::user())->get('/test');//Has admin role
+        $this->actingAs(Auth::user())->get('/test');
         $this->assertResponseStatus(401);
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
