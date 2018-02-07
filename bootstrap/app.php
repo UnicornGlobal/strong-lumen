@@ -73,7 +73,7 @@ $app->routeMiddleware([
     'security' => App\Http\Middleware\SecurityHeaders::class,
     'csp' => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
     'cors' => \Barryvdh\Cors\HandleCors::class,
-    'roles' => \App\Http\Middleware\RolesMiddleware::class,
+    'role' => \App\Http\Middleware\RolesMiddleware::class,
 ]);
 
 /*

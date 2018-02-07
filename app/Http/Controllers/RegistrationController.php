@@ -29,7 +29,8 @@ class RegistrationController extends BaseController
             'password',
             'firstName',
             'lastName',
-            'email'
+            'email',
+            'role'
         );
 
         $this->validate($request, [
@@ -77,6 +78,10 @@ class RegistrationController extends BaseController
             'confirm_code' => Uuid::generate(4)
         ]);
 
+        if (isset($details['role'])) {
+            $this->addRole($details['role'], $newUser);
+        }
+
         Mail::to($details['email'])->send(new ConfirmAccountMessage($newUser));
 
         DB::commit();
@@ -94,6 +99,25 @@ class RegistrationController extends BaseController
             return response()->json(['result' => 'OK'], 200);
         } catch (\Exception $e) {
             throw new \Exception('There was a problem with the code.');
+        }
+    }
+
+    //Assigning a role to the newly created user
+    public function addRole($roleId, $newUser)
+    {
+        try {
+            $role = Role::where('_id', $roleId)->first();
+            $newUser->roles()->syncWithoutDetaching(
+                [
+                    $role->id =>
+                        [
+                            'created_by' => $newUser->id,
+                            'updated_by' => $newUser->id,
+                        ]
+                ]
+            );
+        } catch (\Exception $e) {
+            throw new \Exception('There was a problem assigning the role.');
         }
     }
 }
