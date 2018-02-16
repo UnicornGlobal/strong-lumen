@@ -40,7 +40,7 @@ class ThrottleRequests
     {
         $key = $this->resolveRequestSignature($request);
 
-        if ($this->limiter->tooManyAttempts($key, $maxAttempts, $decayMinutes)) {
+        if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
             return $this->buildResponse($key, $maxAttempts);
         }
 
