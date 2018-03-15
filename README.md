@@ -200,6 +200,8 @@ Make sure you set the appropriate variables in your .env
 
 You may use a symmetrical algo, but then you'll be relying on a secret instead of a keypair. This is not recommended.
 
+Token is blacklisted on logout.
+
 # Roles
 
 There is support for user roles. Specify for a route using:
