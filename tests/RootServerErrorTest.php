@@ -89,7 +89,7 @@ class RootServerErrorTest extends TestCase
         $this->actingAs($user)->get('/api');
 
         $this->assertEquals(
-            'Lumen (5.6.2) (Laravel Components 5.6.*)',
+            'Lumen (5.6.3) (Laravel Components 5.6.*)',
             $this->response->getContent()
         );
 
