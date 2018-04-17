@@ -1,6 +1,7 @@
 <?php
 
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -40,7 +41,7 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(7, count($resultArray));
+        $this->assertEquals(8, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
@@ -48,8 +49,22 @@ class UserControllerTest extends TestCase
         // Should have an email
         $this->assertEquals('developer@example.com', $resultObject->email);
 
+        // Has no role
+        $this->assertEquals(0, count($resultArray['roles']));
+
         // Response should be a 200
         $this->assertEquals('200', $this->response->status());
+
+        // Test with admin user to check roles in response
+        $adminUser = User::where('_id', '5FFA95F4-5EB4-46FB-94F1-F2B27254725B')->first();
+        $this->actingAs($adminUser)->get('/api/me');
+        $result = json_decode($this->response->getContent());
+        $this->assertObjectHasAttribute('roles', $result);
+
+        $roles = new Collection($result->roles);
+
+        $this->assertEquals(1, count($roles));
+        $this->assertTrue($roles->contains('name', 'admin'));
     }
 
     public function testGetEmptyUser()
