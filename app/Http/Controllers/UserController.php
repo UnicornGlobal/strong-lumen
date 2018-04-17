@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $userId = Auth::user()->_id;
 
-        $user = User::where('_id', $userId)->first();
+        $user = User::where('_id', $userId)->with('roles:_id,name')->first();
 
         return response()->json($user);
     }
