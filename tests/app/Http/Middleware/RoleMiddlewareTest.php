@@ -311,4 +311,12 @@ class RoleMiddlewareTest extends TestCase
         $users = json_decode($this->response->getContent());
         $this->assertEquals('5FFA95F4-5EB4-46FB-94F1-F2B27254725B', $users[0]->_id);
     }
+
+    public function testRequestWithoutLogin()
+    {
+        $this->post('/logout');
+        $this->get('/roles');
+        $result = json_decode($this->response->getContent());
+        $this->assertEquals('User not logged in.', $result->error);
+    }
 }
