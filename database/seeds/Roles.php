@@ -81,5 +81,20 @@ class Roles extends Seeder
             'created_by' => 1,
             'updated_by' => 1,
         ]);
+
+        // Assign user 2 and 3 as users
+        UserRole::create([
+            'user_id' => 2,
+            'role_id' => 3,
+            'created_by' => 1,
+            'updated_by' => 1,
+        ]);
+
+        UserRole::create([
+            'user_id' => 3,
+            'role_id' => 3,
+            'created_by' => 1,
+            'updated_by' => 1,
+        ]);
     }
 }
