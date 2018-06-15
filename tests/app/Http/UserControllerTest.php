@@ -50,7 +50,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('developer@example.com', $resultObject->email);
 
         // Has no role
-        $this->assertEquals(0, count($resultArray['roles']));
+        $this->assertEquals(1, count($resultArray['roles']));
 
         // Response should be a 200
         $this->assertEquals('200', $this->response->status());
@@ -63,7 +63,7 @@ class UserControllerTest extends TestCase
 
         $roles = new Collection($result->roles);
 
-        $this->assertEquals(1, count($roles));
+        $this->assertEquals(2, count($roles));
         $this->assertTrue($roles->contains('name', 'admin'));
     }
 
