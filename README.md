@@ -4,11 +4,7 @@
 
 # strong-lumen
 
-Lumen, but with a bunch of security-centric features.
-
-💪
-
-LAST AUDIT: December 2017
+Lumen, but with a bunch of security-centric features 💪
 
 # Middleware
 
