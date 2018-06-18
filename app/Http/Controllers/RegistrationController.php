@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\User;
+use App\Role;
 use Webpatser\Uuid\Uuid;
 
 class RegistrationController extends BaseController
@@ -29,8 +30,7 @@ class RegistrationController extends BaseController
             'password',
             'firstName',
             'lastName',
-            'email',
-            'role'
+            'email'
         );
 
         $this->validate($request, [
@@ -78,9 +78,7 @@ class RegistrationController extends BaseController
             'confirm_code' => Uuid::generate(4)
         ]);
 
-        if (isset($details['role'])) {
-            $this->addRole($details['role'], $newUser);
-        }
+        $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
 
         Mail::to($details['email'])->send(new ConfirmAccountMessage($newUser));
 
