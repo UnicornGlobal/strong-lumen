@@ -6,3 +6,4 @@ Homestead.yaml
 .env
 clover.xml
 tests/coverage
+tests/phpunit.junit.xml

@@ -67,20 +67,15 @@ class RegistrationControllerTest extends TestCase
         $this->post('/register/email', [
             'username' => 'username',
             'password' => 'password',
-            'firstName' => 'Another',
             'lastName' => 'User',
-            'email' => '2+developer@example.com',
+            'email' => 'developer2@example.com',
         ], [ 'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         $result = json_decode($this->response->getContent());
 
         // Should have 1 element
         $this->assertEquals(1, count((array)$result));
-
-        // Response is a UUID
-        $this->assertRegExp(
-            '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
-            $result->_id
-        );
+        $this->assertEquals('The given data was invalid.', $result->error);
+        $this->assertEquals('500', $this->response->status());
     }
 }
