@@ -77,7 +77,7 @@ class RegistrationControllerTest extends TestCase
         // Should have 1 element
         $this->assertEquals(1, count((array)$result));
 
-        $this->assertEquals('The given data was invalid.', $result->error);
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('Registration Failed', $result->error);
+        $this->assertEquals('403', $this->response->status());
     }
 }
