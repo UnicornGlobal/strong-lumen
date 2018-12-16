@@ -44,7 +44,9 @@ class ThrottleRequests
             return $this->buildResponse($key, $maxAttempts);
         }
 
-        $this->limiter->hit($key, $decayMinutes);
+        if (! in_array(env('APP_ENV'), ['testing', 'local']) || getenv('THROTTLE_TEST')) {
+            $this->limiter->hit($key, $decayMinutes);
+        }
 
         $response = $next($request);
 
