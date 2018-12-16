@@ -42,6 +42,7 @@ class Users extends Seeder
             'first_name' => 'System',
             'last_name' => 'User',
             'email' => env('SYSTEM_USER_EMAIL'),
+            'confirm_code' => Uuid::generate(4),
             'created_by' => 1,
             'updated_by' => 1,
         ]);
@@ -61,6 +62,7 @@ class Users extends Seeder
                 'first_name' => 'Test',
                 'last_name' => 'User',
                 'email' => 'developer@example.com',
+                'confirm_code' => Uuid::generate(4),
                 'created_by' => 1,
                 'updated_by' => 1,
             ]);
@@ -74,6 +76,7 @@ class Users extends Seeder
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'email' => 'admin@example.com',
+                'confirm_code' => Uuid::generate(4),
                 'created_by' => 1,
                 'updated_by' => 1,
             ]);

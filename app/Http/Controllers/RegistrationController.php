@@ -47,7 +47,6 @@ class RegistrationController extends BaseController
             $newUserId = $this->createUser($details);
             return response()->json(['_id' => $newUserId], 201);
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(['error' => 'Registration Failed'], 403);
         }
     }
@@ -66,8 +65,8 @@ class RegistrationController extends BaseController
         DB::beginTransaction();
 
         $newUser = User::create([
-            '_id' => Uuid::generate(4),
-            'api_key' => Uuid::generate(4),
+            '_id' => Uuid::generate(4)->string,
+            'api_key' => Uuid::generate(4)->string,
             'username' => $details['username'],
             'password' => Hash::make($details['password']),
             'first_name' => $details['firstName'],
@@ -75,7 +74,7 @@ class RegistrationController extends BaseController
             'email' => $details['email'],
             'created_by' => 1,
             'updated_by' => 1,
-            'confirm_code' => Uuid::generate(4)
+            'confirm_code' => Uuid::generate(4)->string
         ]);
 
         $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
@@ -84,7 +83,7 @@ class RegistrationController extends BaseController
 
         DB::commit();
 
-        return $newUser->_id->string;
+        return $newUser->_id;
     }
 
     public function confirmEmail(Request $request, $token)
