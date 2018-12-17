@@ -40,11 +40,15 @@ class ThrottleRequests
     {
         $key = $this->resolveRequestSignature($request);
 
-        if (! in_array(env('APP_ENV'), ['testing', 'local']) || getenv('THROTTLE_TEST') || ! env('SKIP_THROTTLE')) {
-            if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
-                return $this->buildResponse($key, $maxAttempts);
-            }
+        if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
+            return $this->buildResponse($key, $maxAttempts);
+        }
 
+        if (!in_array(env('APP_ENV'), ['testing', 'local']) && !env('SKIP_THROTTLE')) {
+            $this->limiter->hit($key, $decayMinutes);
+        }
+
+        if (getenv('THROTTLE_TEST')) {
             $this->limiter->hit($key, $decayMinutes);
         }
 

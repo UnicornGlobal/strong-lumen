@@ -43,6 +43,7 @@ class ResetPasswordTest extends TestCase
      */
     public function testThrottleResetPassword()
     {
+        putenv('THROTTLE_TEST=true');
         // Register with bad details
         $this->post('/reset', ['email' => 'developer@example.com']);
         $this->post('/reset', ['email' => 'developer@example.com']);
