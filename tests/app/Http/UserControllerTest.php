@@ -1,8 +1,8 @@
 <?php
 
 use App\User;
+use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
@@ -14,7 +14,7 @@ class UserControllerTest extends TestCase
         $user = factory('App\User')->make();
 
         // The test user in our seed
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6');
+        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -33,7 +33,7 @@ class UserControllerTest extends TestCase
 
     public function testGetSelf()
     {
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // The test user in our seed
         $this->actingAs($user)->get('/api/me');
@@ -56,7 +56,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('200', $this->response->status());
 
         // Test with admin user to check roles in response
-        $adminUser = User::where('_id', '5FFA95F4-5EB4-46FB-94F1-F2B27254725B')->first();
+        $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
         $this->actingAs($adminUser)->get('/api/me');
         $result = json_decode($this->response->getContent());
         $this->assertObjectHasAttribute('roles', $result);
@@ -83,8 +83,7 @@ class UserControllerTest extends TestCase
     {
         $user = factory('App\User')->make();
 
-        // The test user in our seed
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-000000000000');
+        $this->actingAs($user)->get('/api/users/12');
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
@@ -106,17 +105,17 @@ class UserControllerTest extends TestCase
     public function testChangeDetails()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
         // Update own details
-        $this->actingAs($user)->post('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6', [
+        $this->actingAs($user)->post('/api/users/' . env('TEST_USER_ID'), [
             'firstName' => 'Changed',
             'lastName' => 'Changed',
         ]);
 
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6');
+        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -131,7 +130,7 @@ class UserControllerTest extends TestCase
     public function testChangeBadDetails()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
@@ -147,5 +146,68 @@ class UserControllerTest extends TestCase
         );
 
         $this->assertEquals('500', $this->response->status());
+    }
+
+    public function testAdminCanGetAllUsers()
+    {
+        $faker = Factory::create();
+
+        for ($i = 1; $i < 5; $i++) {
+            $user = new User([
+                '_id' => $faker->uuid,
+                'api_key' => $faker->uuid,
+                'username' => $faker->userName,
+                'password' => $faker->password,
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $faker->email,
+                'confirm_code' => $faker->linuxPlatformToken,
+                'confirmed_at' => \Carbon\Carbon::now(),
+                'created_by' => 1,
+                'updated_by' => 1,
+            ]);
+
+            $user->save();
+        }
+
+        $num_users = User::count();
+
+        $admin_user = User::where('_id', env('ADMIN_USER_ID'))->first();
+        $normal_user = User::where('_id', env('TEST_USER_ID'))->first();
+
+        $this->actingAs($normal_user)->get(route('admin.users.all'));
+        $this->assertResponseStatus(401);
+
+        $this->actingAs($admin_user)->get(route('admin.users.all'));
+        $this->assertResponseOk();
+
+        $response = json_decode($this->response->getContent());
+        $this->assertObjectHasAttribute('users', $response);
+        $this->assertCount($num_users, $response->users);
+    }
+
+    public function testDeleteNewUser()
+    {
+        $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
+        $this->post('/register/email', [
+            'username' => 'user@example.com',
+            'password' => 'password',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'email' => 'user@example.com',
+        ],
+        [
+            'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')
+        ]);
+
+        $this->assertEquals('201', $this->response->status());
+        $userId = json_decode($this->response->getContent())->_id;
+        $this->actingAs($adminUser)->delete(sprintf('/api/admin/users/%s', $userId));
+
+        $result = json_decode($this->response->getContent());
+        $this->assertResponseStatus(202);
+        $this->assertTrue($result->success);
+        $this->assertNull(User::where('_id', $userId)->first());
+        $this->assertNotNull(User::where('_id', $userId)->withTrashed()->first());
     }
 }

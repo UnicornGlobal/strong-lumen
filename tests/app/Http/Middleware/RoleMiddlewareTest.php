@@ -202,12 +202,12 @@ class RoleMiddlewareTest extends TestCase
     {
         $this->assertEquals(1, Role::loadFromUuid($this->adminUserId)->is_active);
 
-        $this->actingAs(Auth::user())->get('/users/5FFA95F4-5EB4-46FB-94F1-F2B27254725B/roles');
+        $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
         $this->assertResponseStatus(200);
 
         $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $this->adminUserId, 'deactivate'));
 
-        $this->actingAs(Auth::user())->get('/users/5FFA95F4-5EB4-46FB-94F1-F2B27254725B/roles');
+        $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
         $this->assertResponseStatus(401);
     }
 
@@ -309,7 +309,7 @@ class RoleMiddlewareTest extends TestCase
     {
         $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'roles', $this->adminUserId, 'users'));
         $users = json_decode($this->response->getContent());
-        $this->assertEquals('5FFA95F4-5EB4-46FB-94F1-F2B27254725B', $users[0]->_id);
+        $this->assertEquals(env('ADMIN_USER_ID'), $users[0]->_id);
     }
 
     public function testRequestWithoutLogin()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Role;
 use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -155,5 +156,26 @@ class UserController extends Controller
     {
         User::loadFromUuid($userId)->revokeRole($roleId);
         return response('OK', 200);
+    }
+
+    public function getAllUsers()
+    {
+        $users = User::all();
+
+        return response()->json(compact('users'));
+    }
+
+    public function deleteUser($userId)
+    {
+        $user = User::loadFromUuid($userId);
+
+        if ($user->roles->count() === 1 &&
+            $user->hasRole(Role::where('name', 'user')->first()->_id)) {
+            $user->delete();
+
+            return response()->json(['success' => true], 202);
+        }
+
+        return response()->json(['error' => 'User has a role other than \'user\', cannot delete'], 404);
     }
 }

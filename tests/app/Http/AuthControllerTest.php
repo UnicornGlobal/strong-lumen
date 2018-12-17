@@ -14,7 +14,7 @@ class AuthControllerTest extends TestCase
     public function testLogin()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // Login without those those details
         $this->post('/login', [
@@ -42,7 +42,7 @@ class AuthControllerTest extends TestCase
     public function testLogout()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // Login without those those details
         $this->post('/login', [
@@ -76,7 +76,7 @@ class AuthControllerTest extends TestCase
     public function testChangePassword()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // Login without those those details
         $this->post('/login', [
@@ -163,7 +163,7 @@ class AuthControllerTest extends TestCase
     public function testChangePasswordSamePassword()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // Login without those those details
         $this->post('/login', [
@@ -194,7 +194,7 @@ class AuthControllerTest extends TestCase
     public function testChangePasswordBadPassword()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // Login without those those details
         $this->post('/login', [
@@ -223,9 +223,6 @@ class AuthControllerTest extends TestCase
      */
     public function testRefresh()
     {
-        // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
-
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',

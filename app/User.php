@@ -38,6 +38,8 @@ class User extends BaseModel implements
         'email',
         'confirm_code',
         'confirmed_at',
+        'created_by',
+        'updated_by',
     ];
 
     /**
