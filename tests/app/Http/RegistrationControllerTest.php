@@ -10,6 +10,28 @@ class RegistrationControllerTest extends TestCase
     /**
      * @return void
      */
+    public function testRegisterEmail()
+    {
+        $this->post('/register/email', [
+            'username' => 'usertest@example.com',
+            'password' => 'password',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'email' => 'usertest@example.com',
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        $this->assertEquals('201', $this->response->status());
+        $result = json_decode($this->response->getContent());
+
+        $this->assertRegExp(
+            '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+            $result->_id
+        );
+    }
+
+    /**
+     * @return void
+     */
     public function testMissingRegisterKey()
     {
         // Register with bad details
@@ -56,28 +78,5 @@ class RegistrationControllerTest extends TestCase
         $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
 
         $this->assertEquals('500', $this->response->status());
-    }
-
-    /**
-     * @return void
-     */
-    public function testMissingRegisterNewDetails()
-    {
-        // Register with bad details
-        $this->post('/register/email', [
-            'username' => 'username',
-            'password' => 'password',
-            'firstName' => 'Another',
-            'lastName' => 'User',
-            'email' => 'developer2@example.com',
-        ], [ 'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
-
-        $result = json_decode($this->response->getContent());
-
-        // Should have 1 element
-        $this->assertEquals(1, count((array)$result));
-
-        $this->assertEquals('Registration Failed', $result->error);
-        $this->assertEquals('403', $this->response->status());
     }
 }

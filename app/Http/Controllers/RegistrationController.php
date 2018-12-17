@@ -72,9 +72,9 @@ class RegistrationController extends BaseController
             'first_name' => $details['firstName'],
             'last_name' => $details['lastName'],
             'email' => $details['email'],
+            'confirm_code' => Uuid::generate(4)->string,
             'created_by' => 1,
             'updated_by' => 1,
-            'confirm_code' => Uuid::generate(4)->string
         ]);
 
         $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);

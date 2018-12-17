@@ -14,11 +14,11 @@ class UserTables extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id'); // New
-            $table->uuid('_id')->unique(); // New
-            $table->uuid('api_key')->unique()->nullable(); // New
+            $table->bigIncrements('id');
+            $table->uuid('_id')->unique();
+            $table->uuid('api_key')->unique()->nullable();
             $table->string('username')->unique();
-            $table->string('password'); // At least they has it :D
+            $table->string('password');
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
@@ -27,12 +27,12 @@ class UserTables extends Migration
             $table->uuid('confirm_code');
             $table->dateTime('confirmed_at')->nullable();
 
-            $table->unsignedBigInteger('created_by'); // fk to users
-            $table->unsignedBigInteger('updated_by'); // fk to users, new
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
 
             $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes(); // New
+            $table->softDeletes();
         });
 
         Schema::create('password_resets', function (Blueprint $table) {
