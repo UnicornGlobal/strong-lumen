@@ -55,7 +55,7 @@ class Users extends Seeder
         if (app()->environment('local')) {
             User::create([
                 'id' => 2,
-                '_id' => '4BFE1010-C11D-4739-8C24-99E1468F08F6',
+                '_id' => env('TEST_USER_ID'),
                 'api_key' => '653FDC8C-0FB7-4C72-98F2-2A3A565C7467',
                 'username' => 'user',
                 'password' => Hash::make('password'),
@@ -69,7 +69,7 @@ class Users extends Seeder
 
             User::create([
                 'id' => 3,
-                '_id' => '5FFA95F4-5EB4-46FB-94F1-F2B27254725B',
+                '_id' => env('ADMIN_USER_ID'),
                 'api_key' => 'C87A9108-1568-4CBB-88E1-B90B5A451C67',
                 'username' => 'admin',
                 'password' => Hash::make('admin'),

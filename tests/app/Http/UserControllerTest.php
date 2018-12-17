@@ -1,8 +1,8 @@
 <?php
 
 use App\User;
+use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
@@ -147,5 +147,43 @@ class UserControllerTest extends TestCase
         );
 
         $this->assertEquals('500', $this->response->status());
+    }
+
+    public function testAdminCanGetAllUsers()
+    {
+        $faker = Factory::create();
+
+        for ($i = 1; $i < 5; $i++) {
+            $user = new User([
+                '_id' => $faker->uuid,
+                'api_key' => $faker->uuid,
+                'username' => $faker->userName,
+                'password' => $faker->password,
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $faker->email,
+                'confirm_code' => $faker->linuxPlatformToken,
+                'confirmed_at' => \Carbon\Carbon::now(),
+                'created_by' => 1,
+                'updated_by' => 1,
+            ]);
+
+            $user->save();
+        }
+
+        $num_users = User::count();
+
+        $admin_user = User::where('_id', env('ADMIN_USER_ID'))->first();
+        $normal_user = User::where('_id', env('TEST_USER_ID'))->first();
+
+        $this->actingAs($normal_user)->get(route('admin.users.all'));
+        $this->assertResponseStatus(401);
+
+        $this->actingAs($admin_user)->get(route('admin.users.all'));
+        $this->assertResponseOk();
+
+        $response = json_decode($this->response->getContent());
+        $this->assertObjectHasAttribute('users', $response);
+        $this->assertCount($num_users, $response->users);
     }
 }
