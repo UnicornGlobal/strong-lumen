@@ -185,4 +185,29 @@ class UserControllerTest extends TestCase
         $this->assertObjectHasAttribute('users', $response);
         $this->assertCount($num_users, $response->users);
     }
+
+    public function testDeleteNewUser()
+    {
+        $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
+        $this->post('/register/email', [
+            'username' => 'user@example.com',
+            'password' => 'password',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'email' => 'user@example.com',
+        ],
+        [
+            'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')
+        ]);
+
+        $this->assertEquals('201', $this->response->status());
+        $userId = json_decode($this->response->getContent())->_id;
+        $this->actingAs($adminUser)->delete(sprintf('/api/admin/users/%s', $userId));
+
+        $result = json_decode($this->response->getContent());
+        $this->assertResponseStatus(202);
+        $this->assertTrue($result->success);
+        $this->assertNull(User::where('_id', $userId)->first());
+        $this->assertNotNull(User::where('_id', $userId)->withTrashed()->first());
+    }
 }
