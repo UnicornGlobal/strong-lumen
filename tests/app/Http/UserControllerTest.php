@@ -14,7 +14,7 @@ class UserControllerTest extends TestCase
         $user = factory('App\User')->make();
 
         // The test user in our seed
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6');
+        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -33,7 +33,7 @@ class UserControllerTest extends TestCase
 
     public function testGetSelf()
     {
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
 
         // The test user in our seed
         $this->actingAs($user)->get('/api/me');
@@ -56,7 +56,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('200', $this->response->status());
 
         // Test with admin user to check roles in response
-        $adminUser = User::where('_id', '5FFA95F4-5EB4-46FB-94F1-F2B27254725B')->first();
+        $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
         $this->actingAs($adminUser)->get('/api/me');
         $result = json_decode($this->response->getContent());
         $this->assertObjectHasAttribute('roles', $result);
@@ -83,8 +83,7 @@ class UserControllerTest extends TestCase
     {
         $user = factory('App\User')->make();
 
-        // The test user in our seed
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-000000000000');
+        $this->actingAs($user)->get('/api/users/12');
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
@@ -106,17 +105,17 @@ class UserControllerTest extends TestCase
     public function testChangeDetails()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
         // Update own details
-        $this->actingAs($user)->post('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6', [
+        $this->actingAs($user)->post('/api/users/' . env('TEST_USER_ID'), [
             'firstName' => 'Changed',
             'lastName' => 'Changed',
         ]);
 
-        $this->actingAs($user)->get('/api/users/4BFE1010-C11D-4739-8C24-99E1468F08F6');
+        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -131,7 +130,7 @@ class UserControllerTest extends TestCase
     public function testChangeBadDetails()
     {
         // Get the test user
-        $user = User::where('_id', '4BFE1010-C11D-4739-8C24-99E1468F08F6')->first();
+        $user = User::where('_id', env('TEST_USER_ID'))->first();
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
