@@ -223,9 +223,6 @@ class AuthControllerTest extends TestCase
      */
     public function testRefresh()
     {
-        // Get the test user
-        $user = User::where('_id', env('TEST_USER_ID'))->first();
-
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
