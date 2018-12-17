@@ -40,11 +40,11 @@ class ThrottleRequests
     {
         $key = $this->resolveRequestSignature($request);
 
-        if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
-            return $this->buildResponse($key, $maxAttempts);
-        }
-
         if (! in_array(env('APP_ENV'), ['testing', 'local']) || getenv('THROTTLE_TEST')) {
+            if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
+                return $this->buildResponse($key, $maxAttempts);
+            }
+
             $this->limiter->hit($key, $decayMinutes);
         }
 
