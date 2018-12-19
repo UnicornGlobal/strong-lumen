@@ -15,6 +15,7 @@ class RolesMiddleware
      * @param  \Closure $next
      * @param $requiredRole
      * @return mixed
+     * @throws \Exception
      */
     public function handle($request, Closure $next, $requiredRole)
     {

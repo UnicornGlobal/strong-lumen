@@ -1,5 +1,8 @@
 <?php
 
+use App\Mail\ConfirmAccountMessage;
+use App\User;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -78,5 +81,31 @@ class RegistrationControllerTest extends TestCase
         $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
 
         $this->assertEquals('500', $this->response->status());
+    }
+
+    public function testRegConfirmEmail()
+    {
+        Mail::fake();
+
+        $this->post('/register/email', [
+            'username' => 'user123',
+            'password' => 'password',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'email' => 'asd@example.com',
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
+            $this->get($mail->link);
+            $this->assertEquals('{"result":"OK"}', $this->response->getContent());
+            return true;
+        });
+    }
+
+    public function testBadConfirmCode()
+    {
+        $this->get('confirm/112358');
+        $this->assertResponseStatus(500);
+        $this->assertEquals('{"error":"There was a problem with the code."}', $this->response->getContent());
     }
 }
