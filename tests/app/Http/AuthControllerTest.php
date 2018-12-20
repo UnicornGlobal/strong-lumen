@@ -186,6 +186,17 @@ class AuthControllerTest extends TestCase
 
         $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
         $this->assertEquals('500', $this->response->status());
+
+        $this->post('/api/users/change-password', [
+            'username' => 'user',
+            'password' => 'xyz',
+            'newpassword' => 'newstrongpassword',
+        ], [
+            'Authorization' => sprintf('Bearer %s', $token),
+        ]);
+
+        $this->assertEquals('{"error":"There was a problem changing the password."}', $this->response->getContent());
+        $this->assertEquals('500', $this->response->status());
     }
 
     /**

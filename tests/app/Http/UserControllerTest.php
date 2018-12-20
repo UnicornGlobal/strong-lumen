@@ -210,4 +210,13 @@ class UserControllerTest extends TestCase
         $this->assertNull(User::where('_id', $userId)->first());
         $this->assertNotNull(User::where('_id', $userId)->withTrashed()->first());
     }
+
+    public function testDeleteAdminUser()
+    {
+        $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
+        $this->actingAs($adminUser)->delete(sprintf('/api/admin/users/%s', $adminUser->_id));
+        $result = json_decode($this->response->getContent());
+        $this->assertResponseStatus(404);
+        $this->assertEquals('User has a role other than \'user\', cannot delete', $result->error);
+    }
 }
