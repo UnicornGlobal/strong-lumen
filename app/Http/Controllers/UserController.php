@@ -103,10 +103,6 @@ class UserController extends Controller
 
         $fields = $request->input();
 
-        if (!isset($fields['newpassword'])) {
-            throw new \Exception('There was a problem changing the password.');
-        }
-
         $user = User::where('username', $fields['username'])->first();
 
         if (!Hash::check($request['password'], $user->password)) {

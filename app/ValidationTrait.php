@@ -13,11 +13,6 @@ trait ValidationTrait
         $this->checkValid($uuid, User::class);
     }
 
-    private function isValidRoleID($uuid)
-    {
-        $this->checkValid($uuid, Role::class);
-    }
-
     private function checkValid($uuid, $class)
     {
         $this->checkEmpty($uuid, $class);

@@ -31,6 +31,7 @@ class PasswordResetMessage extends Mailable
     public function __construct(User $user, $token)
     {
         $this->user = $user;
+        $this->token = $token;
         $url = env('PASSWORD_RESET_URL');
         $link = sprintf('%s/%s', $url, $token);
         $this->link = preg_replace('/([^:])(\/{2,})/', '$1/', $link);
