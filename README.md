@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/darrynten/strong-lumen.svg?token=2azvxgpyzAkLb1UEKNft&branch=master)](https://travis-ci.com/darrynten/strong-lumen)
-[![codecov](https://codecov.io/gh/darrynten/strong-lumen/branch/master/graph/badge.svg?token=1FMglKG9GC)](https://codecov.io/gh/darrynten/strong-lumen)
+[![Build Status](https://travis-ci.com/UnicornGlobal/strong-lumen.svg?branch=master)](https://travis-ci.com/UnicornGlobal/strong-lumen)
+[![codecov](https://codecov.io/gh/UnicornGlobal/strong-lumen/branch/master/graph/badge.svg)](https://codecov.io/gh/UnicornGlobal/strong-lumen)
 [![StyleCI](https://styleci.io/repos/112795050/shield?branch=master)](https://styleci.io/repos/112795050)
 
 # strong-lumen
