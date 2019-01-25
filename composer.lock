@@ -3729,16 +3729,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.1.1",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "13be13df7df1ba7bca099b16943a8ba025a38a02"
+                "reference": "736602fab067eee2e6fa1145f011e6798313d9d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/13be13df7df1ba7bca099b16943a8ba025a38a02",
-                "reference": "13be13df7df1ba7bca099b16943a8ba025a38a02",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/736602fab067eee2e6fa1145f011e6798313d9d9",
+                "reference": "736602fab067eee2e6fa1145f011e6798313d9d9",
                 "shasum": ""
             },
             "require": {
@@ -3751,7 +3751,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.2-dev"
                 }
             },
             "autoload": {
@@ -3776,7 +3776,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-01-23T18:32:42+00:00"
+            "time": "2019-01-24T20:33:37+00:00"
         },
         {
             "name": "webpatser/laravel-uuid",
