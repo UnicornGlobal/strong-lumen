@@ -3729,21 +3729,22 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.1.1",
+            "version": "v3.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "13be13df7df1ba7bca099b16943a8ba025a38a02"
+                "reference": "dbcc609971dd9b55f48b8008b553d79fd372ddde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/13be13df7df1ba7bca099b16943a8ba025a38a02",
-                "reference": "13be13df7df1ba7bca099b16943a8ba025a38a02",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/dbcc609971dd9b55f48b8008b553d79fd372ddde",
+                "reference": "dbcc609971dd9b55f48b8008b553d79fd372ddde",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.4 || ^7.0",
-                "phpoption/phpoption": "^1.5"
+                "phpoption/phpoption": "^1.5",
+                "symfony/polyfill-ctype": "^1.9"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8.35 || ^5.0 || ^6.0"
@@ -3751,7 +3752,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -3776,7 +3777,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-01-23T18:32:42+00:00"
+            "time": "2019-03-06T09:39:45+00:00"
         },
         {
             "name": "webpatser/laravel-uuid",
