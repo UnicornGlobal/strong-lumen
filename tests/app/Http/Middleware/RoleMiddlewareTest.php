@@ -12,10 +12,12 @@ class RoleMiddlewareTest extends TestCase
 
     private $testUserId;
     private $adminUserId;
-    private $userId;
-    private $systemUserId;
 
-    public function setUp()
+    private $adminRoleId;
+    private $userRoleId;
+    private $systemRoleId;
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->post('/login', [
@@ -24,19 +26,20 @@ class RoleMiddlewareTest extends TestCase
         ], [ 'Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->testUserId = User::where('id', 2)->first()->_id;
+        $this->adminUserId = User::where('id', 3)->first()->_id;
         $this->actingAs(Auth::user())->get('/roles');
         $roles = json_decode($this->response->getContent());
 
         foreach ($roles as $role) {
             switch ($role->name) {
                 case 'admin':
-                    $this->adminUserId = $role->_id;
+                    $this->adminRoleId = $role->_id;
                     break;
                 case 'user':
-                    $this->userId = $role->_id;
+                    $this->userRoleId = $role->_id;
                     break;
                 case 'system':
-                    $this->systemUserId = $role->_id;
+                    $this->systemRoleId = $role->_id;
             }
         }
     }
@@ -62,7 +65,7 @@ class RoleMiddlewareTest extends TestCase
                 'users',
                 $this->testUserId,
                 'roles/assign',
-                $this->adminUserId
+                $this->adminRoleId
             )
         );
 
@@ -96,7 +99,7 @@ class RoleMiddlewareTest extends TestCase
                 'users',
                 $this->testUserId,
                 'roles/assign',
-                $this->adminUserId
+                $this->adminRoleId
             )
         );
 
@@ -118,23 +121,29 @@ class RoleMiddlewareTest extends TestCase
                 Uuid::generate(4)->string
             )
         );
+
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
 
-        // remove the role
+        // remove the admin role
         $this->actingAs(Auth::user())->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
                 $this->testUserId,
                 'roles/revoke',
-                $this->adminUserId
+                $this->adminRoleId
             )
         );
 
-        $this->actingAs($testUser)->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->assertEquals('OK', $this->response->getContent());
+        $this->assertResponseStatus(200);
+
+        $user = User::loadFromUuid($this->testUserId);
+        $this->actingAs($user)->get(sprintf('%s/%s/%s', 'users', $this->adminUserId, 'roles'));
 
         // ensure we get access denied error
         $this->assertResponseStatus(401);
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
 
     public function testCreateRole()
@@ -200,12 +209,12 @@ class RoleMiddlewareTest extends TestCase
 
     public function testInactiveRole()
     {
-        $this->assertEquals(1, Role::loadFromUuid($this->adminUserId)->is_active);
+        $this->assertEquals(1, Role::loadFromUuid($this->adminRoleId)->is_active);
 
         $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
         $this->assertResponseStatus(200);
 
-        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $this->adminUserId, 'deactivate'));
+        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $this->adminRoleId, 'deactivate'));
 
         $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
         $this->assertResponseStatus(401);
@@ -307,7 +316,7 @@ class RoleMiddlewareTest extends TestCase
 
     public function testGetUserForRole()
     {
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'roles', $this->adminUserId, 'users'));
+        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'roles', $this->adminRoleId, 'users'));
         $users = json_decode($this->response->getContent());
         $this->assertEquals(env('ADMIN_USER_ID'), $users[0]->_id);
     }
