@@ -7,3 +7,4 @@ Homestead.yaml
 clover.xml
 tests/coverage
 tests/phpunit.junit.xml
+.phpunit.result.cache
