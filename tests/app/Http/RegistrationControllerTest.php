@@ -109,11 +109,11 @@ class RegistrationControllerTest extends TestCase
         Mail::fake();
 
         $this->post('/register/email', [
-            'username' => 'user12345',
-            'password' => 'password1',
+            'username'  => 'user12345',
+            'password'  => 'password1',
             'firstName' => 'First',
-            'lastName' => 'Last',
-            'email' => 'asdfg@example.com',
+            'lastName'  => 'Last',
+            'email'     => 'asdfg@example.com',
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
@@ -121,6 +121,7 @@ class RegistrationControllerTest extends TestCase
             $this->assertResponseStatus(200);
             $this->assertEquals('{"result":"OK"}', $this->response->getContent());
             self::$code = $mail->user->confirm_code;
+
             return true;
         });
 
