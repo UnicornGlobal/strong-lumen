@@ -17,7 +17,6 @@ before_install:
   - cp .env.example .env
   - php artisan migrate
   - php artisan db:seed
-  - vendor/bin/phpunit --coverage-clover=coverage.xml
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - rm .env

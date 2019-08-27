@@ -81,6 +81,20 @@ class ResetPasswordTest extends TestCase
         $this->post('/reset', ['email' => 'developer@example.com']);
         $this->post('/reset', ['email' => 'developer@example.com']);
         $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
+        $this->post('/reset', ['email' => 'developer@example.com']);
 
         $this->assertContains('Too many consecutive attempts. Try again', $this->response->getContent());
 
