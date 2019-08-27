@@ -4,15 +4,14 @@ namespace App;
 
 use App\Mail\PasswordResetMessage;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Auth\Authorizable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
 
 class User extends BaseModel implements
@@ -75,7 +74,8 @@ class User extends BaseModel implements
     /**
      * Send the password reset notification.
      *
-     * @param  string  $token
+     * @param string $token
+     *
      * @return void
      */
     public function sendPasswordResetNotification($token)
@@ -108,11 +108,11 @@ class User extends BaseModel implements
         return $this->belongsToMany('App\Role', 'user_role')->using('App\UserRole')->withTimestamps();
     }
 
-
     /**
-     * Check if the user has a specified role
+     * Check if the user has a specified role.
      *
      * @param $role
+     *
      * @return bool
      */
     public function hasRole($roleId)
@@ -122,11 +122,12 @@ class User extends BaseModel implements
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * Assign a role to this user
+     * Assign a role to this user.
      *
      * @param $role
      */
@@ -138,18 +139,17 @@ class User extends BaseModel implements
             && !$this->hasRole($role->_id)) {
             $this->roles()->syncWithoutDetaching(
                 [
-                $role->id =>
-                    [
+                $role->id => [
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
-                    ]
+                    ],
                 ]
             );
         }
     }
 
     /**
-     * Remove a role from this user
+     * Remove a role from this user.
      *
      * @param $name
      */

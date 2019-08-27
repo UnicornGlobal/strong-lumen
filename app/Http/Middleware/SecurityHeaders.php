@@ -7,11 +7,12 @@ use Closure;
 class SecurityHeaders
 {
     /**
-     * Some common security headers
+     * Some common security headers.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  $role
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param string                   $role
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)

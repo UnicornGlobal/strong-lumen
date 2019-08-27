@@ -64,16 +64,16 @@ $app->singleton(
 // ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-    'register' => App\Http\Middleware\RegisterKeyMiddleware::class,
-    'appid' => App\Http\Middleware\AppIdMiddleware::class,
-    'throttle' => App\Http\Middleware\ThrottleRequests::class,
-    'nocache' => App\Http\Middleware\NoCache::class,
+    'auth'       => App\Http\Middleware\Authenticate::class,
+    'register'   => App\Http\Middleware\RegisterKeyMiddleware::class,
+    'appid'      => App\Http\Middleware\AppIdMiddleware::class,
+    'throttle'   => App\Http\Middleware\ThrottleRequests::class,
+    'nocache'    => App\Http\Middleware\NoCache::class,
     'hideserver' => App\Http\Middleware\ServerHeader::class,
-    'security' => App\Http\Middleware\SecurityHeaders::class,
-    'csp' => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
-    'cors' => \Barryvdh\Cors\HandleCors::class,
-    'role' => \App\Http\Middleware\RolesMiddleware::class,
+    'security'   => App\Http\Middleware\SecurityHeaders::class,
+    'csp'        => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
+    'cors'       => \Barryvdh\Cors\HandleCors::class,
+    'role'       => \App\Http\Middleware\RolesMiddleware::class,
 ]);
 
 /*
