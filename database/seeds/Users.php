@@ -57,7 +57,7 @@ class Users extends Seeder
                 '_id'          => env('TEST_USER_ID'),
                 'api_key'      => '653FDC8C-0FB7-4C72-98F2-2A3A565C7467',
                 'username'     => 'user',
-                'password'     => Hash::make('password'),
+                'password'     => Hash::make('user'),
                 'first_name'   => 'Test',
                 'last_name'    => 'User',
                 'email'        => 'developer@example.com',
