@@ -10,6 +10,8 @@ class RegistrationControllerTest extends TestCase
 {
     use DatabaseTransactions;
 
+    public static $code;
+
     /**
      * @return void
      */
@@ -97,9 +99,36 @@ class RegistrationControllerTest extends TestCase
 
         Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
             $this->get($mail->link);
+            $this->assertResponseStatus(200);
             $this->assertEquals('{"result":"OK"}', $this->response->getContent());
             return true;
         });
+    }
+
+    public function testGoodConfirmCode()
+    {
+        Mail::fake();
+
+        $this->post('/register/email', [
+            'username' => 'user12345',
+            'password' => 'password1',
+            'firstName' => 'First',
+            'lastName' => 'Last',
+            'email' => 'asdfg@example.com',
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
+            $this->get($mail->link);
+            $this->assertResponseStatus(200);
+            $this->assertEquals('{"result":"OK"}', $this->response->getContent());
+            self::$code = $mail->user->confirm_code;
+            return true;
+        });
+
+        $url = sprintf('confirm/%s', self::$code);
+        $this->get($url);
+        $this->assertResponseStatus(200);
+        $this->assertEquals('{"result":"OK"}', $this->response->getContent());
     }
 
     public function testBadConfirmCode()

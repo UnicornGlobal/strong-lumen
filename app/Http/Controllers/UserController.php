@@ -21,7 +21,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function getUserById(Request $request, $userId)
+    public function getUserById($userId)
     {
         if (!$userId) {
             throw new \Exception('There was a problem retrieving the user.');

@@ -41,7 +41,7 @@ class ThrottleRequests
         $key = $this->resolveRequestSignature($request);
 
         if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
-            return $this->buildResponse($key, $maxAttempts);
+            return $this->buildResponse($key);
         }
 
         if (!in_array(env('APP_ENV'), ['testing', 'local']) && !env('SKIP_THROTTLE')) {
@@ -84,9 +84,9 @@ class ThrottleRequests
      * @param  int  $maxAttempts
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function buildResponse($key, $maxAttempts)
+    protected function buildResponse($key)
     {
-        $response = new Response('Too Many Attempts.', 429);
+        new Response('Too Many Attempts.', 429);
         $retryAfter = $this->limiter->availableIn($key);
 
         return response(
