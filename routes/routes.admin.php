@@ -2,7 +2,7 @@
 
 $router->group(
     [
-        'prefix' => 'api',
+        'prefix'     => 'api',
         'middleware' => ['nocache', 'hideserver', 'security', 'csp', 'cors', 'auth:api', 'throttle', 'role:admin'],
     ],
     function () use ($router) {

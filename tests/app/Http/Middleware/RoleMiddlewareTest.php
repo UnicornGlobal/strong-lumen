@@ -23,7 +23,7 @@ class RoleMiddlewareTest extends TestCase
         $this->post('/login', [
             'username' => 'admin',
             'password' => 'admin',
-        ], [ 'Debug-Token' => env('DEBUG_TOKEN')]);
+        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->testUserId = User::where('id', 2)->first()->_id;
         $this->adminUserId = User::where('id', 3)->first()->_id;
@@ -256,7 +256,7 @@ class RoleMiddlewareTest extends TestCase
         $router = $this->app->router;
         $this->app->router->group(['middleware' => ['role:admin']], function () use ($router) {
             $router->get('/test', function () {
-                return "Test";
+                return 'Test';
             });
         });
         $this->actingAs(Auth::user())->get('/test');
@@ -282,7 +282,7 @@ class RoleMiddlewareTest extends TestCase
         $router = $this->app->router;
         $this->app->router->group(['middleware' => ['role:admin']], function () use ($router) {
             $router->get('/test', function () {
-                return "Test";
+                return 'Test';
             });
         });
 

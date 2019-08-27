@@ -3,26 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Role;
-
 use Illuminate\Support\Facades\Auth;
 use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
     /**
-     * Get Role from name
+     * Get Role from name.
      *
      * @param $name
+     *
      * @return Role
      */
     public function getRole($roleId)
     {
         $role = Role::loadFromUuid($roleId);
+
         return $role;
     }
 
     /**
-     * Get all roles in the DB
+     * Get all roles in the DB.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -31,17 +32,17 @@ class RolesController extends Controller
         return Role::all();
     }
 
-
     /**
-     * Create a new role
+     * Create a new role.
      *
      * @param $name
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function createRole(string $name)
     {
         $role = Role::where('name', $name)->first();
-        if (preg_match("/[a-z]{4,}/", $name) && is_null($role)) {
+        if (preg_match('/[a-z]{4,}/', $name) && is_null($role)) {
             $role = new Role();
             $role->name = $name;
             $role->_id = Uuid::generate(4)->string;
@@ -49,16 +50,19 @@ class RolesController extends Controller
             $role->created_by = Auth::user()->id;
             $role->updated_by = Auth::user()->id;
             $role->save();
+
             return response()->json(['_id' => $role->_id]);
         }
+
         return response('Role name invalid', 500);
     }
 
     /**
      * Delete a given role
-     * Only if the role is not assigned to any users
+     * Only if the role is not assigned to any users.
      *
      * @param $name
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function deleteRole($roleId)
@@ -66,14 +70,15 @@ class RolesController extends Controller
         $role = $this->getRole($roleId);
         if ($role->users->isEmpty()) {
             $role->delete();
+
             return response(200, 'OK');
         }
+
         return response('Role has assigned users', 500);
     }
 
-
     /**
-     * Deactivate a given role
+     * Deactivate a given role.
      *
      * @param $name
      */
@@ -85,7 +90,7 @@ class RolesController extends Controller
     }
 
     /**
-     * Activate a given role
+     * Activate a given role.
      *
      * @param $name
      */
@@ -97,15 +102,17 @@ class RolesController extends Controller
     }
 
     /**
-     * Get all the users assigned to a given role
+     * Get all the users assigned to a given role.
      *
      * @param $name
+     *
      * @return mixed
      */
     public function getUsersForRole($roleId)
     {
         $role = $this->getRole($roleId);
         $users = $role->users;
+
         return $users;
     }
 }
