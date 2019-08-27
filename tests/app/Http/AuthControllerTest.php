@@ -18,7 +18,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
@@ -46,7 +46,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
@@ -80,7 +80,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
@@ -97,7 +97,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/api/users/change-password', [
             'username'    => 'user',
-            'password'    => 'password',
+            'password'    => 'user',
             'newpassword' => 'newpassword',
         ], [
             'Debug-Token'   => env('DEBUG_KEY'),
@@ -141,7 +141,7 @@ class AuthControllerTest extends TestCase
         $this->post('/api/users/change-password', [
             'username'    => 'user',
             'password'    => 'newpassword',
-            'newpassword' => 'password',
+            'newpassword' => 'user',
         ], [
             'Debug-Token'   => env('DEBUG_KEY'),
             'Authorization' => sprintf('Bearer %s', $token),
@@ -167,7 +167,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
@@ -177,8 +177,8 @@ class AuthControllerTest extends TestCase
 
         $this->post('/api/users/change-password', [
             'username'    => 'user',
-            'password'    => 'password',
-            'newpassword' => 'password',
+            'password'    => 'user',
+            'newpassword' => 'user',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
@@ -206,7 +206,7 @@ class AuthControllerTest extends TestCase
         // Login without those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
@@ -216,7 +216,7 @@ class AuthControllerTest extends TestCase
 
         $this->post('/api/users/change-password', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
@@ -233,7 +233,7 @@ class AuthControllerTest extends TestCase
         // Login without those those details
         $this->post('/login', [
             'username' => 'user',
-            'password' => 'password',
+            'password' => 'user',
         ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
