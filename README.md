@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/UnicornGlobal/strong-lumen.svg?branch=master)](https://travis-ci.com/UnicornGlobal/strong-lumen)
 [![codecov](https://codecov.io/gh/UnicornGlobal/strong-lumen/branch/master/graph/badge.svg)](https://codecov.io/gh/UnicornGlobal/strong-lumen)
-[![StyleCI](https://styleci.io/repos/112795050/shield?branch=master)](https://styleci.io/repos/112795050)
+[![StyleCI](https://github.styleci.io/repos/204465801/shield?branch=master)](https://styleci.io/repos/204465801)
 
 # strong-lumen
 
