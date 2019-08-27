@@ -1,7 +1,6 @@
 <?php
 
 use App\User;
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class AuthControllerTest extends TestCase
@@ -20,12 +19,12 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertEquals(5, count((array)$result));
-        $this->assertEquals(7, count((array)$result->user));
+        $this->assertEquals(5, count((array) $result));
+        $this->assertEquals(7, count((array) $result->user));
 
         $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
 
@@ -48,7 +47,7 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
 
@@ -82,7 +81,7 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
 
@@ -97,11 +96,11 @@ class AuthControllerTest extends TestCase
 
         // Login without those those details
         $this->post('/api/users/change-password', [
-            'username' => 'user',
-            'password' => 'password',
+            'username'    => 'user',
+            'password'    => 'password',
             'newpassword' => 'newpassword',
         ], [
-            'Debug-Token' => env('DEBUG_KEY'),
+            'Debug-Token'   => env('DEBUG_KEY'),
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
@@ -121,12 +120,12 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'newpassword',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertEquals(5, count((array)$result));
-        $this->assertEquals(7, count((array)$result->user));
+        $this->assertEquals(5, count((array) $result));
+        $this->assertEquals(7, count((array) $result->user));
 
         $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
 
@@ -140,11 +139,11 @@ class AuthControllerTest extends TestCase
 
         // Login without those those details
         $this->post('/api/users/change-password', [
-            'username' => 'user',
-            'password' => 'newpassword',
+            'username'    => 'user',
+            'password'    => 'newpassword',
             'newpassword' => 'password',
         ], [
-            'Debug-Token' => env('DEBUG_KEY'),
+            'Debug-Token'   => env('DEBUG_KEY'),
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
@@ -169,7 +168,7 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
 
@@ -177,8 +176,8 @@ class AuthControllerTest extends TestCase
         $token = $result->jwt;
 
         $this->post('/api/users/change-password', [
-            'username' => 'user',
-            'password' => 'password',
+            'username'    => 'user',
+            'password'    => 'password',
             'newpassword' => 'password',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
@@ -188,8 +187,8 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('500', $this->response->status());
 
         $this->post('/api/users/change-password', [
-            'username' => 'user',
-            'password' => 'xyz',
+            'username'    => 'user',
+            'password'    => 'xyz',
             'newpassword' => 'newstrongpassword',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
@@ -208,7 +207,7 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
 
@@ -235,7 +234,7 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $result = json_decode($this->response->getContent());
 

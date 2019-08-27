@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
 class AuthController extends BaseController
 {
     /**
-     * post: /login
+     * post: /login.
+     *
      * @return string
      */
     public function postLogin(Request $req)
@@ -25,7 +26,7 @@ class AuthController extends BaseController
     }
 
     /**
-     * Log the user out (Invalidate the token)
+     * Log the user out (Invalidate the token).
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -50,18 +51,18 @@ class AuthController extends BaseController
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */
     protected function respondWithToken($token)
     {
         return response()->json([
-            '_id' => Auth::user()->_id,
-            'jwt' => $token,
+            '_id'        => Auth::user()->_id,
+            'jwt'        => $token,
             'token_type' => 'bearer',
-            'expires' => $this->guard()->factory()->getTTL() * 60,
-            'user' => $this->guard()->user(),
+            'expires'    => $this->guard()->factory()->getTTL() * 60,
+            'user'       => $this->guard()->user(),
         ])->header('Authorization', sprintf('Bearer %s', $token));
     }
 

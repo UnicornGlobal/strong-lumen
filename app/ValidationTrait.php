@@ -2,10 +2,6 @@
 
 namespace App;
 
-use App\Http\Controllers\ConfigController;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-
 trait ValidationTrait
 {
     private function isValidUserID($uuid)
@@ -44,6 +40,7 @@ trait ValidationTrait
     private function throwExceptionMessage($state, $className)
     {
         $name = substr($className, strrpos($className, '\\') + 1);
+
         throw new \Exception(sprintf('%s %s ID', $state, $name));
     }
 }

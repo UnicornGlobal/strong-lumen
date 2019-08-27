@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ConfirmAccountMessage;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use App\Role;
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\User;
-use App\Role;
+use Laravel\Lumen\Routing\Controller as BaseController;
 use Webpatser\Uuid\Uuid;
 
 class RegistrationController extends BaseController
@@ -20,7 +19,7 @@ class RegistrationController extends BaseController
         'password',
         'firstName',
         'lastName',
-        'email'
+        'email',
     ];
 
     public function registerEmail(Request $request)
@@ -34,17 +33,18 @@ class RegistrationController extends BaseController
         );
 
         $this->validate($request, [
-            'username' => 'required|string|unique:users',
-            'password' => 'required|string|min:8',
+            'username'  => 'required|string|unique:users',
+            'password'  => 'required|string|min:8',
             'firstName' => 'required|string',
-            'lastName' => 'required|string',
-            'email' => 'required|email|distinct|unique:users',
+            'lastName'  => 'required|string',
+            'email'     => 'required|email|distinct|unique:users',
         ]);
 
         $this->checkHasMinimum($details);
 
         try {
             $newUserId = $this->createUser($details);
+
             return response()->json(['_id' => $newUserId], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Registration Failed'], 403);
@@ -65,16 +65,16 @@ class RegistrationController extends BaseController
         DB::beginTransaction();
 
         $newUser = User::create([
-            '_id' => Uuid::generate(4)->string,
-            'api_key' => Uuid::generate(4)->string,
-            'username' => $details['username'],
-            'password' => Hash::make($details['password']),
-            'first_name' => $details['firstName'],
-            'last_name' => $details['lastName'],
-            'email' => $details['email'],
+            '_id'          => Uuid::generate(4)->string,
+            'api_key'      => Uuid::generate(4)->string,
+            'username'     => $details['username'],
+            'password'     => Hash::make($details['password']),
+            'first_name'   => $details['firstName'],
+            'last_name'    => $details['lastName'],
+            'email'        => $details['email'],
             'confirm_code' => Uuid::generate(4)->string,
-            'created_by' => 1,
-            'updated_by' => 1,
+            'created_by'   => 1,
+            'updated_by'   => 1,
         ]);
 
         $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
@@ -90,7 +90,7 @@ class RegistrationController extends BaseController
     {
         try {
             $user = User::where('confirm_code', $token)->first();
-            $user->confirmed_at = date("Y-m-d H:i:s");
+            $user->confirmed_at = date('Y-m-d H:i:s');
             $user->save();
             // TODO this should render a response
             return response()->json(['result' => 'OK'], 200);
@@ -106,11 +106,10 @@ class RegistrationController extends BaseController
             $role = Role::where('_id', $roleId)->first();
             $newUser->roles()->syncWithoutDetaching(
                 [
-                    $role->id =>
-                        [
+                    $role->id => [
                             'created_by' => $newUser->id,
                             'updated_by' => $newUser->id,
-                        ]
+                        ],
                 ]
             );
         } catch (\Exception $e) {

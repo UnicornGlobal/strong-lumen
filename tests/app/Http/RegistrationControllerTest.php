@@ -1,9 +1,7 @@
 <?php
 
 use App\Mail\ConfirmAccountMessage;
-use App\User;
 use Illuminate\Support\Facades\Mail;
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class RegistrationControllerTest extends TestCase
@@ -18,11 +16,11 @@ class RegistrationControllerTest extends TestCase
     public function testRegisterEmail()
     {
         $this->post('/register/email', [
-            'username' => 'usertest@example.com',
-            'password' => 'password',
+            'username'  => 'usertest@example.com',
+            'password'  => 'password',
             'firstName' => 'First',
-            'lastName' => 'Last',
-            'email' => 'usertest@example.com',
+            'lastName'  => 'Last',
+            'email'     => 'usertest@example.com',
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         $this->assertEquals('201', $this->response->status());
@@ -43,7 +41,7 @@ class RegistrationControllerTest extends TestCase
         $this->post('/register/email', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('{"error":"Missing Registration Key"}', $this->response->getContent());
 
@@ -59,7 +57,7 @@ class RegistrationControllerTest extends TestCase
         $this->post('/register/email', [
             'username' => 'user',
             'password' => 'password',
-        ], [ 'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
 
@@ -73,12 +71,12 @@ class RegistrationControllerTest extends TestCase
     {
         // Register with bad details
         $this->post('/register/email', [
-            'username' => 'user',
-            'password' => 'password',
+            'username'  => 'user',
+            'password'  => 'password',
             'firstName' => 'First',
-            'lastName' => 'Last',
-            'email' => 'developer@example.com',
-        ], [ 'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+            'lastName'  => 'Last',
+            'email'     => 'developer@example.com',
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
 
@@ -90,17 +88,18 @@ class RegistrationControllerTest extends TestCase
         Mail::fake();
 
         $this->post('/register/email', [
-            'username' => 'user123',
-            'password' => 'password',
+            'username'  => 'user123',
+            'password'  => 'password',
             'firstName' => 'First',
-            'lastName' => 'Last',
-            'email' => 'asd@example.com',
+            'lastName'  => 'Last',
+            'email'     => 'asd@example.com',
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
         Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
             $this->get($mail->link);
             $this->assertResponseStatus(200);
             $this->assertEquals('{"result":"OK"}', $this->response->getContent());
+
             return true;
         });
     }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use App\Role;
+use App\User;
 use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +14,14 @@ class UserController extends Controller
     use ValidationTrait;
 
     /**
-     * Get a user by their UUID
+     * Get a user by their UUID.
      *
      * @param Request $request
      * @param $userId
-     * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Exception
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getUserById($userId)
     {
@@ -35,7 +37,7 @@ class UserController extends Controller
     }
 
     /**
-     * Returns model with current users UUID
+     * Returns model with current users UUID.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -49,17 +51,17 @@ class UserController extends Controller
     }
 
     /**
-     * Update user in the system
+     * Update user in the system.
      */
     public function updateUserByUUID(Request $request, $userId)
     {
         $this->validate($request, [
             'firstName' => 'required|string',
-            'lastName' => 'required|string',
+            'lastName'  => 'required|string',
         ]);
 
         if (Auth::user()->_id !== $userId) {
-            throw new \Exception('Illegal attempt to adjust another users details. ' .
+            throw new \Exception('Illegal attempt to adjust another users details. '.
                 'The suspicious action has been logged.');
         }
 
@@ -87,17 +89,19 @@ class UserController extends Controller
     }
 
     /**
-     * Change the users password
+     * Change the users password.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     *
      * @throws \Exception
+     *
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function changePassword(Request $request)
     {
         $this->validate($request, [
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username'    => 'required|string',
+            'password'    => 'required|string',
             'newpassword' => 'required|string|different:password',
         ]);
 
@@ -117,40 +121,46 @@ class UserController extends Controller
     }
 
     /**
-     * Get the roles of a user
+     * Get the roles of a user.
      *
      * @param $userId
+     *
      * @return mixed
      */
     public function getUserRoles($userId)
     {
         $user = User::loadFromUuid($userId);
+
         return $user->roles;
     }
 
     /**
-     * Assign a new role to a user
+     * Assign a new role to a user.
      *
      * @param $userId
      * @param $role
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function assignRole($roleId, $userId)
     {
         User::loadFromUuid($userId)->assignRole($roleId);
+
         return response('OK', 200);
     }
 
     /**
-     * Revoke a role from a user
+     * Revoke a role from a user.
      *
      * @param $userId
      * @param $role
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function revokeRole($roleId, $userId)
     {
         User::loadFromUuid($userId)->revokeRole($roleId);
+
         return response('OK', 200);
     }
 

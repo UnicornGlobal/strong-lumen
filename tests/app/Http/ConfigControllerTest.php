@@ -1,6 +1,5 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ConfigControllerTest extends TestCase
@@ -10,7 +9,7 @@ class ConfigControllerTest extends TestCase
     public function testGetConfig()
     {
         // The test user in our seed
-        $this->get('/config/app', [ 'App' => env('APP_ID'), 'Debug-Token' => env('DEBUG_KEY') ]);
+        $this->get('/config/app', ['App' => env('APP_ID'), 'Debug-Token' => env('DEBUG_KEY')]);
 
         $this->assertEquals('200', $this->response->status());
 
@@ -18,7 +17,7 @@ class ConfigControllerTest extends TestCase
 
         $this->assertEquals('object', gettype($result));
 
-        $this->assertEquals(4, count((array)$result));
+        $this->assertEquals(4, count((array) $result));
 
         $this->assertRegExp(
             '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',

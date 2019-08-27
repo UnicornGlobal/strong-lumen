@@ -14,7 +14,7 @@ class UserControllerTest extends TestCase
         $user = factory('App\User')->make();
 
         // The test user in our seed
-        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
+        $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -110,12 +110,12 @@ class UserControllerTest extends TestCase
         $this->assertEquals('User', $user->last_name);
 
         // Update own details
-        $this->actingAs($user)->post('/api/users/' . env('TEST_USER_ID'), [
+        $this->actingAs($user)->post('/api/users/'.env('TEST_USER_ID'), [
             'firstName' => 'Changed',
-            'lastName' => 'Changed',
+            'lastName'  => 'Changed',
         ]);
 
-        $this->actingAs($user)->get('/api/users/' . env('TEST_USER_ID'));
+        $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
@@ -137,7 +137,7 @@ class UserControllerTest extends TestCase
         // Update own details
         $this->actingAs($user)->post('/api/users/4', [
             'firstName' => 'Changed',
-            'lastName' => 'Changed',
+            'lastName'  => 'Changed',
         ]);
 
         $this->assertEquals(
@@ -154,17 +154,17 @@ class UserControllerTest extends TestCase
 
         for ($i = 1; $i < 5; $i++) {
             $user = new User([
-                '_id' => $faker->uuid,
-                'api_key' => $faker->uuid,
-                'username' => $faker->userName,
-                'password' => $faker->password,
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
-                'email' => $faker->email,
+                '_id'          => $faker->uuid,
+                'api_key'      => $faker->uuid,
+                'username'     => $faker->userName,
+                'password'     => $faker->password,
+                'first_name'   => $faker->firstName,
+                'last_name'    => $faker->lastName,
+                'email'        => $faker->email,
                 'confirm_code' => $faker->linuxPlatformToken,
                 'confirmed_at' => \Carbon\Carbon::now(),
-                'created_by' => 1,
-                'updated_by' => 1,
+                'created_by'   => 1,
+                'updated_by'   => 1,
             ]);
 
             $user->save();
@@ -190,14 +190,14 @@ class UserControllerTest extends TestCase
     {
         $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
         $this->post('/register/email', [
-            'username' => 'user@example.com',
-            'password' => 'password',
+            'username'  => 'user@example.com',
+            'password'  => 'password',
             'firstName' => 'First',
-            'lastName' => 'Last',
-            'email' => 'user@example.com',
+            'lastName'  => 'Last',
+            'email'     => 'user@example.com',
         ],
         [
-            'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')
+            'Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY'),
         ]);
 
         $this->assertEquals('201', $this->response->status());

@@ -2,20 +2,21 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\Log;
 use Closure;
+use Illuminate\Support\Facades\Log;
 
 class RegisterKeyMiddleware
 {
     /**
-     * Require a registration access key
+     * Require a registration access key.
      *
      * Ensure REGISTRATION_ACCESS_KEY in your .env
      * Request with `Registration-Access-Key: your-key-here`
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  $role
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param string                   $role
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -30,6 +31,7 @@ class RegisterKeyMiddleware
 
         // It's important that all registration related errors say the same thing
         Log::error('Registration attempted without a registration key.');
+
         return response()->json(['error' => 'Missing Registration Key'], 401);
     }
 }
