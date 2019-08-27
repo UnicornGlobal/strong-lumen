@@ -204,10 +204,7 @@ class AuthControllerTest extends TestCase
      */
     public function testChangePasswordBadPassword()
     {
-        // Get the test user
-        $user = User::where('_id', env('TEST_USER_ID'))->first();
-
-        // Login without those those details
+        // Login without those details
         $this->post('/login', [
             'username' => 'user',
             'password' => 'password',
