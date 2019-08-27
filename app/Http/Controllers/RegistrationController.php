@@ -86,7 +86,7 @@ class RegistrationController extends BaseController
         return $newUser->_id;
     }
 
-    public function confirmEmail(Request $request, $token)
+    public function confirmEmail($token)
     {
         try {
             $user = User::where('confirm_code', $token)->first();
