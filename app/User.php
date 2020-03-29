@@ -20,7 +20,10 @@ class User extends BaseModel implements
     CanResetPasswordContract,
     AuthenticatableUserContract
 {
-    use Authenticatable, Authorizable, SoftDeletes, CanResetPassword;
+    use Authenticatable;
+    use Authorizable;
+    use SoftDeletes;
+    use CanResetPassword;
 
     /**
      * The attributes that are mass assignable.
@@ -139,7 +142,7 @@ class User extends BaseModel implements
             && !$this->hasRole($role->_id)) {
             $this->roles()->syncWithoutDetaching(
                 [
-                $role->id => [
+                    $role->id => [
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ],
