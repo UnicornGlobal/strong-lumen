@@ -96,7 +96,7 @@ class ResetPasswordTest extends TestCase
         $this->post('/reset', ['email' => 'developer@example.com']);
         $this->post('/reset', ['email' => 'developer@example.com']);
 
-        $this->assertContains('Too many consecutive attempts. Try again', $this->response->getContent());
+        $this->assertStringContainsString('Too many consecutive attempts. Try again', $this->response->getContent());
 
         $this->assertEquals('429', $this->response->status());
     }
