@@ -5,14 +5,14 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=7.2.0",
-        "laravel/lumen-framework": "5.8.*",
+        "php": ">=7.3.0",
+        "laravel/lumen-framework": "^6.0",
         "vlucas/phpdotenv": "~3.1",
         "tymon/jwt-auth": "^1.0.0-rc.3",
         "phpseclib/phpseclib": "^2.0",
         "barryvdh/laravel-cors": "^0.11.2",
         "webpatser/laravel-uuid": "^3.0",
-        "illuminate/mail": "^5.8",
+        "illuminate/mail": "^6.0",
         "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {

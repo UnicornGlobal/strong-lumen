@@ -68,7 +68,7 @@ class ResetPasswordTest extends TestCase
         putenv('THROTTLE_TEST=true');
         // Register with bad details
 
-        for ($i = 0; $i < 35; $i++) {
+        for ($i = 0; $i < 45; $i++) {
             $this->post('/reset', ['email' => 'developer@example.com']);
         }
 
