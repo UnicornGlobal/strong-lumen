@@ -3,7 +3,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 try {
-    (Dotenv\Dotenv::create(__DIR__.'/../'))->load();
+    Dotenv\Dotenv::createImmutable(__DIR__.'/../')->load();
 } catch (Dotenv\Exception\InvalidPathException $e) {
     //
 }
@@ -72,7 +72,7 @@ $app->routeMiddleware([
     'hideserver' => App\Http\Middleware\ServerHeader::class,
     'security'   => App\Http\Middleware\SecurityHeaders::class,
     'csp'        => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
-    'cors'       => \Barryvdh\Cors\HandleCors::class,
+    'cors'       => Fruitcake\Cors\HandleCors::class,
     'role'       => \App\Http\Middleware\RolesMiddleware::class,
 ]);
 
@@ -95,7 +95,7 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 // CORS
-$app->register(Barryvdh\Cors\ServiceProvider::class);
+$app->register(\Fruitcake\Cors\CorsServiceProvider::class);
 
 // Mail
 $app->register(\Illuminate\Mail\MailServiceProvider::class);
