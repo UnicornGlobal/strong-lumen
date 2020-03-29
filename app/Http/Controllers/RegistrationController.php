@@ -107,9 +107,9 @@ class RegistrationController extends BaseController
             $newUser->roles()->syncWithoutDetaching(
                 [
                     $role->id => [
-                            'created_by' => $newUser->id,
-                            'updated_by' => $newUser->id,
-                        ],
+                        'created_by' => $newUser->id,
+                        'updated_by' => $newUser->id,
+                    ],
                 ]
             );
         } catch (\Exception $e) {

@@ -11,7 +11,9 @@ use function preg_replace;
 
 class PasswordResetMessage extends Mailable
 {
-    use Queueable, SerializesModels, ResetPasswordTrait;
+    use Queueable;
+    use SerializesModels;
+    use ResetPasswordTrait;
 
     /**
      * @var link
