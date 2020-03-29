@@ -67,34 +67,10 @@ class ResetPasswordTest extends TestCase
     {
         putenv('THROTTLE_TEST=true');
         // Register with bad details
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
-        $this->post('/reset', ['email' => 'developer@example.com']);
+
+        for ($i = 0; $i < 35; $i++) {
+            $this->post('/reset', ['email' => 'developer@example.com']);
+        }
 
         $this->assertStringContainsString('Too many consecutive attempts. Try again', $this->response->getContent());
 

@@ -73,7 +73,7 @@ class RoleMiddlewareTest extends TestCase
 
         // Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
-        $this->assertEquals('admin', $roles[1]->name);
+        $this->assertContains('admin', array_column($roles, 'name'));
 
         $this->actingAs(Auth::user())->post(
             sprintf(
