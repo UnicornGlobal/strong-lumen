@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/UnicornGlobal/strong-lumen.svg?branch=master)](https://travis-ci.com/UnicornGlobal/strong-lumen)
-[![codecov](https://codecov.io/gh/UnicornGlobal/strong-lumen/branch/master/graph/badge.svg)](https://codecov.io/gh/UnicornGlobal/strong-lumen)
+[![Build Status](https://travis-ci.com/Moondas/strong-lumen.svg?branch=master)](https://travis-ci.com/Moondas/strong-lumen)
+[![codecov](https://codecov.io/gh/Moondas/strong-lumen/branch/master/graph/badge.svg)](https://codecov.io/gh/Moondas/strong-lumen)
 [![StyleCI](https://github.styleci.io/repos/204465801/shield?branch=master)](https://styleci.io/repos/204465801)
 
 # strong-lumen
