@@ -66,9 +66,11 @@ class ResetPasswordTest extends TestCase
     public function testThrottleResetPassword()
     {
         putenv('THROTTLE_TEST=true');
-        // Register with bad details
 
-        for ($i = 0; $i < 45; $i++) {
+        \Carbon\Carbon::setTestNow(\Carbon\Carbon::now()->startOfMinute());
+
+        for ($i = 0; $i < 11; $i++) {
+            // Register with bad details
             $this->post('/reset', ['email' => 'developer@example.com']);
         }
 
