@@ -26,7 +26,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(5, count((array) $result));
         $this->assertEquals(7, count((array) $result->user));
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
@@ -51,7 +51,7 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
@@ -66,7 +66,7 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Successfully logged out', $result->message);
+        $this->assertStringContainsString('Successfully logged out', $result->message);
     }
 
     /**
@@ -87,7 +87,7 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
@@ -114,7 +114,7 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Successfully logged out', $result->message);
+        $this->assertStringContainsString('Successfully logged out', $result->message);
 
         // Login without those those details
         $this->post('/login', [
@@ -127,7 +127,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(5, count((array) $result));
         $this->assertEquals(7, count((array) $result->user));
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
@@ -238,7 +238,8 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
+
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
@@ -253,6 +254,6 @@ class AuthControllerTest extends TestCase
 
         $result = json_decode($this->response->getContent());
 
-        $this->assertContains('Bearer', $this->response->headers->get('Authorization'));
+        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
     }
 }

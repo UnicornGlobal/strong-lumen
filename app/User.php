@@ -48,6 +48,8 @@ class User extends BaseModel implements
      * @var array
      */
     protected $hidden = [
+        'otp',
+        'otp_created_at',
         'password',
         'remember_token',
         'id',
