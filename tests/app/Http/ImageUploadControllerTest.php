@@ -35,6 +35,34 @@ class ImageUploadControllerTest extends TestCase
         $this->assertEquals('image/png', $image->mime);
     }
 
+    public function testProfilePictureUrl()
+    {
+        Storage::fake('images');
+
+        $file = UploadedFile::fake()->image('profile.png', 4000, 2000);
+
+        $this->actingAs($this->user)->call(
+            'POST',
+            '/api/upload/profile',
+            [],
+            [],
+            [
+                'picture' => $file,
+            ],
+            ['Content-Type' => 'multipart/form-data']
+        );
+
+        $this->assertResponseStatus(201);
+        $_id = json_decode($this->response->getContent())->_id;
+
+        $image = ProfilePicture::loadFromUuid($_id);
+        $image->file_url = 'https://example.com';
+        $image->save();
+        $image->refresh();
+
+        $this->assertEquals('https://example.com', $image->url);
+    }
+
     public function testSmallImageFail()
     {
         Storage::fake('images');

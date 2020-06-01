@@ -55,9 +55,4 @@ class ProfilePicture extends BaseModel
             return sprintf('%s%s', env('API_URL'), $this->file_url);
         }
     }
-
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
 }
