@@ -117,6 +117,13 @@ class RegistrationControllerTest extends TestCase
             $render = $mail->build();
             $this->assertEquals('Confirm Your Account', $render->subject);
 
+            $this->get($mail->link);
+
+            $this->assertResponseStatus(302);
+            $this->assertStringContainsString('Redirecting to <a href="', $this->response->getContent());
+            $this->assertStringContainsString('confirmed', $this->response->getContent());
+            $this->assertStringContainsString('refresh', $this->response->getContent());
+
             return true;
         });
     }

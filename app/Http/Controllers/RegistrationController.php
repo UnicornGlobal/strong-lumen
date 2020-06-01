@@ -106,7 +106,7 @@ class RegistrationController extends BaseController
             $user->confirmed_at = date('Y-m-d H:i:s');
             $user->save();
 
-            return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($otp)));
+            return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
         } catch (\Exception $e) {
             header(sprintf('refresh:0; url=%s/login?invalidconfirmation=true', env('ADMIN_URL')));
 
