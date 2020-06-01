@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Mail\PasswordResetMessage;
+use App\Traits\GeneratesUuid;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -20,7 +21,7 @@ class User extends BaseModel implements
     CanResetPasswordContract,
     AuthenticatableUserContract
 {
-    use Authenticatable, Authorizable, SoftDeletes, CanResetPassword;
+    use Authenticatable, Authorizable, SoftDeletes, CanResetPassword, GeneratesUuid;
 
     /**
      * The attributes that are mass assignable.

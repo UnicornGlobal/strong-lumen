@@ -17,7 +17,8 @@ class ConfirmAccountMessage extends Mailable
     public function __construct(User $user)
     {
         $this->user = $user;
-        $url = url('/');
+        $url = env('API_URL');
+        $this->subject = 'Confirm Your Account';
         $this->link = sprintf('%s/confirm/%s', $url, $user->confirm_code);
     }
 

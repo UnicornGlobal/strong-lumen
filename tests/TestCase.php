@@ -1,7 +1,11 @@
 <?php
 
+use Laravel\Lumen\Application;
+
 abstract class TestCase extends Laravel\Lumen\Testing\TestCase
 {
+    use InteractsWithExceptionHandling;
+
     /**
      * Creates the application.
      *

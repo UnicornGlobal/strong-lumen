@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\ConfirmAccountMessage;
 use App\Role;
 use App\User;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -86,7 +88,7 @@ class RegistrationController extends BaseController
         return $newUser->_id;
     }
 
-    public function confirmEmail($token)
+    public function confirmEmail($token) : RedirectResponse
     {
         try {
             $user = User::where('confirm_code', $token)->first();
