@@ -100,10 +100,20 @@ $app->register(Barryvdh\Cors\ServiceProvider::class);
 // Mail
 $app->register(\Illuminate\Mail\MailServiceProvider::class);
 
+// Password Reset
 $app->register(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 
+// File System
+$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
+$app->configure('filesystems');
+
 $app->configure('cors');
+
+$app->configure('services');
 $app->configure('mail');
+$app->alias('mailer', Illuminate\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
 
 /*
 |--------------------------------------------------------------------------
