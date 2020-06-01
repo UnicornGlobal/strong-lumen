@@ -90,12 +90,25 @@ class RegistrationController extends BaseController
     {
         try {
             $user = User::where('confirm_code', $token)->first();
+
+            if (!$user) {
+                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+            }
+
+            if (null !== $user->confirmed_at) {
+                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+            }
+
+            $user->otp = Uuid::generate(4)->string;
+            $user->otp_created_at = Carbon::now();
             $user->confirmed_at = date('Y-m-d H:i:s');
             $user->save();
-            // TODO this should render a response
-            return response()->json(['result' => 'OK'], 200);
+
+            return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($otp)));
         } catch (\Exception $e) {
-            throw new \Exception('There was a problem with the code.');
+            header(sprintf('refresh:0; url=%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+
+            return false;
         }
     }
 
