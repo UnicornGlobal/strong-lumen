@@ -88,7 +88,7 @@ class RegistrationController extends BaseController
         return $newUser->_id;
     }
 
-    public function confirmEmail($token) : RedirectResponse
+    public function confirmEmail($token): RedirectResponse
     {
         try {
             $user = User::where('confirm_code', $token)->first();
@@ -122,9 +122,9 @@ class RegistrationController extends BaseController
             $newUser->roles()->syncWithoutDetaching(
                 [
                     $role->id => [
-                            'created_by' => $newUser->id,
-                            'updated_by' => $newUser->id,
-                        ],
+                        'created_by' => $newUser->id,
+                        'updated_by' => $newUser->id,
+                    ],
                 ]
             );
         } catch (\Exception $e) {

@@ -1,7 +1,7 @@
 <?php
 
-use App\User;
 use App\Mail\ConfirmAccountMessage;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Testing\DatabaseTransactions;
@@ -116,6 +116,7 @@ class RegistrationControllerTest extends TestCase
 
             $render = $mail->build();
             $this->assertEquals('Confirm Your Account', $render->subject);
+
             return true;
         });
     }

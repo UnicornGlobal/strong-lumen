@@ -1,14 +1,14 @@
 <?php
 
 use App\User;
-use Laravel\Lumen\Application;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Lumen\Application;
 
 abstract class TestCase extends Laravel\Lumen\Testing\TestCase
 {
     use InteractsWithExceptionHandling;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

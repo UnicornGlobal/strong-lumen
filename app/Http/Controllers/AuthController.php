@@ -27,7 +27,6 @@ class AuthController extends BaseController
         return response('Unauthorized.', 401);
     }
 
-
     /**
      * post: /login/token.
      *
