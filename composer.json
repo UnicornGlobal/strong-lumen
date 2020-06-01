@@ -6,19 +6,19 @@
     "type": "project",
     "require": {
         "php": ">=7.2.0",
-        "laravel/lumen-framework": "5.8.*",
+        "laravel/lumen-framework": "6.0.*",
         "vlucas/phpdotenv": "~3.1",
         "tymon/jwt-auth": "^1.0.0-rc.3",
         "phpseclib/phpseclib": "^2.0",
-        "barryvdh/laravel-cors": "^0.11.2",
+        "barryvdh/laravel-cors": "^0.11.4",
         "webpatser/laravel-uuid": "^3.0",
-        "illuminate/mail": "^5.8",
+        "illuminate/mail": "^6.0",
         "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.8",
         "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "~8.0"
+        "phpunit/phpunit": "~8.5"
     },
     "autoload": {
         "psr-4": {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -14,11 +16,43 @@ class AuthController extends BaseController
      *
      * @return string
      */
-    public function postLogin(Request $req)
+    public function login(Request $req)
     {
         $credentials = $req->only('username', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
+            return $this->respondWithToken($token);
+        }
+
+        return response('Unauthorized.', 401);
+    }
+
+
+    /**
+     * post: /login/token.
+     *
+     * @return string
+     */
+    public function loginToken(Request $req)
+    {
+        $credentials = $req->only('token');
+        $decrypted = decrypt($credentials['token']);
+
+        $user = User::where('otp', $decrypted)->first();
+
+        if (!$user || !$user->otp_created_at) {
+            return response('Unauthorized.', 401);
+        }
+
+        if ($user->otp_created_at < Carbon::now()->subSeconds(env('LOGIN_OTP_TIMEOUT', 60))) {
+            return response('Unauthorized.', 401);
+        }
+
+        if ($token = Auth::login($user)) {
+            $user->otp = null;
+            $user->otp_created_at = null;
+            $user->save();
+
             return $this->respondWithToken($token);
         }
 

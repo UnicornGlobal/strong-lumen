@@ -65,6 +65,7 @@ $router->group(
         $router->group(['middleware' => 'throttle:10,1'], function () use ($router) {
             $router->post('/login', 'AuthController@postLogin');
             $router->post('/logout', 'AuthController@logout');
+            $router->post('/login/token', 'AuthController@loginToken');
         });
 
         /*
