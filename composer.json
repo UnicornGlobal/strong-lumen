@@ -18,7 +18,8 @@
     "require-dev": {
         "fzaninotto/faker": "~1.8",
         "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "~8.5"
+        "phpunit/phpunit": "~8.5",
+        "laravel/tinker": "^2.4"
     },
     "autoload": {
         "psr-4": {
