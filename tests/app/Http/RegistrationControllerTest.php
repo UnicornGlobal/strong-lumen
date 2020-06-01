@@ -46,7 +46,7 @@ class RegistrationControllerTest extends TestCase
         $this->post('/register/email', [
             'username' => 'user',
             'password' => 'password',
-        ], ['Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->assertEquals('{"error":"Missing Registration Key"}', $this->response->getContent());
 
@@ -64,9 +64,8 @@ class RegistrationControllerTest extends TestCase
             'password' => 'password',
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
-        $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
-
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('{"username":["The username has already been taken."],"firstName":["The first name field is required."],"lastName":["The last name field is required."],"email":["The email field is required."]}', $this->response->getContent());
+        $this->assertEquals('422', $this->response->status());
     }
 
     /**
@@ -86,9 +85,8 @@ class RegistrationControllerTest extends TestCase
             'agree'     => true,
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
-        $this->assertEquals('{"error":"The given data was invalid."}', $this->response->getContent());
-
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('{"username":["The username has already been taken."],"email":["The email has already been taken."]}', $this->response->getContent());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testRegConfirmEmail()

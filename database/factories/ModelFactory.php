@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Hash;
+
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -12,8 +14,17 @@
 */
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
+    $username = rand(0, 100000) . $faker->email;
+
     return [
-        'name'  => $faker->name,
-        'email' => $faker->email,
+        'username'     => $username,
+        'password'     => Hash::make($faker->password),
+        'first_name'   => $faker->firstName,
+        'last_name'    => $faker->lastName,
+        'email'        => $username,
+        'mobile'       => $faker->e164PhoneNumber,
+        'confirm_code' => $faker->randomNumber(4),
+        'created_by'   => 1,
+        'updated_by'   => 1,
     ];
 });

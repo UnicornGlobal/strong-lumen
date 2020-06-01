@@ -32,6 +32,7 @@ class Profile extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('profile_picture_id')->nullable();
+            $table->string('mobile')->nullable();
         });
     }
 
@@ -46,6 +47,7 @@ class Profile extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('profile_picture_id');
+            $table->dropColumn('mobile');
         });
     }
 }

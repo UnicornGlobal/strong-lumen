@@ -121,6 +121,7 @@ $app->router->group([
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
     require __DIR__.'/../routes/routes.admin.php';
+    require __DIR__.'/../routes/routes.upload.php';
 });
 
 return $app;

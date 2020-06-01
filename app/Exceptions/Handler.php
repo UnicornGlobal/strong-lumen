@@ -50,13 +50,17 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         $environment = env('APP_ENV');
-        $required = env('DEBUG_KEY');
+        $required = env('DEBUG_TOKEN');
         $debugMode = env('APP_DEBUG');
         $token = $request->header('Debug-Token');
         if (!is_null($token) &&
             $token === $required &&
             $environment !== 'production' &&
             $debugMode === true) {
+            return parent::render($request, $e);
+        }
+
+        if ($e instanceof ValidationException) {
             return parent::render($request, $e);
         }
 

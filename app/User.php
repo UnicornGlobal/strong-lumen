@@ -50,6 +50,8 @@ class User extends BaseModel implements
     protected $hidden = [
         'otp',
         'otp_created_at',
+        'profile_picture_id',
+        'pivot',
         'password',
         'remember_token',
         'id',

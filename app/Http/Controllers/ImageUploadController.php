@@ -14,30 +14,23 @@ class ImageUploadController extends Controller
 {
     use ValidationTrait;
 
-    /**
-     * Adds a profile photo for a user.
-     *
-     * @param Request $request The request as received.
-     *
-     * @return JsonResponse
-     */
-    public function setUserProfilePhoto(Request $request)
+    public function setUserProfilePicture(Request $request)
     {
         $this->validate(
             $request, [
-                'photo' => 'required|image|file|mimes:jpeg,png|dimensions:min_width=300,min_height=300,max_height:7680,max_width:7680|max:5120',
+                'picture' => 'required|image|file|mimes:jpeg,png|dimensions:min_width=300,min_height=300,max_height:7680,max_width:7680|max:5120',
             ]
         );
 
         $uuid = Uuid::generate(4)->string;
 
-        $file = $request->file('photo');
+        $file = $request->file('picture');
         $filename = sprintf('%s.%s', $uuid, $file->extension());
 
         $image = Image::make($file);
         $image->fit(300);
 
-        $url = sprintf('photo/%s', $filename);
+        $url = sprintf('picture/%s', $filename);
 
         Storage::put(
             $url,

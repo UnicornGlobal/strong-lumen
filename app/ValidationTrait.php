@@ -41,6 +41,8 @@ trait ValidationTrait
     {
         $name = substr($className, strrpos($className, '\\') + 1);
 
+        $name = join(' ', preg_split('/([[:upper:]][[:lower:]]+)/', $name, null, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY));
+
         throw new \Exception(sprintf('%s %s ID', $state, $name));
     }
 }
