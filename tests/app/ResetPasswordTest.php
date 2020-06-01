@@ -17,7 +17,7 @@ class ResetPasswordTest extends TestCase
 
         $this->post('/reset', [
             'email' => 'developer@example.com',
-        ], ['Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->assertEquals('{"success":true}', $this->response->getContent());
 
@@ -53,7 +53,7 @@ class ResetPasswordTest extends TestCase
         // Register with bad details
         $this->post('/reset', [
             'email' => 'dev@example.com',
-        ], ['Debug-Token' => env('DEBUG_KEY')]);
+        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->assertEquals('{"success":false}', $this->response->getContent());
 
@@ -96,7 +96,7 @@ class ResetPasswordTest extends TestCase
         $this->post('/reset', ['email' => 'developer@example.com']);
         $this->post('/reset', ['email' => 'developer@example.com']);
 
-        $this->assertContains('Too many consecutive attempts. Try again', $this->response->getContent());
+        $this->assertStringContainsString('Too many consecutive attempts. Try again', $this->response->getContent());
 
         $this->assertEquals('429', $this->response->status());
     }

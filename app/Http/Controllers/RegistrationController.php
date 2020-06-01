@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\ConfirmAccountMessage;
 use App\Role;
 use App\User;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -86,16 +88,29 @@ class RegistrationController extends BaseController
         return $newUser->_id;
     }
 
-    public function confirmEmail($token)
+    public function confirmEmail($token): RedirectResponse
     {
         try {
             $user = User::where('confirm_code', $token)->first();
+
+            if (!$user) {
+                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+            }
+
+            if (null !== $user->confirmed_at) {
+                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+            }
+
+            $user->otp = Uuid::generate(4)->string;
+            $user->otp_created_at = Carbon::now();
             $user->confirmed_at = date('Y-m-d H:i:s');
             $user->save();
-            // TODO this should render a response
-            return response()->json(['result' => 'OK'], 200);
+
+            return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
         } catch (\Exception $e) {
-            throw new \Exception('There was a problem with the code.');
+            header(sprintf('refresh:0; url=%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+
+            return false;
         }
     }
 
@@ -107,9 +122,9 @@ class RegistrationController extends BaseController
             $newUser->roles()->syncWithoutDetaching(
                 [
                     $role->id => [
-                            'created_by' => $newUser->id,
-                            'updated_by' => $newUser->id,
-                        ],
+                        'created_by' => $newUser->id,
+                        'updated_by' => $newUser->id,
+                    ],
                 ]
             );
         } catch (\Exception $e) {

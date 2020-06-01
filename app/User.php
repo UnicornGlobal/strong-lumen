@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Mail\PasswordResetMessage;
+use App\Traits\GeneratesUuid;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -20,7 +21,11 @@ class User extends BaseModel implements
     CanResetPasswordContract,
     AuthenticatableUserContract
 {
-    use Authenticatable, Authorizable, SoftDeletes, CanResetPassword;
+    use Authenticatable;
+    use Authorizable;
+    use SoftDeletes;
+    use CanResetPassword;
+    use GeneratesUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +52,10 @@ class User extends BaseModel implements
      * @var array
      */
     protected $hidden = [
+        'otp',
+        'otp_created_at',
+        'profile_picture_id',
+        'pivot',
         'password',
         'remember_token',
         'id',
@@ -103,6 +112,11 @@ class User extends BaseModel implements
         return [];
     }
 
+    public function profile_picture()
+    {
+        return $this->belongsTo('App\ProfilePicture', 'profile_picture_id');
+    }
+
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'user_role')->using('App\UserRole')->withTimestamps();
@@ -139,7 +153,7 @@ class User extends BaseModel implements
             && !$this->hasRole($role->_id)) {
             $this->roles()->syncWithoutDetaching(
                 [
-                $role->id => [
+                    $role->id => [
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ],

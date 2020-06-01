@@ -9,7 +9,7 @@ class ConfigControllerTest extends TestCase
     public function testGetConfig()
     {
         // The test user in our seed
-        $this->get('/config/app', ['App' => env('APP_ID'), 'Debug-Token' => env('DEBUG_KEY')]);
+        $this->get('/config/app', ['App' => env('APP_ID'), 'Debug-Token' => env('DEBUG_TOKEN')]);
 
         $this->assertEquals('200', $this->response->status());
 

@@ -63,8 +63,9 @@ $router->group(
          * 10 Login and Logouts per minute
          */
         $router->group(['middleware' => 'throttle:10,1'], function () use ($router) {
-            $router->post('/login', 'AuthController@postLogin');
+            $router->post('/login', 'AuthController@login');
             $router->post('/logout', 'AuthController@logout');
+            $router->post('/login/token', 'AuthController@loginToken');
         });
 
         /*
