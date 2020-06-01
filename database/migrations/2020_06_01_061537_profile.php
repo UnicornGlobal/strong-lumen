@@ -13,7 +13,26 @@ class Profile extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('profile_pictures', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->uuid('_id')->unique();
+            $table->unsignedBigInteger('user_id');
+
+            $table->string('title');
+            $table->string('mime');
+            $table->string('file_url');
+            $table->string('file_key');
+
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('profile_picture_id')->nullable();
+        });
     }
 
     /**
@@ -23,6 +42,10 @@ class Profile extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('profile_pictures');
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('profile_picture_id');
+        });
     }
 }

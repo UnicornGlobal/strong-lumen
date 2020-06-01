@@ -29,9 +29,9 @@ class ImageUploadController extends Controller
             ]
         );
 
-        $file = $request->file('photo');
         $uuid = Uuid::generate(4)->string;
 
+        $file = $request->file('photo');
         $filename = sprintf('%s.%s', $uuid, $file->extension());
 
         $image = Image::make($file);
@@ -44,15 +44,18 @@ class ImageUploadController extends Controller
             $image->encode()
         );
 
-        Storage::setVisibility($url, 'public');
+        Storage::setVisibility(
+            $url,
+            'public'
+        );
 
         $profilePicture = ProfilePicture::create([
             '_id'        => Uuid::generate(4)->string,
+            'user_id'    => Auth::user()->id,
             'title'      => Auth::user()->first_name,
+            'mime'       => $file->getMimeType(),
             'file_url'   => Storage::url($url),
             'file_key'   => $uuid,
-            'user_id'    => Auth::user()->id,
-            'mime'       => $file->getMimeType(),
             'created_by' => Auth::user()->id,
             'updated_by' => Auth::user()->id,
         ]);
