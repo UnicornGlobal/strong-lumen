@@ -1,10 +1,8 @@
 <?php
 
 use App\ProfilePicture;
-use App\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ImageUploadControllerTest extends TestCase

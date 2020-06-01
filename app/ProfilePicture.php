@@ -45,7 +45,7 @@ class ProfilePicture extends BaseModel
         'url',
     ];
 
-    public function getUrlAttribute() : String
+    public function getUrlAttribute(): string
     {
         if ($this->file_url) {
             if (preg_match('/^https?:\/\//', $this->file_url)) {

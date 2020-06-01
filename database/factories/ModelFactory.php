@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 */
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
-    $username = rand(0, 100000) . $faker->email;
+    $username = rand(0, 100000).$faker->email;
 
     return [
         'username'     => $username,

@@ -240,7 +240,6 @@ class AuthControllerTest extends TestCase
 
         $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
-
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
 
