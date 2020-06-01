@@ -191,4 +191,34 @@ class RegistrationControllerTest extends TestCase
         ]);
         $this->assertResponseStatus(401);
     }
+
+    public function testLoginOldToken()
+    {
+        Mail::fake();
+
+        $this->post('/register/email', [
+            'username'  => 'user12345',
+            'password'  => 'password1',
+            'firstName' => 'First',
+            'lastName'  => 'Last',
+            'email'     => 'asdfg@example.com',
+            'mobile'    => '+27822222222',
+            'location'  => 'Nowhere',
+            'agree'     => true,
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        // Get the users confirm code
+        $result = json_decode($this->response->getContent());
+        $user = User::loadFromUuid($result->_id);
+        $user->otp_created_at = Carbon::now()->subDays(2);
+        $token = encrypt('stale');
+        $user->otp = 'stale';
+        $user->save();
+        $user = $user->fresh();
+
+        $this->post('/login/token', [
+            'token' => $token,
+        ]);
+        $this->assertResponseStatus(401);
+    }
 }
