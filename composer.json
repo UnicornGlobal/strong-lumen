@@ -13,6 +13,7 @@
         "barryvdh/laravel-cors": "^0.11.4",
         "webpatser/laravel-uuid": "^3.0",
         "illuminate/mail": "^6.0",
+        "intervention/image": "^2.5",
         "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
