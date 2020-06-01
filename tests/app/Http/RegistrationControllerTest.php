@@ -40,6 +40,48 @@ class RegistrationControllerTest extends TestCase
     /**
      * @return void
      */
+    public function testRegisterEmailNumberFormats()
+    {
+        $variants = [
+            '+27822222222',
+            '+27 82 2222222',
+            '+27 82 222 2222',
+            '+1 888-222-1234',
+            '+1-888-222-1234',
+            '+1 888 222 1234',
+            '+1 888 2221234',
+            '+1 (888) 222-1234',
+            '+1(888)222-1234',
+            '+1(888)2221234',
+            '+18882221234',
+        ];
+
+        foreach ($variants as $variant) {
+            $this->post('/register/email', [
+                'email'     => sprintf('test%s@example.com', md5($variant)),
+                'username'  => sprintf('test%s@example.com', md5($variant)),
+                'mobile'    => $variant,
+                'password'  => 'password',
+                'firstName' => 'First',
+                'lastName'  => 'Last',
+                'mobile'    => '+27822222222',
+                'location'  => 'Nowhere',
+                'agree'     => true,
+            ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+            $this->assertEquals('201', $this->response->status());
+            $result = json_decode($this->response->getContent());
+
+            $this->assertRegExp(
+                '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+                $result->_id
+            );
+        }
+    }
+
+    /**
+     * @return void
+     */
     public function testMissingRegisterKey()
     {
         // Register with bad details
@@ -143,7 +185,14 @@ class RegistrationControllerTest extends TestCase
             'agree'     => true,
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
-        Mail::assertSent(ConfirmAccountMessage::class);
+        Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
+            $this->get($mail->link);
+            $this->assertResponseStatus(302);
+            $this->assertStringContainsString(sprintf('Redirecting to <a href="%s', env('ADMIN_URL')), $this->response->getContent());
+            self::$code = $mail->user->confirm_code;
+
+            return true;
+        });
     }
 
     public function testBadConfirmCode()
@@ -152,6 +201,36 @@ class RegistrationControllerTest extends TestCase
         $this->assertResponseStatus(302);
         $this->assertStringContainsString('Redirecting to <a href="', $this->response->getContent());
         $this->assertStringContainsString('invalidconfirmation', $this->response->getContent());
+    }
+
+    public function testUsedConfirmCode()
+    {
+        Mail::fake();
+
+        $this->post('/register/email', [
+            'username'  => 'user12345',
+            'password'  => 'password1',
+            'firstName' => 'First',
+            'lastName'  => 'Last',
+            'email'     => 'asdfg@example.com',
+            'mobile'    => '+27822222222',
+            'location'  => 'Nowhere',
+            'agree'     => true,
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        // Get the users confirm code
+        $result = json_decode($this->response->getContent());
+        $user = User::loadFromUuid($result->_id);
+
+        // Confirm account
+        $user->confirmed_at = Carbon::now();
+        $user->save();
+
+        // Try use code again
+        $url = sprintf('confirm/%s', $user->confirm_code);
+        $this->get($url);
+        $this->assertResponseStatus(302);
+        $this->assertStringContainsString('login?invalidconfirmation=true', $this->response->getContent());
     }
 
     public function testLoginToken()
@@ -219,6 +298,37 @@ class RegistrationControllerTest extends TestCase
         $this->post('/login/token', [
             'token' => $token,
         ]);
+        $this->assertResponseStatus(401);
+    }
+
+    public function testLoginTokenNoDate()
+    {
+        Mail::fake();
+
+        $this->post('/register/email', [
+            'username'  => 'user12345',
+            'password'  => 'password1',
+            'firstName' => 'First',
+            'lastName'  => 'Last',
+            'email'     => 'asdfg@example.com',
+            'mobile'    => '+27822222222',
+            'location'  => 'Nowhere',
+            'agree'     => true,
+        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+
+        // Get the users confirm code
+        $result = json_decode($this->response->getContent());
+        $user = User::loadFromUuid($result->_id);
+
+        $token = encrypt('awesome');
+        $user->otp = 'awesome';
+        // intentionally leave off created at
+        $user->save();
+
+        $this->post('/login/token', [
+            'token' => $token,
+        ]);
+
         $this->assertResponseStatus(401);
     }
 }
