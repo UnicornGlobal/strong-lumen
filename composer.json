@@ -13,11 +13,14 @@
         "barryvdh/laravel-cors": "^0.11.4",
         "webpatser/laravel-uuid": "^3.0",
         "illuminate/mail": "^6.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "ext-json": "*",
+        "doctrine/dbal": "^2.9",
         "intervention/image": "^2.5",
         "league/flysystem": "^1.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
         "predis/predis": "^1.1",
-        "illuminate/redis": "^6.14",
-        "guzzlehttp/guzzle": "^6.3"
+        "illuminate/redis": "^6.14"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.8",
