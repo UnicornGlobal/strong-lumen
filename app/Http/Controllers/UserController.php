@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmAccountMessage;
 use App\Role;
 use App\User;
 use App\ValidationTrait;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -32,7 +34,12 @@ class UserController extends Controller
 
         $this->isValidUserID($userId);
 
-        $user = User::where('_id', $userId)->first();
+        $user = User::with([
+            'startup_company',
+            'investment_company',
+            'profile_picture',
+        ])->where('_id', $userId)->first();
+
 
         return response()->json($user);
     }
@@ -46,7 +53,11 @@ class UserController extends Controller
     {
         $userId = Auth::user()->_id;
 
-        $user = User::where('_id', $userId)->with('roles:_id,name')->first();
+        $user = User::where('_id', $userId)->with([
+            'roles:_id,name',
+            'profile_picture',
+            'documents',
+        ])->first();
 
         return response()->json($user);
     }
@@ -56,31 +67,43 @@ class UserController extends Controller
      */
     public function updateUserByUUID(Request $request, $userId)
     {
-        $this->validate($request, [
-            'firstName' => 'required|string',
-            'lastName'  => 'required|string',
-        ]);
+        $this->isValidUserID($userId);
 
         if (Auth::user()->_id !== $userId) {
             throw new \Exception('Illegal attempt to adjust another users details. '.
                 'The suspicious action has been logged.');
         }
 
-        $this->isValidUserID($userId);
+        $this->validate($request, [
+            'firstName'   => 'nullable|string',
+            'lastName'    => 'nullable|string',
+            'mobile'      => 'nullable|string|min:4|max:20',
+            'location'    => 'nullable|string',
+        ]);
 
         $fields = $request->only([
             'firstName',
             'lastName',
+            'mobile',
+            'location',
         ]);
 
         $user = Auth::user();
 
-        if (!is_null($fields['firstName'])) {
+        if (isset($fields['firstName']) && null !== $fields['firstName']) {
             $user->first_name = $fields['firstName'];
         }
 
-        if (!is_null($fields['lastName'])) {
+        if (isset($fields['lastName']) && null !== $fields['lastName']) {
             $user->last_name = $fields['lastName'];
+        }
+
+        if (isset($fields['mobile']) && null !== $fields['mobile']) {
+            $user->mobile = $fields['mobile'];
+        }
+
+        if (isset($fields['location']) && null !== $fields['location']) {
+            $user->location = $fields['location'];
         }
 
         $user->updated_by = Auth::user()->id;
@@ -207,5 +230,12 @@ class UserController extends Controller
         }
 
         return response()->json(['error' => 'User has a role other than \'user\', cannot delete'], 404);
+    }
+
+    public function resendUserVerificationMail()
+    {
+        if (!Auth::user()->confirmed) {
+            Mail::to(Auth::user()->email)->queue(new ConfirmAccountMessage(Auth::user()));
+        }
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Listeners;
 
 use App\Events\UserCreated;
-use App\Mail\UserCreatedMessage;
+use App\Mail\ConfirmAccountMessage;
+use App\Mail\AdminNewUserMessage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 
@@ -13,9 +15,10 @@ class OnUserCreated
 
     public function handle(UserCreated $event)
     {
+        Log::info('Handle!!!!!!!!!! >>>>>>>>>>>>>>>>>>>>>>>>>>');
         // Welcome the user to the application
         Mail::to($event->user)
-            ->queue(new UserCreatedMessage($event->user));
+            ->queue(new ConfirmAccountMessage($event->user));
 
         // Tell the admin user about the new signup
         Mail::to(env('ADMIN_NOTIFICATIONS_MAIL'))

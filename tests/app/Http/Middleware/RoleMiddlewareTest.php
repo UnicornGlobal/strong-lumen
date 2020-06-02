@@ -168,11 +168,11 @@ class RoleMiddlewareTest extends TestCase
         $this->assertTrue(array_search('intern', array_column($roles, 'name')) !== false);
 
         $this->actingAs(Auth::user())->post('/roles/mm');
-        $this->assertEquals('Role name invalid', $this->response->getContent());
+        $this->assertEquals('{"error":"Role name invalid"}', $this->response->getContent());
 
         $this->actingAs(Auth::user())->post('/roles/intern');
 
-        $this->assertEquals('Role name invalid', $this->response->getContent());
+        $this->assertEquals('{"error":"Role name invalid"}', $this->response->getContent());
     }
 
     public function testDeleteRole()

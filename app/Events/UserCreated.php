@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\User;
+use Illuminate\Support\Facades\Log;
 
 class UserCreated extends Event
 {
@@ -10,6 +11,7 @@ class UserCreated extends Event
 
     public function __construct(User $user)
     {
+        Log::info('User Created Event MMM<<<<<<<<<<<<<<<<<<<');
         $this->user = $user;
     }
 }

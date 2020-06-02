@@ -118,6 +118,11 @@ $router->group(
             $router->post('/users/change-password', 'UserController@changePassword');
             $router->get('/users/{userId}', 'UserController@getUserById');
             $router->post('/users/{userId}', 'UserController@updateUserByUUID');
+
+            /*
+             * Verification
+             */
+            $router->get('/resend/verification', 'UserController@resendUserVerificationMail');
         });
     }
 );

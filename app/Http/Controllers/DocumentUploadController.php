@@ -24,7 +24,8 @@ class DocumentUploadController extends Controller
         ]);
 
         $file = $request->file('file');
-        $name = $request->file('name');
+        $name = $request->input('name');
+
         $uuid = Uuid::generate(4)->string;
 
         $filename = sprintf('/%s.%s', $uuid, $file->extension());
@@ -51,7 +52,7 @@ class DocumentUploadController extends Controller
             'assets',
         ])->flush();
 
-        return response()->json($upload, 201);
+        return response()->json($document, 201);
     }
 
     /**

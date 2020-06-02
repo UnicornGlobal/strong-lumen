@@ -11,45 +11,47 @@ class DocumentUploadControllerTest extends TestCase
 
     public function testUploadDocument()
     {
-        Storage::fake('uploads');
+        Storage::fake('docs');
 
         $file = UploadedFile::fake()->create('document.pdf', 1000);
 
         $this->actingAs($this->user)->call(
             'POST',
             '/api/upload/document',
-            [],
+            [
+                'name' => 'Document',
+            ],
             [],
             [
                 'file' => $file,
-                'name' => 'Document',
             ],
             ['Content-Type' => 'multipart/form-data']
         );
 
         $this->assertResponseStatus(201);
-        $upload_id = json_decode($this->response->getContent())->_id;
+        $documentId = json_decode($this->response->getContent())->_id;
 
-        $document = Document::loadFromUuid($upload_id);
+        $document = Document::loadFromUuid($documentId);
 
         $this->assertEquals('Document', $document->title);
-        $this->assertEquals('application/pdf', $upload->mime);
+        $this->assertEquals('application/pdf', $document->mime);
     }
 
     public function testBigFileFail()
     {
-        Storage::fake('uploads');
+        Storage::fake('docs');
 
         $file = UploadedFile::fake()->create('document.pdf', 50000);
 
         $this->actingAs($this->user)->call(
             'POST',
             '/api/upload/document',
-            [],
+            [
+                'name' => 'Document',
+            ],
             [],
             [
                 'file' => $file,
-                'name' => 'Document',
             ],
             ['Content-Type' => 'multipart/form-data']
         );
@@ -61,41 +63,43 @@ class DocumentUploadControllerTest extends TestCase
 
     public function testBadFormatFail()
     {
-        Storage::fake('uploads');
+        Storage::fake('docs');
 
         $file = UploadedFile::fake()->create('document.rar', 5000);
 
         $this->actingAs($this->user)->call(
             'POST',
             '/api/upload/document',
-            [],
+            [
+                'name' => 'Document',
+            ],
             [],
             [
                 'file' => $file,
-                'name' => 'Document',
             ],
             ['Content-Type' => 'multipart/form-data']
         );
 
         $this->assertResponseStatus(422);
         $message = json_decode($this->response->getContent())->file[0];
-        $this->assertEquals('The file must be a file of type: pdf.', $message);
+        $this->assertEquals('The file must be a file of type: pdf, jpg, png.', $message);
     }
 
     public function testDocumentAssignedToUser()
     {
-        Storage::fake('uploads');
+        Storage::fake('docs');
 
-        $file = UploadedFile::fake()->create('image.png', 200);
+        $file = UploadedFile::fake()->create('image.pdf');
 
         $this->actingAs($this->user)->call(
             'POST',
             '/api/upload/document',
-            [],
+            [
+                'name' => 'Image',
+            ],
             [],
             [
                 'file' => $file,
-                'name' => 'Image',
             ],
             ['Content-Type' => 'multipart/form-data']
         );
@@ -103,27 +107,28 @@ class DocumentUploadControllerTest extends TestCase
         $this->assertResponseStatus(201);
         $documentId = json_decode($this->response->getContent())->_id;
 
-        $upload = Document::loadFromUuid($documentId);
+        $document = Document::loadFromUuid($documentId);
 
-        $this->assertEquals($this->user->id, $upload->user_id);
-        $this->assertEquals($upload->title, 'Image');
-        $this->assertEquals($upload->mime, 'image/png');
+        $this->assertEquals($this->user->id, $document->user_id);
+        $this->assertEquals($document->title, 'Image');
+        $this->assertEquals($document->mime, 'application/pdf');
     }
 
     public function testDownloadDocument()
     {
-        Storage::fake('uploads');
+        Storage::fake('docs');
 
         $file = UploadedFile::fake()->create('document.pdf', 700);
 
         $this->actingAs($this->user)->call(
             'POST',
             '/api/upload/document',
-            [],
+            [
+                'name' => 'Document',
+            ],
             [],
             [
                 'file' => $file,
-                'name' => 'Download',
             ],
             ['Content-Type' => 'multipart/form-data']
         );

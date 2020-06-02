@@ -60,7 +60,7 @@ class RolesController extends Controller
             return response()->json(['_id' => $role->_id]);
         }
 
-        return response('Role name invalid', 500);
+        throw new \Exception('Role name invalid');
     }
 
     /**
@@ -82,10 +82,10 @@ class RolesController extends Controller
                 'roles',
             ])->flush();
 
-            return response(200, 'OK');
+            return response()->json(['success' => true]);
         }
 
-        return response('Role has assigned users', 500);
+        throw new \Exception('Role has assigned users');
     }
 
     /**

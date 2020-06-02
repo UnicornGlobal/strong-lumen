@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ConfirmAccountMessage;
+use App\Events\UserCreated;
 use App\Role;
 use App\User;
 use Carbon\Carbon;
@@ -82,13 +82,13 @@ class RegistrationController extends BaseController
 
         $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
 
-        Mail::to($details['email'])->queue(new ConfirmAccountMessage($newUser));
-
         DB::commit();
 
         Cache::tags([
             'users',
         ])->flush();
+
+        event(new UserCreated($newUser));
 
         return $newUser->_id;
     }
