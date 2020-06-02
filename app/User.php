@@ -117,6 +117,11 @@ class User extends BaseModel implements
         return $this->belongsTo('App\ProfilePicture', 'profile_picture_id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany('App\Document');
+    }
+
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'user_role')->using('App\UserRole')->withTimestamps();
