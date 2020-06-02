@@ -6,6 +6,7 @@ use App\ProfilePicture;
 use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManagerStatic as Image;
 use Webpatser\Uuid\Uuid;
@@ -56,6 +57,11 @@ class ImageUploadController extends Controller
 
         Auth::user()->profile_picture_id = $profilePicture->id;
         Auth::user()->save();
+
+        Cache::tags([
+            'users',
+            'assets',
+        ])->flush();
 
         return response()->json($profilePicture, 201);
     }

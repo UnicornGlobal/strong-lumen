@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
@@ -51,6 +52,11 @@ class RolesController extends Controller
             $role->updated_by = Auth::user()->id;
             $role->save();
 
+            Cache::tags([
+                'users',
+                'roles',
+            ])->flush();
+
             return response()->json(['_id' => $role->_id]);
         }
 
@@ -71,6 +77,11 @@ class RolesController extends Controller
         if ($role->users->isEmpty()) {
             $role->delete();
 
+            Cache::tags([
+                'users',
+                'roles',
+            ])->flush();
+
             return response(200, 'OK');
         }
 
@@ -87,6 +98,11 @@ class RolesController extends Controller
         $role = $this->getRole($roleId);
         $role->is_active = false;
         $role->save();
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 
     /**
@@ -99,6 +115,11 @@ class RolesController extends Controller
         $role = $this->getRole($roleId);
         $role->is_active = true;
         $role->save();
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 
     /**

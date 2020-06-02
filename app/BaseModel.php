@@ -2,10 +2,14 @@
 
 namespace App;
 
+use App\Traits\Flushable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class BaseModel extends Model
 {
+    use Flushable;
     use ValidationTrait;
 
     /**
@@ -22,7 +26,35 @@ class BaseModel extends Model
         $model->checkValid($uuid, $class);
         $classId = $model->getIdFromUuid($uuid, $model);
 
-        return $class::where('id', $classId)->first();
+        $cacheKey = sprintf(
+            '_get_base_model_class_uuid_%s_%s_%i_cache_',
+            $uuid,
+            $class,
+            $classId
+        );
+
+        $result = Cache::tags([
+            self::getTagFromClassName($class),
+        ])->get($cacheKey);
+
+        if (!$result) {
+            $result = $class::where('id', $classId)->first();
+
+            Cache::tags([
+                self::getTagFromClassName($class),
+            ])->put($cacheKey, $result, 600);
+        }
+
+        return $result;
+    }
+
+    protected static function getTagFromClassName(String $className) : String
+    {
+        $pieces = explode('\\', $className);
+        $index = count($pieces);
+        $result = strtolower(sprintf('%ss', $pieces[$index - 1] ?: 'cache'));
+        $tag = Str::plural($result);
+        return $tag;
     }
 
     /**

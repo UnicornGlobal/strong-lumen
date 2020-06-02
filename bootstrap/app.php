@@ -107,6 +107,9 @@ $app->register(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 $app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
 $app->configure('filesystems');
 
+// Redis
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+
 $app->configure('cors');
 
 $app->configure('services');

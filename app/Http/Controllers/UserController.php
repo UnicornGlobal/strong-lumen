@@ -7,6 +7,7 @@ use App\User;
 use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -85,6 +86,10 @@ class UserController extends Controller
         $user->updated_by = Auth::user()->id;
         $user->save();
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
@@ -117,6 +122,10 @@ class UserController extends Controller
         $user->updated_by = Auth::user()->id;
         $user->save();
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
@@ -146,6 +155,10 @@ class UserController extends Controller
     {
         User::loadFromUuid($userId)->assignRole($roleId);
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
@@ -161,12 +174,19 @@ class UserController extends Controller
     {
         User::loadFromUuid($userId)->revokeRole($roleId);
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
     public function getAllUsers()
     {
-        $users = User::all();
+        $users = User::with([
+            'roles:_id,name',
+            'profile_picture'
+        ])->get();
 
         return response()->json(compact('users'));
     }
@@ -178,6 +198,10 @@ class UserController extends Controller
         if ($user->roles->count() === 1 &&
             $user->hasRole(Role::where('name', 'user')->first()->_id)) {
             $user->delete();
+
+            Cache::tags([
+                'users',
+            ])->flush();
 
             return response()->json(['success' => true], 202);
         }

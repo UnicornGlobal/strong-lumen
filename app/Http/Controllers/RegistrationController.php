@@ -8,6 +8,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -85,6 +86,10 @@ class RegistrationController extends BaseController
 
         DB::commit();
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return $newUser->_id;
     }
 
@@ -105,6 +110,10 @@ class RegistrationController extends BaseController
             $user->otp_created_at = Carbon::now();
             $user->confirmed_at = date('Y-m-d H:i:s');
             $user->save();
+
+            Cache::tags([
+                'users',
+            ])->flush();
 
             return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
         } catch (\Exception $e) {
@@ -127,6 +136,11 @@ class RegistrationController extends BaseController
                     ],
                 ]
             );
+
+            Cache::tags([
+                'users',
+                'roles',
+            ])->flush();
         } catch (\Exception $e) {
             throw new \Exception('There was a problem assigning the role.');
         }
