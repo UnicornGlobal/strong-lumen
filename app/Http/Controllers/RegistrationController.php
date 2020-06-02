@@ -81,7 +81,7 @@ class RegistrationController extends BaseController
 
         $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
 
-        Mail::to($details['email'])->send(new ConfirmAccountMessage($newUser));
+        Mail::to($details['email'])->queue(new ConfirmAccountMessage($newUser));
 
         DB::commit();
 

@@ -148,7 +148,7 @@ class RegistrationControllerTest extends TestCase
             'agree'     => true,
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
-        Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
+        Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
             $this->assertStringContainsString(sprintf('%s/confirm/', env('API_URL')), $mail->link);
 
             $this->assertRegExp(
@@ -157,7 +157,7 @@ class RegistrationControllerTest extends TestCase
             );
 
             $render = $mail->build();
-            $this->assertEquals('Confirm Your Account', $render->subject);
+            $this->assertEquals(sprintf('Confirm Your %s Account', env('APP_NAME')), $render->subject);
 
             $this->get($mail->link);
 
@@ -185,7 +185,7 @@ class RegistrationControllerTest extends TestCase
             'agree'     => true,
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
 
-        Mail::assertSent(ConfirmAccountMessage::class, function ($mail) {
+        Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
             $this->get($mail->link);
             $this->assertResponseStatus(302);
             $this->assertStringContainsString(sprintf('Redirecting to <a href="%s', env('ADMIN_URL')), $this->response->getContent());

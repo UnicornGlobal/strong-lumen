@@ -32,7 +32,7 @@ class ResetPasswordTest extends TestCase
         ]);
         $this->assertEquals('{"success":false}', $this->response->getContent());
 
-        Mail::assertSent(PasswordResetMessage::class, function ($mail) {
+        Mail::assertQueued(PasswordResetMessage::class, function ($mail) {
             $this->post(sprintf('/reset/%s', $mail->token), [
                 'email'                 => 'developer@example.com',
                 'password'              => '123abc^&*',

@@ -89,7 +89,7 @@ class User extends BaseModel implements
      */
     public function sendPasswordResetNotification($token)
     {
-        Mail::to($this->email)->send(new PasswordResetMessage($this, $token));
+        Mail::to($this->email)->queue(new PasswordResetMessage($this, $token));
     }
 
     /**
