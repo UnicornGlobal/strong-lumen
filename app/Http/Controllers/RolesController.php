@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Role;
+use App\ValidationTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
+    use ValidationTrait;
+
     /**
      * Get Role from name.
      *
@@ -60,7 +63,7 @@ class RolesController extends Controller
             return response()->json(['_id' => $role->_id]);
         }
 
-        throw new \Exception('Role name invalid');
+        $this->throwValidationExceptionMessage('Role name invalid');
     }
 
     /**
@@ -85,7 +88,7 @@ class RolesController extends Controller
             return response()->json(['success' => true]);
         }
 
-        throw new \Exception('Role has assigned users');
+        $this->throwValidationExceptionMessage('Role has assigned users');
     }
 
     /**

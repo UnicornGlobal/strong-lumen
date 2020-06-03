@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\UserCreated;
 use App\Role;
 use App\User;
+use App\ValidationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,50 +18,33 @@ use Webpatser\Uuid\Uuid;
 
 class RegistrationController extends BaseController
 {
-    private $requiredFields = [
-        'username',
-        'password',
-        'firstName',
-        'lastName',
-        'email',
-    ];
+    use ValidationTrait;
 
     public function registerEmail(Request $request)
     {
-        $details = $request->only(
-            'username',
-            'password',
-            'firstName',
-            'lastName',
-            'email'
-        );
-
         $this->validate($request, [
             'username'  => 'required|string|unique:users',
             'password'  => 'required|string|min:8',
             'firstName' => 'required|string',
             'lastName'  => 'required|string',
             'email'     => 'required|email|distinct|unique:users',
+            'mobile'    => 'nullable|string',
+            'location'  => 'nullable|string',
         ]);
 
-        $this->checkHasMinimum($details);
+        $details = $request->only(
+            'username',
+            'password',
+            'firstName',
+            'lastName',
+            'email',
+            'mobile',
+            'location'
+        );
 
-        try {
-            $newUserId = $this->createUser($details);
+        $newUserId = $this->createUser($details);
 
-            return response()->json(['_id' => $newUserId], 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Registration Failed'], 403);
-        }
-    }
-
-    private function checkHasMinimum($details)
-    {
-        foreach ($this->requiredFields as $field) {
-            if (is_null($details[$field])) {
-                throw new \Exception('There was a problem validating the requested registration.');
-            }
-        }
+        return response()->json(['_id' => $newUserId], 201);
     }
 
     private function createUser($details)
@@ -123,7 +107,7 @@ class RegistrationController extends BaseController
         }
     }
 
-    //Assigning a role to the newly created user
+    // Assigning a role to the newly created user
     public function addRole($roleId, $newUser)
     {
         try {
@@ -142,7 +126,7 @@ class RegistrationController extends BaseController
                 'roles',
             ])->flush();
         } catch (\Exception $e) {
-            throw new \Exception('There was a problem assigning the role.');
+            $this->throwValidationExceptionMessage('There was a problem assigning the role.');
         }
     }
 }

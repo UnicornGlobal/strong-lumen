@@ -43,6 +43,6 @@ class ConfigControllerTest extends TestCase
             $this->response->getContent()
         );
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 }

@@ -347,7 +347,6 @@ class RoleMiddlewareTest extends TestCase
 
     public function testRequestWithoutLogin()
     {
-        $this->post('/logout');
         $this->get('/roles');
         $result = json_decode($this->response->getContent());
         $this->assertEquals('User not logged in.', $result->error);

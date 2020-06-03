@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Role;
+use App\ValidationTrait;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class RolesMiddleware
 {
+    use ValidationTrait;
+
     /**
      * Handle an incoming request.
      *
@@ -24,7 +27,7 @@ class RolesMiddleware
     public function handle($request, Closure $next, String $requiredRole)
     {
         if (empty(Auth::user())) {
-            throw new Exception('User not logged in.');
+            $this->throwValidationExceptionMessage('User not logged in.');
         }
 
         $allRoles = explode('|', $requiredRole);

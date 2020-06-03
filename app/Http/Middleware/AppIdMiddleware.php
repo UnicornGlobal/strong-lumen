@@ -2,10 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use App\ValidationTrait;
 use Closure;
 
 class AppIdMiddleware
 {
+    use ValidationTrait;
+
     /**
      * Ensures that there is an App header present, and that is
      * matches the env setting.
@@ -28,6 +31,6 @@ class AppIdMiddleware
             return $next($request);
         }
 
-        throw new \Exception('There was a problem validating the request.');
+        $this->throwValidationExceptionMessage('There was a problem validating the request.');
     }
 }

@@ -4,6 +4,7 @@ namespace App;
 
 use App\Mail\PasswordResetMessage;
 use App\Traits\GeneratesUuid;
+use App\ValidationTrait;
 use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -28,6 +29,7 @@ class User extends BaseModel implements
     use SoftDeletes;
     use CanResetPassword;
     use GeneratesUuid;
+    use ValidationTrait;
 
     protected $with = [
         'profile_picture',
@@ -219,19 +221,19 @@ class User extends BaseModel implements
         $role = Role::loadFromUuid($roleId);
 
         if ($this->hasRoleByName('system')) {
-            throw new Exception('Cannot add roles to a system user');
+            $this->throwValidationExceptionMessage('Cannot add roles to a system user');
         }
 
         if ($role->name === 'system') {
-            throw new Exception('Cannot assign the system role');
+            $this->throwValidationExceptionMessage('Cannot assign the system role');
         }
 
         if ($role->name === 'user') {
-            throw new Exception('Cannot assign the user role');
+            $this->throwValidationExceptionMessage('Cannot assign the user role');
         }
 
         if ($role->name === 'admin' && !Auth::user()->hasRoleByName('admin')) {
-            throw new Exception('Only admins can assign the admin role');
+            $this->throwValidationExceptionMessage('Only admins can assign the admin role');
         }
 
         if (!empty($role)
@@ -260,21 +262,21 @@ class User extends BaseModel implements
     public function revokeRole($roleId)
     {
         if ($this->hasRoleByName('system')) {
-            throw new Exception('Cannot revoke roles from the system user');
+            $this->throwValidationExceptionMessage('Cannot revoke roles from the system user');
         }
 
         $role = Role::loadFromUuid($roleId);
 
         if ($role->name === 'system') {
-            throw new Exception('Cannot revoke the system role');
+            $this->throwValidationExceptionMessage('Cannot revoke the system role');
         }
 
         if ($role->name === 'user') {
-            throw new Exception('Cannot revoke the user role');
+            $this->throwValidationExceptionMessage('Cannot revoke the user role');
         }
 
         if ($role->name === 'admin' && !Auth::user()->hasRoleByName('admin')) {
-            throw new Exception('Only admins can revoke the admin role');
+            $this->throwValidationExceptionMessage('Only admins can revoke the admin role');
         }
 
         if ($this->hasRoleById($roleId)) {

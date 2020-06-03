@@ -199,7 +199,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $this->assertEquals('{"error":"There was a problem changing the password."}', $this->response->getContent());
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     /**
