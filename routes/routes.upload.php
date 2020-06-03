@@ -21,13 +21,13 @@ $router->group(
             // Public
             $router->post('/profile', [
                 'as'   => 'profile_picture',
-                'uses' => 'ImageUploadController@setUserProfilePicture',
+                'uses' => 'UploadController@setUserProfilePicture',
             ]);
 
             // Private
             $router->post('/document', [
                 'as'   => 'upload_document',
-                'uses' => 'DocumentUploadController@uploadDocument',
+                'uses' => 'UploadController@uploadDocument',
             ]);
         });
     }
