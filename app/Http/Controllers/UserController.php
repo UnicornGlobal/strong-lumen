@@ -29,7 +29,7 @@ class UserController extends Controller
     public function getUserById($userId)
     {
         if (!$userId) {
-            throw new \Exception('There was a problem retrieving the user.');
+            $this->throwValidationExceptionMessage('There was a problem retrieving the user.');
         }
 
         $this->isValidUserID($userId);
@@ -68,8 +68,7 @@ class UserController extends Controller
         $this->isValidUserID($userId);
 
         if (Auth::user()->_id !== $userId) {
-            throw new \Exception('Illegal attempt to adjust another users details. '.
-                'The suspicious action has been logged.');
+            $this->throwValidationExceptionMessage('Illegal attempt to adjust another users details. The suspicious action has been logged.');
         }
 
         $this->validate($request, [

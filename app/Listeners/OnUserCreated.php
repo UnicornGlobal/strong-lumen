@@ -23,9 +23,9 @@ class OnUserCreated
         Mail::to(env('ADMIN_NOTIFICATIONS_MAIL'))
             ->queue(new AdminNewUserMessage($event->user));
 
-        Password::broker($this->broker)
-            ->sendResetLink([
-                'email' => $event->user->email
-            ]);
+        // Password::broker($this->broker)
+            // ->sendResetLink([
+                // 'email' => $event->user->email
+            // ]);
     }
 }

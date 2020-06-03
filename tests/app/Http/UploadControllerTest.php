@@ -288,7 +288,7 @@ class UploadControllerTest extends TestCase
             '/api/download/document/invalid'
         );
 
-        $this->assertResponseStatus(500);
+        $this->assertResponseStatus(422);
         $error = json_decode($this->response->getContent())->error;
         $this->assertEquals('Invalid Document ID', $error);
     }

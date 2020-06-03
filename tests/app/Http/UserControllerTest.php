@@ -81,7 +81,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"There was a problem retrieving the user."}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testGetBadUser()
@@ -92,7 +92,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testGetBadUserFormat()
@@ -104,7 +104,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testChangeDetails()
@@ -142,7 +142,7 @@ class UserControllerTest extends TestCase
             'lastName'  => 'Changed',
         ]);
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
 
         $this->assertEquals(
             '{"error":"Invalid User ID"}',
@@ -155,7 +155,7 @@ class UserControllerTest extends TestCase
             'lastName'  => 'Changed',
         ]);
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
 
         $this->assertEquals(
             '{"error":"Illegal attempt to adjust another users details. The suspicious action has been logged."}',

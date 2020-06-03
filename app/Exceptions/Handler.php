@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof ValidationException) {
-            return parent::render($request, $e);
+            return $e->response;
         }
 
         $message = $e->getMessage();
