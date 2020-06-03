@@ -86,11 +86,11 @@ trait InteractsWithExceptionHandling
             /**
              * Report the given exception.
              *
-             * @param Exception $e
+             * @param Throwable $e
              *
              * @return void
              */
-            public function report(Exception $e)
+            public function report(Throwable $e)
             {
                 // no-op
             }
@@ -98,11 +98,11 @@ trait InteractsWithExceptionHandling
             /**
              * Determine if the exception should be reported.
              *
-             * @param Exception $e
+             * @param Throwable $e
              *
              * @return bool
              */
-            public function shouldReport(Exception $e)
+            public function shouldReport(Throwable $e)
             {
                 return false;
             }
@@ -111,13 +111,13 @@ trait InteractsWithExceptionHandling
              * Render the given exception.
              *
              * @param Request   $request
-             * @param Exception $e
+             * @param Throwable $e
              *
              *@throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException|Exception
              *
              * @return mixed
              */
-            public function render($request, Exception $e)
+            public function render($request, Throwable $e)
             {
                 if ($e instanceof NotFoundHttpException) {
                     throw new NotFoundHttpException(
@@ -140,11 +140,11 @@ trait InteractsWithExceptionHandling
              * Render the exception for the console.
              *
              * @param OutputInterface $output
-             * @param Exception       $e
+             * @param Throwable       $e
              *
              * @return void
              */
-            public function renderForConsole($output, Exception $e)
+            public function renderForConsole($output, Throwable $e)
             {
                 (new ConsoleApplication())->renderException($e, $output);
             }

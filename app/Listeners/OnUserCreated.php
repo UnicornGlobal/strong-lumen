@@ -15,7 +15,6 @@ class OnUserCreated
 
     public function handle(UserCreated $event)
     {
-        Log::info('Handle!!!!!!!!!! >>>>>>>>>>>>>>>>>>>>>>>>>>');
         // Welcome the user to the application
         Mail::to($event->user)
             ->queue(new ConfirmAccountMessage($event->user));

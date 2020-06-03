@@ -83,16 +83,16 @@ $router->group(
             $router->get('/{roleId}/users', 'RolesController@getUsersForRole');
             $router->get('/{roleId}', 'RolesController@getRole');
             $router->get('/', 'RolesController@getRoles');
-            $router->post('/{roleId}', 'RolesController@createRole');
+            $router->post('/{name}', 'RolesController@createRole');
             $router->delete('/{roleId}', 'RolesController@deleteRole');
             $router->post('/{roleId}/activate', 'RolesController@activateRole');
             $router->post('/{roleId}/deactivate', 'RolesController@deactivateRole');
         });
 
         $router->group(['prefix' => 'users', 'middleware' => ['role:admin']], function () use ($router) {
-            $router->get('/{id}/roles', 'UserController@getUserRoles');
-            $router->post('/{id}/roles/assign/{roleId}', 'UserController@assignRole');
-            $router->post('/{id}/roles/revoke/{roleId}', 'UserController@revokeRole');
+            $router->get('/{userId}/roles', 'UserController@getUserRoles');
+            $router->post('/{userId}/roles/assign/{roleId}', 'UserController@assignRole');
+            $router->post('/{userId}/roles/revoke/{roleId}', 'UserController@revokeRole');
         });
 
         /*

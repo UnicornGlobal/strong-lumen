@@ -1,6 +1,9 @@
 <?php
 
+use App\Events\UserCreated;
+use App\Listeners\OnUserCreated;
 use App\Mail\ConfirmAccountMessage;
+use App\Mail\AdminNewUserMessage;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -135,7 +138,8 @@ class RegistrationControllerTest extends TestCase
     {
         Mail::fake();
 
-        $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
+        $this->expectsEvents('App\Events\UserCreated');
 
         $this->post('/register/email', [
             'username'  => 'user123',
@@ -147,6 +151,14 @@ class RegistrationControllerTest extends TestCase
             'location'  => 'Nowhere',
             'agree'     => true,
         ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+    }
+
+    public function testRegConfirmEmailEvent()
+    {
+        Mail::fake();
+
+        $listener = new OnUserCreated();
+        $listener->handle(new UserCreated($this->user));
 
         Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
             $this->assertStringContainsString(sprintf('%s/confirm/', env('API_URL')), $mail->link);
@@ -158,6 +170,7 @@ class RegistrationControllerTest extends TestCase
 
             $render = $mail->build();
             $this->assertEquals(sprintf('Confirm Your %s Account', env('APP_NAME')), $render->subject);
+            $this->assertEquals($this->user->email, $render->to[0]['address']);
 
             $this->get($mail->link);
 
@@ -168,28 +181,18 @@ class RegistrationControllerTest extends TestCase
 
             return true;
         });
-    }
 
-    public function testGoodConfirmCode()
-    {
-        Mail::fake();
+        Mail::assertQueued(AdminNewUserMessage::class, function ($mail) {
+            $this->assertStringContainsString(sprintf('%s/admin/users/%s', env('ADMIN_URL'), $this->user->_id), $mail->link);
 
-        $this->post('/register/email', [
-            'username'  => 'user12345',
-            'password'  => 'password1',
-            'firstName' => 'First',
-            'lastName'  => 'Last',
-            'email'     => 'asdfg@example.com',
-            'mobile'    => '+27822222222',
-            'location'  => 'Nowhere',
-            'agree'     => true,
-        ], ['Registration-Access-Key' => env('REGISTRATION_ACCESS_KEY')]);
+            $this->assertRegExp(
+                '/.*\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+                $mail->link
+            );
 
-        Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
-            $this->get($mail->link);
-            $this->assertResponseStatus(302);
-            $this->assertStringContainsString(sprintf('Redirecting to <a href="%s', env('ADMIN_URL')), $this->response->getContent());
-            self::$code = $mail->user->confirm_code;
+            $render = $mail->build();
+            $this->assertEquals(env('ADMIN_NOTIFICATIONS_MAIL'), $render->to[0]['address']);
+            $this->assertEquals(sprintf('New %s Account Created', env('APP_NAME')), $render->subject);
 
             return true;
         });

@@ -21,7 +21,7 @@ class AdminNewUserMessage extends Mailable
     {
         $this->user = $user;
         $this->app = env('APP_NAME');
-        $this->subject = 'New %s Account Created';
+        $this->subject = sprintf('New %s Account Created', env('APP_NAME'));
         $this->link = sprintf('%s/admin/users/%s', env('ADMIN_URL'), $user->_id);
 
     }
