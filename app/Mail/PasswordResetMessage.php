@@ -30,11 +30,11 @@ class PasswordResetMessage extends Mailable
      */
     public $token;
 
-    public function __construct(User $user, String $token)
+    public function __construct(User $user, string $token)
     {
         $this->user = $user;
         $this->token = $token;
-        # The URL for your UnicornGlobal/quick-dash projet
+        // The URL for your UnicornGlobal/quick-dash projet
         $url = env('ADMIN_URL');
         $link = sprintf('%s/password-reset/%s/%s', $url, $user->email, $token);
         $this->subject = sprintf('%s Password Reset', env('APP_NAME'));

@@ -4,8 +4,6 @@ namespace App;
 
 use App\Mail\PasswordResetMessage;
 use App\Traits\GeneratesUuid;
-use App\ValidationTrait;
-use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -142,7 +140,7 @@ class User extends BaseModel implements
      *
      * @return bool
      */
-    public function hasRoleById(String $roleId) : Bool
+    public function hasRoleById(string $roleId): bool
     {
         $cacheKey = sprintf(
             '_user_m_has_role_id_u_%s_r_%s_',
@@ -180,7 +178,7 @@ class User extends BaseModel implements
      *
      * @return bool
      */
-    public function hasRoleByName(String $role) : Bool
+    public function hasRoleByName(string $role): bool
     {
         $cacheKey = sprintf(
             '_user_has_role_name_u_%s_r_%s_',

@@ -2,8 +2,8 @@
 
 use App\Events\UserCreated;
 use App\Listeners\OnUserCreated;
-use App\Mail\ConfirmAccountMessage;
 use App\Mail\AdminNewUserMessage;
+use App\Mail\ConfirmAccountMessage;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;

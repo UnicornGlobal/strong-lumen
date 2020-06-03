@@ -20,14 +20,14 @@ return [
         'X-CSRF-Token',
         'App',
         'User-Agent',
-        'Authorization'
+        'Authorization',
     ],
     'allowed_methods'          => [
         'GET',
         'POST',
         'PUT',
         'DELETE',
-        'OPTIONS'
+        'OPTIONS',
     ],
     'exposed_headers'          => ['Authorization'],
     'max_age'                  => 0,

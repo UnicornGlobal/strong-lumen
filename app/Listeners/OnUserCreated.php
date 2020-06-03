@@ -3,9 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\UserCreated;
-use App\Mail\ConfirmAccountMessage;
 use App\Mail\AdminNewUserMessage;
-use Illuminate\Support\Facades\Log;
+use App\Mail\ConfirmAccountMessage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 
