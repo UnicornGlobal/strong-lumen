@@ -21,6 +21,9 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
         $this->adminRole = Role::getByName('admin');
         $this->adminRoleId = $this->adminRole->_id;
 
+        $this->systemRole = Role::getByName('system');
+        $this->systemRoleId = $this->systemRole->_id;
+
         // Normal User
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -31,6 +34,19 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
             'created_by' => 1,
             'updated_by' => 1,
             'user_id'    => $this->user->id,
+            'role_id'    => $this->userRole->id,
+        ]);
+
+        // Second Normal User
+        $this->secondUser = factory(User::class)->create([
+            'password' => Hash::make('password'),
+        ]);
+        $this->secondUserId = $this->secondUser->_id;
+
+        UserRole::create([
+            'created_by' => 1,
+            'updated_by' => 1,
+            'user_id'    => $this->secondUser->id,
             'role_id'    => $this->userRole->id,
         ]);
 

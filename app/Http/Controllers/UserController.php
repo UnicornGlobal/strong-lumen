@@ -35,8 +35,6 @@ class UserController extends Controller
         $this->isValidUserID($userId);
 
         $user = User::with([
-            'startup_company',
-            'investment_company',
             'profile_picture',
         ])->where('_id', $userId)->first();
 

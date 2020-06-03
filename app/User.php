@@ -4,6 +4,7 @@ namespace App;
 
 use App\Mail\PasswordResetMessage;
 use App\Traits\GeneratesUuid;
+use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
