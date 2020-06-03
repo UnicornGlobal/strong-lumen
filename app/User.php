@@ -11,6 +11,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
@@ -26,6 +27,10 @@ class User extends BaseModel implements
     use SoftDeletes;
     use CanResetPassword;
     use GeneratesUuid;
+
+    protected $with = [
+        'profile_picture',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -128,16 +133,74 @@ class User extends BaseModel implements
     }
 
     /**
-     * Check if the user has a specified role.
+     * Check if the user has a specified role by _id.
      *
      * @param $role
      *
      * @return bool
      */
-    public function hasRole($roleId)
+    public function hasRoleById(String $roleId) : Bool
     {
+        $cacheKey = sprintf(
+            '_user_m_has_role_id_u_%s_r_%s_',
+            $this->_id,
+            $roleId
+        );
+
+        $result = Cache::tags([
+            'users',
+            'roles',
+        ])->get($cacheKey);
+
+        if ($result) {
+            return $result;
+        }
+
         foreach ($this->roles()->get() as $userRole) {
             if ($userRole->_id === $roleId) {
+                Cache::tags([
+                    'users',
+                    'roles',
+                ])->put($cacheKey, true);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the user has a specified role by name.
+     *
+     * @param $role
+     *
+     * @return bool
+     */
+    public function hasRoleByName(String $role) : Bool
+    {
+        $cacheKey = sprintf(
+            '_user_has_role_name_u_%s_r_%s_',
+            $this->_id,
+            $role
+        );
+
+        $result = Cache::tags([
+            'users',
+            'roles',
+        ])->get($cacheKey);
+
+        if ($result) {
+            return $result;
+        }
+
+        foreach ($this->roles as $userRole) {
+            if ($userRole->name === $role) {
+                Cache::tags([
+                    'users',
+                    'roles',
+                ])->put($cacheKey, true);
+
                 return true;
             }
         }
@@ -154,8 +217,24 @@ class User extends BaseModel implements
     {
         $role = Role::loadFromUuid($roleId);
 
+        if ($this->hasRoleByName('system')) {
+            throw new Exception('Cannot add roles to a system user');
+        }
+
+        if ($role->name === 'system') {
+            throw new Exception('Cannot assign the system role');
+        }
+
+        if ($role->name === 'user') {
+            throw new Exception('Cannot assign the user role');
+        }
+
+        if ($role->name === 'admin' && !Auth::user()->hasRoleByName('admin')) {
+            throw new Exception('Only admins can assign the admin role');
+        }
+
         if (!empty($role)
-            && !$this->hasRole($role->_id)) {
+            && !$this->hasRoleById($role->_id)) {
             $this->roles()->syncWithoutDetaching(
                 [
                     $role->id => [
@@ -165,6 +244,11 @@ class User extends BaseModel implements
                 ]
             );
         }
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 
     /**
@@ -174,11 +258,33 @@ class User extends BaseModel implements
      */
     public function revokeRole($roleId)
     {
+        if ($this->hasRoleByName('system')) {
+            throw new Exception('Cannot revoke roles from the system user');
+        }
+
         $role = Role::loadFromUuid($roleId);
-        if ($this->hasRole($roleId)) {
+
+        if ($role->name === 'system') {
+            throw new Exception('Cannot revoke the system role');
+        }
+
+        if ($role->name === 'user') {
+            throw new Exception('Cannot revoke the user role');
+        }
+
+        if ($role->name === 'admin' && !Auth::user()->hasRoleByName('admin')) {
+            throw new Exception('Only admins can revoke the admin role');
+        }
+
+        if ($this->hasRoleById($roleId)) {
             $this->roles()->detach(
                 $role->id
             );
         }
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 }

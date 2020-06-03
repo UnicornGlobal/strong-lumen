@@ -26,7 +26,7 @@ class RolesMiddleware
             throw new \Exception('User not logged in.');
         }
 
-        if (!is_null($model) && $model->is_active && Auth::user()->hasRole($model->_id)) {
+        if (!is_null($model) && $model->is_active && Auth::user()->hasRoleById($model->_id)) {
             return $next($request);
         }
 

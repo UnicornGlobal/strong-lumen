@@ -219,7 +219,7 @@ class UserController extends Controller
         $user = User::loadFromUuid($userId);
 
         if ($user->roles->count() === 1 &&
-            $user->hasRole(Role::where('name', 'user')->first()->_id)) {
+            $user->hasRoleByName('user')) {
             $user->delete();
 
             Cache::tags([

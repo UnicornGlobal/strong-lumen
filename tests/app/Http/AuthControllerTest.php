@@ -24,12 +24,20 @@ class AuthControllerTest extends TestCase
         $result = json_decode($this->response->getContent());
 
         $this->assertEquals(5, count((array) $result));
-        $this->assertEquals(8, count((array) $result->user));
+        $this->assertEquals(9, count((array) $result->user));
 
         $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
         $this->assertObjectHasAttribute('user', $result);
         $this->assertObjectHasAttribute('jwt', $result);
+
+        $this->assertObjectHasAttribute('username', $result->user);
+        $this->assertObjectHasAttribute('first_name', $result->user);
+        $this->assertObjectHasAttribute('last_name', $result->user);
+        $this->assertObjectHasAttribute('email', $result->user);
+        $this->assertObjectHasAttribute('mobile', $result->user);
+        $this->assertObjectHasAttribute('confirmed', $result->user);
+        $this->assertObjectHasAttribute('profile_picture', $result->user);
 
         $this->assertEquals($user->_id, $result->user->_id);
         $this->assertEquals($user->email, $result->user->email);
@@ -41,24 +49,15 @@ class AuthControllerTest extends TestCase
     public function testLogout()
     {
         // Get the test user
-        $user = User::where('_id', env('TEST_USER_ID'))->first();
-
-        // Login without those those details
         $this->post('/login', [
-            'username' => 'user',
-            'password' => 'user',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+            'username' => $this->user->username,
+            'password' => 'password',
+        ]);
 
         $result = json_decode($this->response->getContent());
-
-        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
-
-        $this->assertObjectHasAttribute('user', $result);
-        $this->assertObjectHasAttribute('jwt', $result);
-
         $token = $result->jwt;
 
-        $this->post('/logout', [], [
+        $this->actingAs($this->user)->post('/logout', [], [
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
@@ -74,41 +73,27 @@ class AuthControllerTest extends TestCase
      */
     public function testChangePassword()
     {
-        // Get the test user
-        $user = User::where('_id', env('TEST_USER_ID'))->first();
-
-        // Login without those those details
         $this->post('/login', [
-            'username' => 'user',
-            'password' => 'user',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+            'username' => $this->user->username,
+            'password' => 'password',
+        ]);
 
         $this->assertEquals('200', $this->response->status());
 
         $result = json_decode($this->response->getContent());
-
-        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
-
-        $this->assertObjectHasAttribute('user', $result);
-        $this->assertObjectHasAttribute('jwt', $result);
-
         $token = $result->jwt;
 
-        // Login without those those details
-        $this->post('/api/users/change-password', [
-            'username'    => 'user',
-            'password'    => 'user',
+        $this->actingAs($this->user)->post('/api/users/change-password', [
+            'username'    => $this->user->username,
+            'password'    => 'password',
             'newpassword' => 'newpassword',
         ], [
-            'Debug-Token'   => env('DEBUG_TOKEN'),
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
         $this->assertEquals('200', $this->response->status());
 
-        $this->post('/logout', [], [
-            'Authorization' => sprintf('Bearer %s', $token),
-        ]);
+        $this->actingAs($this->user)->post('/logout');
 
         $this->assertEquals('200', $this->response->status());
 
@@ -116,43 +101,29 @@ class AuthControllerTest extends TestCase
 
         $this->assertStringContainsString('Successfully logged out', $result->message);
 
+        $this->user->refresh();
+
         // Login without those those details
         $this->post('/login', [
-            'username' => 'user',
+            'username' => $this->user->username,
             'password' => 'newpassword',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+        ]);
 
         $result = json_decode($this->response->getContent());
-
-        $this->assertEquals(5, count((array) $result));
-        $this->assertEquals(8, count((array) $result->user));
-
-        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
-
-        $this->assertObjectHasAttribute('user', $result);
-        $this->assertObjectHasAttribute('jwt', $result);
-
-        $this->assertEquals($user->_id, $result->user->_id);
-        $this->assertEquals($user->email, $result->user->email);
-
         $token = $result->jwt;
 
         // Login without those those details
         $this->post('/api/users/change-password', [
-            'username'    => 'user',
+            'username'    => $this->user->username,
             'password'    => 'newpassword',
-            'newpassword' => 'user',
+            'newpassword' => 'password',
         ], [
-            'Debug-Token'   => env('DEBUG_TOKEN'),
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
         $this->assertEquals('200', $this->response->status());
 
-        $this->post('/logout', [], [
-            'Authorization' => sprintf('Bearer %s', $token),
-        ]);
-
+        $this->actingAs($this->user)->post('/logout');
         $this->assertEquals('200', $this->response->status());
     }
 
@@ -161,41 +132,25 @@ class AuthControllerTest extends TestCase
      */
     public function testChangePasswordSamePassword()
     {
-        // Get the test user
-        $user = User::where('_id', env('TEST_USER_ID'))->first();
-
-        // Login without those those details
         $this->post('/login', [
-            'username' => 'user',
-            'password' => 'user',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+            'username' => $this->user->username,
+            'password' => 'password',
+        ]);
 
         $this->assertEquals('200', $this->response->status());
-
         $result = json_decode($this->response->getContent());
         $token = $result->jwt;
 
         $this->post('/api/users/change-password', [
-            'username'    => 'user',
-            'password'    => 'user',
-            'newpassword' => 'user',
+            'username'    => $this->user->username,
+            'password'    => 'password',
+            'newpassword' => 'password',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
         $this->assertEquals('422', $this->response->status());
         $this->assertEquals('{"newpassword":["The newpassword and password must be different."]}', $this->response->getContent());
-
-        $this->post('/api/users/change-password', [
-            'username'    => 'user',
-            'password'    => 'xyz',
-            'newpassword' => 'newstrongpassword',
-        ], [
-            'Authorization' => sprintf('Bearer %s', $token),
-        ]);
-
-        $this->assertEquals('{"error":"There was a problem changing the password."}', $this->response->getContent());
-        $this->assertEquals('500', $this->response->status());
     }
 
     /**
@@ -215,14 +170,36 @@ class AuthControllerTest extends TestCase
         $token = $result->jwt;
 
         $this->post('/api/users/change-password', [
-            'username' => 'user',
-            'password' => 'user',
+            'username' => $this->user->username,
+            'password' => 'password',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
         $this->assertEquals('{"newpassword":["The newpassword field is required."]}', $this->response->getContent());
         $this->assertEquals('422', $this->response->status());
+
+
+        $this->post('/api/users/change-password', [
+            'username' => $this->user->username,
+            'newpassword' => 'password',
+        ], [
+            'Authorization' => sprintf('Bearer %s', $token),
+        ]);
+
+        $this->assertEquals('{"password":["The password field is required."],"newpassword":["The newpassword and password must be different."]}', $this->response->getContent());
+        $this->assertEquals('422', $this->response->status());
+
+        $this->post('/api/users/change-password', [
+            'username'    => $this->user->username,
+            'password'    => 'xyz',
+            'newpassword' => 'newstrongpassword',
+        ], [
+            'Authorization' => sprintf('Bearer %s', $token),
+        ]);
+
+        $this->assertEquals('{"error":"There was a problem changing the password."}', $this->response->getContent());
+        $this->assertEquals('500', $this->response->status());
     }
 
     /**
@@ -234,15 +211,9 @@ class AuthControllerTest extends TestCase
         $this->post('/login', [
             'username' => 'user',
             'password' => 'user',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+        ]);
 
         $result = json_decode($this->response->getContent());
-
-        $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
-
-        $this->assertObjectHasAttribute('user', $result);
-        $this->assertObjectHasAttribute('jwt', $result);
-
         $token = $result->jwt;
 
         $this->post('/refresh', [], [
@@ -250,7 +221,6 @@ class AuthControllerTest extends TestCase
         ]);
 
         $this->assertEquals('200', $this->response->status());
-
         $result = json_decode($this->response->getContent());
 
         $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
