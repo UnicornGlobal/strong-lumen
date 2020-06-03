@@ -140,7 +140,7 @@ class UploadControllerTest extends TestCase
 
     public function testUploadDocument()
     {
-        Storage::fake('docs');
+        Storage::fake('local_docs');
 
         $file = UploadedFile::fake()->create('document.pdf', 1000);
 
@@ -164,6 +164,9 @@ class UploadControllerTest extends TestCase
 
         $this->assertEquals('Document', $document->title);
         $this->assertEquals('application/pdf', $document->mime);
+
+        Storage::disk('local_docs')->assertMissing('document.pdf');
+        Storage::disk('local_docs')->assertExists(sprintf('%s.pdf', $document->file_key));
     }
 
     public function testBigFileFail()
@@ -282,7 +285,7 @@ class UploadControllerTest extends TestCase
     {
         $this->actingAs($this->user)->call(
             'GET',
-            '/api/download/invalid'
+            '/api/download/document/invalid'
         );
 
         $this->assertResponseStatus(500);
