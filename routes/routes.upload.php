@@ -32,3 +32,20 @@ $router->group(
         });
     }
 );
+
+/*
+ * This lives outside of the grouping because of middleware issues
+ * on Storage::download calls.
+ *
+ * The response object doesn't have the headers() method, so it
+ * cannot append the headers defined in the middlewares
+ */
+$router->get('/api/download/document/{documentId}', [
+    'as'         => 'download.document',
+    'middleware' => [
+        'auth:api',
+        'throttle',
+        'cors',
+    ],
+    'uses' => 'UploadController@downloadDocument',
+]);

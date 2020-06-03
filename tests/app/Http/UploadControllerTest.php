@@ -267,14 +267,14 @@ class UploadControllerTest extends TestCase
 
         $this->actingAs($this->user)->call(
             'GET',
-            sprintf('/api/download/%s', $documentId),
+            sprintf('/api/download/document/%s', $documentId),
         );
 
         $this->assertResponseStatus(200);
 
         $disposition = $this->response->headers->get('content-disposition');
         $type = $this->response->headers->get('content-type');
-        $this->assertEquals($disposition, 'attachment; filename="Download"');
+        $this->assertEquals($disposition, 'attachment; filename=Document');
         $this->assertEquals($type, 'application/pdf');
     }
 

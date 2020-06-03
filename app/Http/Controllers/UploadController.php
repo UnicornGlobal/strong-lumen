@@ -106,6 +106,13 @@ class UploadController extends Controller
         return response()->json($document, 201);
     }
 
+    public function downloadDocument(String $documentId)
+    {
+        $document = Document::loadFromUuid($documentId);
+
+        return Storage::disk($this->getDocumentStorage())->download($document->file_url, $document->title);
+    }
+
     /**
      * Get the location of the documents based on the environment.
      *
