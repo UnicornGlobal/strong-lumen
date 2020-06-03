@@ -106,7 +106,7 @@ class UploadController extends Controller
         return response()->json($document, 201);
     }
 
-    public function downloadDocument(String $documentId)
+    public function downloadDocument(string $documentId)
     {
         $document = Document::loadFromUuid($documentId);
 

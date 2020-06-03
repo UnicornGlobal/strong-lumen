@@ -24,7 +24,7 @@ class RolesMiddleware
      *
      * @return mixed
      */
-    public function handle($request, Closure $next, String $requiredRole)
+    public function handle($request, Closure $next, string $requiredRole)
     {
         if (empty(Auth::user())) {
             $this->throwValidationExceptionMessage('User not logged in.');

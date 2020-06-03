@@ -2,8 +2,6 @@
 
 use App\Role;
 use App\User;
-use App\UserRole;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 use Webpatser\Uuid\Uuid;
 

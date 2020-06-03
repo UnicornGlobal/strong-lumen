@@ -15,7 +15,7 @@ use Webpatser\Uuid\Uuid;
 */
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
-    $username = rand(0, 500) . $faker->email;
+    $username = rand(0, 500).$faker->email;
 
     return [
         'username'     => $username,

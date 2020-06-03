@@ -38,7 +38,6 @@ class UserController extends Controller
             'profile_picture',
         ])->where('_id', $userId)->first();
 
-
         return response()->json($user);
     }
 
@@ -205,7 +204,7 @@ class UserController extends Controller
     {
         $users = User::with([
             'roles:_id,name',
-            'profile_picture'
+            'profile_picture',
         ])->get();
 
         return response()->json(compact('users'));

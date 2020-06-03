@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 trait Flushable
 {
     /**
-     * Flushes the current models cache tags
+     * Flushes the current models cache tags.
      */
     public static function bootFlushable()
     {
@@ -33,7 +33,7 @@ trait Flushable
     }
 
     /**
-     * Allows any model to force a cache flush for itself
+     * Allows any model to force a cache flush for itself.
      */
     public function flush()
     {
