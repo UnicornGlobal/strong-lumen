@@ -48,12 +48,13 @@ class BaseModel extends Model
         return $result;
     }
 
-    protected static function getTagFromClassName(String $className) : String
+    protected static function getTagFromClassName(string $className): string
     {
         $pieces = explode('\\', $className);
         $index = count($pieces);
         $result = strtolower(sprintf('%ss', $pieces[$index - 1] ?: 'cache'));
         $tag = Str::plural($result);
+
         return $tag;
     }
 

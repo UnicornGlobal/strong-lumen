@@ -2,8 +2,8 @@
 
 namespace App;
 
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 trait ValidationTrait
 {

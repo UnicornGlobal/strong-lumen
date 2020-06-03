@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\User;
-use Illuminate\Support\Facades\Log;
 
 class UserCreated extends Event
 {

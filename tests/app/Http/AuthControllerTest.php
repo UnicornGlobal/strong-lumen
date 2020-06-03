@@ -179,9 +179,8 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('{"newpassword":["The newpassword field is required."]}', $this->response->getContent());
         $this->assertEquals('422', $this->response->status());
 
-
         $this->post('/api/users/change-password', [
-            'username' => $this->user->username,
+            'username'    => $this->user->username,
             'newpassword' => 'password',
         ], [
             'Authorization' => sprintf('Bearer %s', $token),
