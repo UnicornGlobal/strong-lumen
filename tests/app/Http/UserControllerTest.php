@@ -19,7 +19,7 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(8, count($resultArray));
+        $this->assertEquals(9, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
@@ -41,10 +41,15 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(9, count($resultArray));
+        $this->assertEquals(11, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
+
+        $this->assertObjectHasAttribute('roles', $resultObject);
+        $this->assertObjectHasAttribute('documents', $resultObject);
+        $this->assertEmpty($resultObject->documents);
+        $this->assertEquals(1, count($resultObject->roles));
 
         // Should have an email
         $this->assertEquals('developer@example.com', $resultObject->email);
@@ -118,9 +123,6 @@ class UserControllerTest extends TestCase
         $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
-        $resultArray = json_decode($this->response->getContent(), true);
-
-        $this->assertEquals(8, count($resultArray));
 
         // Details should have changed
         $this->assertEquals('Changed', $resultObject->first_name);
@@ -134,18 +136,31 @@ class UserControllerTest extends TestCase
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
-        // Update own details
+        // Invalid
         $this->actingAs($user)->post('/api/users/4', [
             'firstName' => 'Changed',
             'lastName'  => 'Changed',
         ]);
 
+        $this->assertEquals('500', $this->response->status());
+
+        $this->assertEquals(
+            '{"error":"Invalid User ID"}',
+            $this->response->getContent()
+        );
+
+        // Other user
+        $this->actingAs($this->user)->post(sprintf('/api/users/%s', $this->secondUserId), [
+            'firstName' => 'Changed',
+            'lastName'  => 'Changed',
+        ]);
+
+        $this->assertEquals('500', $this->response->status());
+
         $this->assertEquals(
             '{"error":"Illegal attempt to adjust another users details. The suspicious action has been logged."}',
             $this->response->getContent()
         );
-
-        $this->assertEquals('500', $this->response->status());
     }
 
     public function testAdminCanGetAllUsers()
