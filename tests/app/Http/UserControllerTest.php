@@ -62,7 +62,7 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(9, count($resultArray));
+        $this->assertEquals(10, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
@@ -83,7 +83,7 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(11, count($resultArray));
+        $this->assertEquals(12, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);

@@ -24,7 +24,7 @@ class AuthControllerTest extends TestCase
         $result = json_decode($this->response->getContent());
 
         $this->assertEquals(5, count((array) $result));
-        $this->assertEquals(9, count((array) $result->user));
+        $this->assertEquals(10, count((array) $result->user));
 
         $this->assertStringContainsString('Bearer', $this->response->headers->get('Authorization'));
 
@@ -36,6 +36,7 @@ class AuthControllerTest extends TestCase
         $this->assertObjectHasAttribute('last_name', $result->user);
         $this->assertObjectHasAttribute('email', $result->user);
         $this->assertObjectHasAttribute('mobile', $result->user);
+        $this->assertObjectHasAttribute('location', $result->user);
         $this->assertObjectHasAttribute('confirmed', $result->user);
         $this->assertObjectHasAttribute('profile_picture', $result->user);
 
