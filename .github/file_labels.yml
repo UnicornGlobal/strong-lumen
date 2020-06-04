@@ -1,0 +1,105 @@
+javascript:
+  - '**/*.js'
+html:
+  - '**/*.html'
+styles:
+  - '**/*.css'
+  - '**/*.scss'
+  - '**/*.sass'
+vue:
+  - '**/*.vue'
+unit-tests:
+  - 'test/**/*.spec.js'
+  - 'tests/**/*'
+  - 'phpunit.xml'
+integration-tests:
+  - 'cypress/**/*.spec.js'
+database:
+  - '**/*.sql'
+migrations:
+  - 'database/migrations/*'
+seed-data:
+  - 'database/seeds/*'
+json:
+  - '**/*.json'
+xml:
+  - '**/*.xml'
+documentation:
+  - '**/*.md'
+scripts:
+  - '**/*.sh'
+images:
+  - '**/*.png'
+  - '**/*.jpg'
+  - '**/*.jpeg'
+  - '**/*.svg'
+  - '**/*.gif'
+  - '**/*.tiff'
+  - '**/*.webp'
+  - '**/*.ico'
+dependencies:
+  - 'package-lock.json'
+  - 'package.json'
+  - 'yarn.json'
+  - 'yarn.lock'
+  - 'composer.json'
+  - 'composer.lock'
+webpack-config:
+  - 'webpack*'
+automation:
+  - '.travis.yml'
+  - 'scripts/**/*'
+  - '.devbots/**/*'
+  - '.github/**/*'
+fonts:
+  - '**/*.ttf'
+  - '**/*.woff'
+  - '**/*.woff2'
+configuration:
+  - '**/*.yml'
+  - '**/*.yaml'
+  - '**/*.json'
+  - '**/*.conf'
+  - '.gitignore'
+  - '.gitconfig'
+  - '**/.gitkeep'
+  - '**/.htaccess'
+  - '**/*.config.*'
+  - '**/*.conf.*'
+  - 'eslint*'
+  - 'wordlist.txt'
+  - '**/*.config.*'
+  - 'config/*'
+examples:
+  - '**/*.example'
+invalid:
+  - '**/*.bak'
+  - '**/*.tmp'
+  - '**/*.temp'
+  - '**/*.old'
+  - '**/*.diff'
+  - '**/*.log'
+  - '**/*.zip'
+  - '**/*.tar'
+  - '**/*.pdf'
+  - '**/*.gz'
+  - '**/*.psd'
+  - '**/*.orig'
+  - '**/*.bin'
+  - '**/*.rar'
+  - '**/*.exe'
+  - 'node_modules'
+  - 'dist'
+  - 'coverage'
+  - '.DS_Store'
+  - 'vendor'
+critical:
+  - '**/*.sql'
+  - '**/*.sh'
+  - '.gitignore'
+jsx:
+  - '**/*.jsx'
+php:
+  - '**/*.php'
+templates:
+  - '**/*.blade.php'

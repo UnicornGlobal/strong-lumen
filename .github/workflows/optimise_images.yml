@@ -1,0 +1,24 @@
+name: Optimise Images
+on:
+  pull_request:
+    type:
+    - opened
+    paths:
+    - '**.jpg'
+    - '**.jpeg'
+    - '**.png'
+    - '**.webp'
+    - '**.ico'
+    - '**.svg'
+
+jobs:
+  optimise:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - uses: calibreapp/image-actions@1.1.0
+      with:
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        ignorePaths: 'node_modules/**,build,dist,coverage,tests,vendor,public'

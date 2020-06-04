@@ -1,0 +1,4 @@
+WIP:
+  title: ".*WIP.*"
+ready-to-merge:
+  mergeable: true

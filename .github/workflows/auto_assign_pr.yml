@@ -1,0 +1,29 @@
+name: Auto Assign PR
+on:
+  pull_request:
+    types:
+    - opened
+jobs:
+  author:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Assign Author to PR
+      uses: technote-space/assign-author@v1
+  # Uncomment once you have created the project on github
+  # project:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Assign PR to Project
+  #     uses: srggrs/assign-one-project-github-action@1.1.0
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       project: 'https://github.com/UnicornGlobal/strong-lumen/projects/1'
+  reviewers:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Assign Reviewers to PR
+      uses: kentaro-m/auto-assign-action@v1.1.0
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        configuration-path: ".github/review_groups.yml"

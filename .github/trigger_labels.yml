@@ -1,0 +1,16 @@
+# GitHub Workflow (c) Unicorn Global
+onApproved:
+  remove:
+    - in-progress
+    - changes-requested
+    - ready-for-review
+  set:
+    - approved
+    - merge-ready
+onChangesRequested:
+  remove:
+    - approved
+    - merge-ready
+  set:
+    - in-progress
+    - changes-requested

@@ -1,0 +1,25 @@
+# GitHub Workflow (c) Unicorn Global
+name: Validate Dependencies
+on:
+  pull_request:
+    paths:
+    - 'composer.json'
+    - 'composer.lock'
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Dependency cache
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-composer
+      with:
+        path: ~/.composer
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: Validate composer file
+      run: composer validate

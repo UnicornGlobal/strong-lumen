@@ -1,0 +1,102 @@
+# GitHub Workflow (c) Unicorn Global
+name: Build Status
+on:
+  pull_request:
+    paths:
+    - '**.php'
+    - 'composer.json'
+    - 'composer.lock'
+    - '.github/**'
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Wait for Status Checks'
+      id: checks
+      uses: UnicornGlobal/github-action-wait-for-status@master
+      with:
+        payload: |
+          {
+            "actions": [
+              "unit",
+              "phpcs",
+              "dependencies",
+              "markdown",
+              "secrets",
+              "shellcheck",
+              "spelling",
+              "yaml",
+              "conflicts",
+              "staging",
+              "production"
+            ],
+            "interval": 5
+          }
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    - name: 'Show details'
+      run: echo "${{ steps.checks.outputs.status }}" && echo "${{ steps.checks.outputs }}"
+    - name: 'Get run metadata'
+      id: metadata
+      uses: UnicornGlobal/get-run-metadata@v1.0.0
+      with:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    - name: 'Show run metadata'
+      run: echo ${{ steps.metadata.outputs.url }} && echo ${{ steps.metadata.outputs.id }} && echo ${{ steps.metadata.outputs.pr }}
+    - name: 'Show env'
+      run: echo ${{ github.ref }} && echo ${{ github.run_id }} && echo ${{ github.action }} && echo ${{ github.sha }}
+    - name: 'Get end time'
+      uses: gerred/actions/current-time@master
+      id: ended_at
+    - name: 'Show times'
+      run: echo ${{ steps.metadata.outputs.started_at }} && echo ${{ steps.ended_at.outputs.time }} && echo "2"
+    - name: 'Diff times'
+      uses: UnicornGlobal/get-time-diff@master
+      id: diff
+      with:
+        start: ${{ steps.metadata.outputs.started_at }}
+        end: ${{ steps.ended_at.outputs.time }}
+    - name: 'Notify success'
+      if: steps.checks.outputs.status == 'success'
+      uses: 8398a7/action-slack@v2.7.0
+      with:
+        status: custom
+        channel: ${{ secrets.SLACK_NOTIFICATION_CHANNEL }}
+        payload: |
+          {
+            username: "CI Status",
+            icon_emoji: ":robot_face:",
+            attachments: [
+              {
+                color: "good",
+                text: "Build <https://github.com/${{ github.repository }}/pull/${{ steps.metadata.outputs.pr }}/checks?check_run_id=${{ steps.metadata.outputs.id }}|#${{ github.run_number }}> (<https://github.com/${{ github.repository}}/commit/${{ steps.metadata.outputs.head_sha }}|${{ steps.metadata.outputs.head_sha7 }}>) of ${{ github.repository }}@${{ github.head_ref }} in PR <https://github.com/${{ github.repository }}/pull/${{ steps.metadata.outputs.pr }}|#${{ steps.metadata.outputs.pr }}> by ${{ github.actor }} passed in ${{ steps.diff.outputs.diff }}",
+              }
+            ]
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    - name: 'Notify Failure'
+      if: steps.checks.outputs.status != 'success'
+      uses: 8398a7/action-slack@v2.7.0
+      with:
+        status: custom
+        channel: ${{ secrets.SLACK_NOTIFICATION_CHANNEL }}
+        payload: |
+          {
+            username: "CI Status",
+            icon_emoji: ":robot_face:",
+            attachments: [
+              {
+                color: "warning",
+                text: "Build <https://github.com/${{ github.repository }}/pull/${{ steps.metadata.outputs.pr }}/checks?check_run_id=${{ steps.metadata.outputs.id }}|#${{ github.run_number }}> (<https://github.com/${{ github.repository}}/commit/${{ steps.metadata.outputs.head_sha }}|${{ steps.metadata.outputs.head_sha7 }}>) of ${{ github.repository }}@${{ github.head_ref }} in PR <https://github.com/${{ github.repository }}/pull/${{ steps.metadata.outputs.pr }}|#${{ steps.metadata.outputs.pr }}> by ${{ github.actor }} errored in ${{ steps.diff.outputs.diff }}",
+              }
+            ]
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    - name: 'Exit'
+      if: steps.checks.outputs.status != 'success'
+      run: echo "Please see status checks on the PR for details about the failure(s)" && exit 1

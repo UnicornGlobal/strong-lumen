@@ -1,0 +1,12 @@
+addReviewers: true
+addAssignees: author
+# 0 is all reviewers
+numberOfReviewers: 0
+reviewers:
+  # Uncomment and put the names of reviewers
+  # - example
+useReviewGroups: false
+filterLabels:
+  exclude:
+    - wip
+    - WIP

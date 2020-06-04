@@ -1,0 +1,23 @@
+name: Auto Assign Issue
+on:
+  issues:
+  issue_comment:
+jobs:
+  # Uncomment once you have made the project on github
+  # project:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Assign to Project
+  #     uses: srggrs/assign-one-project-github-action@1.1.0
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       project: 'https://github.com/UnicornGlobal/strong-lumen/projects/1'
+  lines:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Assign dev based on any linked lines of code
+      uses: estrada9166/issue-assigner@v1
+      with:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        WITH_COMMENTS: true

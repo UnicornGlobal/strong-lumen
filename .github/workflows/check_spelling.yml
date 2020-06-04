@@ -1,0 +1,21 @@
+# GitHub Workflow (c) Unicorn Global
+# Uses `spellcheck.yaml` and `wordlist.txt` files in this repo
+name: Check Spelling
+on:
+  pull_request:
+    paths:
+    - '**.txt'
+    - '**.html'
+    - '**.md'
+
+jobs:
+  spelling:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Additional info
+      run: echo 'If there are false positives you can add the words to whitelist.txt'
+    - name: Check for spelling errors
+      uses: UnicornGlobal/spellcheck-github-actions@master
