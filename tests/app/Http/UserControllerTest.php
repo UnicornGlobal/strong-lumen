@@ -171,7 +171,7 @@ class UserControllerTest extends TestCase
 
         // Update mobile and location
         $this->actingAs($user)->post('/api/users/'.env('TEST_USER_ID'), [
-            'mobile' => '+27822222222',
+            'mobile'    => '+27822222222',
             'location'  => 'Somewhere',
         ]);
 
