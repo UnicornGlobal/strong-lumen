@@ -49,7 +49,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        return parent::render($request, $e);
         $environment = env('APP_ENV');
         $required = env('DEBUG_TOKEN');
         $debugMode = env('APP_DEBUG');
