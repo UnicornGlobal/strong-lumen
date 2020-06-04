@@ -63,12 +63,21 @@ class RegistrationController extends BaseController
             'updated_by'   => 1,
         ]);
 
-        $this->addRole('user', $newUser);
+        $role = Role::getByName('user');
+        $newUser->roles()->syncWithoutDetaching(
+            [
+                $role->id => [
+                    'created_by' => $newUser->id,
+                    'updated_by' => $newUser->id,
+                ],
+            ]
+        );
 
         DB::commit();
 
         Cache::tags([
             'users',
+            'roles',
         ])->flush();
 
         event(new UserCreated($newUser));
@@ -98,29 +107,5 @@ class RegistrationController extends BaseController
         ])->flush();
 
         return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
-    }
-
-    // Assigning a role to the newly created user
-    public function addRole($roleName, $newUser)
-    {
-        $role = Role::getByName($roleName);
-
-        if (!$role) {
-            $this->throwValidationExceptionMessage('There was a problem assigning the role.');
-        }
-
-        $newUser->roles()->syncWithoutDetaching(
-            [
-                $role->id => [
-                    'created_by' => $newUser->id,
-                    'updated_by' => $newUser->id,
-                ],
-            ]
-        );
-
-        Cache::tags([
-            'users',
-            'roles',
-        ])->flush();
     }
 }
