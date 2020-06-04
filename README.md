@@ -4,15 +4,17 @@
 
 # strong-lumen
 
-Lumen, but with a bunch of security-centric features 💪
+Lumen, but with a bunch of security focused features 💪
+
+v7.x
 
 # Middleware
 
-We added modern security Middleware for Lumen to ensure our APIs are a litte
-more hardened than a default install.
+We added modern security Middleware for Lumen to ensure our APIs are a
+little more hardened than a default install.
 
-The internet is a dangerous place, and non-security minded developers often
-make mistakes that could easily be avoided.
+The internet is a dangerous place, and non-security minded developers
+often make mistakes that could easily be avoided.
 
 ## App ID
 
@@ -79,8 +81,6 @@ Too many consecutive attempts. Try again in 5s
 Includes a set of Common security headers for browsers that support them.
 
 Useful for defense against many different types of common attacks.
-
-The aim is to support the [OWASP Secure Headers Project Specification](https://www.owasp.org/index.php/OWASP_Secure_Headers_Project)
 
 ### Content Security Policy
 
@@ -255,7 +255,7 @@ Additionally, users are assigned an `_id` and an `api_key` when getting created.
 
 Confirmation codes are sent out via email
 
-See the RegistrationController for full details.
+See the `RegistrationController` for full details.
 
 # Soft Deletes
 
@@ -316,6 +316,42 @@ Set an environment variable in Travis for this.
 
 Travis also requires additional environment variables if you want to auto deploy.
 
+# GitHub Workflows
+
+There are several workflows available. You need to set certain github
+secrets in order for the workflows to operate correctly.
+
+- PERSONAL_ACCESS_TOKEN
+- SLACK_NOTIFICATION_CHANNEL
+- SLACK_WEBHOOK
+
+You need to set additional variables in the following files:
+
+- `auto_assign_issue.yml`
+- `auto_assign_pr.yml`
+
+## Label Sync
+
+GitHub labels get synched with the `github_label_setup.yml` file.
+
+If you want to change your GH label setup you must change this file.
+
+Any changes you make directly on GH will be removed on the following
+sync.
+
+Labels get automatically applied to PRs depending on the contents.
+
+## Review Groups
+
+You can configure who gets automatically tagged for review in the
+`review_groups.yml` file.
+
+## Trafico
+
+Trafico is a 3rd party GH app that provides some nice features. There is
+a config file included. It's not vital to install this app, but if you
+do you will unlock a lot of nice automation.
+
 # Emails
 
 There are 2 included emailers that form part of the registration and
@@ -324,23 +360,29 @@ verification processes.
 * Confirm Account
 * Password Reset
 
-# Additional Packages
+# Queue and Events
 
-These are the additional support packages in this project
+When a user signs up an event is fired which sends out emails to the
+new user as well as the admin.
 
-* tymon/jwt-auth - Provides JWT Functionality
-* phpseclib/phpseclib - Provides additional security features and algos
-* barryvdh/laravel-cors - Provides CORS functionality
-* webpatser/laravel-uuid - Provides the UUID functionality
-* illuminate/mail - For sending out confirm codes and password resets
-* guzzlehttp/guzzle - For network comms
+You can use these events as a starting block for building non-blocking
+functionality.
+
+# Cache
+
+Cache is pre-configured with tag support.
+
+If you use the `::loadFromUuid($uuid)` method you will benefit from
+automatic cache creation and invalidation functionality built into the
+base model.
 
 # Required Configuration
 
-* Cache - Used for the Throttle
 * Mail - Used for PW resets and Confirm codes
+* Cache - Used for the Throttle
+* Queue - Used for Email and Events
 
-It is suggested that you use Redis for your cache.
+It is suggested that you use Redis for your cache and queue.
 
 # .env file notes
 
@@ -352,39 +394,13 @@ Please replace with actual UUIDs for your .env file
 
 It is suggested you configure your server with the following:
 
-* ext-libsodium - Additional modern algos
-* ext-mcrypt - Speeds up some crypto operations
-* ext-gmp (GNU Multiple Precision) - Speeds up arbitrary precision integer calculations
+* `ext-libsodium` - Additional modern algos
+* `ext-mcrypt` - Speeds up some crypto operations
+* `ext-gmp` (GNU Multiple Precision) - Speeds up arbitrary precision integer calculations
 
 # Sessions
 
 In case you're wondering, this is stateless. There are no sessions.
-
-# Other Changes
-
-## bootstrap/app.php
-
-* Enabled Facades
-* Enabled Eloquent
-* Registered Middleware
-* Registered CORS and JWT Providers
-* Call CORS Config
-* Call Mail Config
-
-# Default Routes
-
-## Registration
-
-# Roadmap
-
-These features have not been included yet, but are planned.
-
-## Secure Headers
-
-* Public Key Pinning Extension for HTTP (HPKP)
-* X-Permitted-Cross-Domain-Policies
-* Referrer-Policy
-* Expect-CT (Certificate Transparency)
 
 # Contributing
 
@@ -393,12 +409,7 @@ security.
 
 Feel free to contribute back.
 
-I'm sure there are hundereds of ways of improving upon this work. Let's 
+I'm sure there are hundreds of ways of improving upon this work. Let's
 make the internet a safer place, together.
 
-Security is everyones problem.
-
-# Acknowledgements
-
-* [Brian Maiyo](https://github.com/kiproping)
-* [Fergus Strangways-Dixon](https://github.com/fergusdixon)
+Security is everyone's problem.

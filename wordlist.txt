@@ -34,6 +34,8 @@ StyleCI
 jwt
 jwts
 api
+API
+APIs
 colour
 namespaced
 theming
