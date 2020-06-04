@@ -1,0 +1,15 @@
+name: Validate YAML Files
+on:
+  pull_request:
+    paths:
+    - '**.yml'
+    - '**.yaml'
+    - '.yamllint'
+jobs:
+  yaml:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ibiqlik/action-yamllint@master
+      with:
+        config_file: .yamllint.yml

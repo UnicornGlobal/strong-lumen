@@ -1,0 +1,25 @@
+# GitHub Workflow (c) Unicorn Global
+name: Label Actions
+on:
+  pull_request_review:
+  pull_request_review_comment:
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Label if Approved
+      uses: pullreminders/label-when-approved-action@master
+      env:
+        APPROVALS: "1"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ADD_LABEL: "approved"
+        REMOVE_LABEL: "ready-for-review"
+  triggers:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Label Triggers
+      uses: estrada9166/labeler@v1
+      with:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        CONFIG_PATH: '.github/trigger_labels.yml'

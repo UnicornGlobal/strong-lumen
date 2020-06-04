@@ -1,0 +1,13 @@
+name: Stuck PRs
+on:
+  schedule:
+    - cron: '0 */12 * * *' # Twice a day
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: loomble/pull-request-stuck-notifier-action@master
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'This PR appears to be stuck.'
+          search-query: 'repo:${{ github.repository }}'

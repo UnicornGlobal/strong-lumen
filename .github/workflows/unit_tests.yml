@@ -1,0 +1,68 @@
+name: Unit Tests
+on:
+  pull_request:
+    paths:
+    - '.github/**'
+    - '**.php'
+    - 'composer.json'
+    - 'composer.lock'
+
+jobs:
+  unit:
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: strong
+        ports:
+        - 3306
+    runs-on: ubuntu-latest
+    steps:
+    - name: Admin tools
+      run: sudo apt-get install php-pear php7.4-dev
+    - name: Install pcov
+      run: sudo pecl install pcov
+    - name: Info
+      run: php -i
+    - name: Setup
+      run: sudo phpdismod xdebug && sudo phpenmod pcov
+    - name: Start mysql
+      run: sudo /etc/init.d/mysql start
+    - name: Reset test password
+      run: mysqladmin -u root -p'root' password ''
+    - name: Make testing database
+      run: mysql -uroot -e "create database strong"
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Dependency cache
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-composer
+      with:
+        path: ~/.composer
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: Configure test environment
+      run: cp .env.example .env
+    - name: Set env var value from github secrets
+      run: echo "EXAMPLE_VARIABLE=${{ secrets.EXAMPLE_VARIABLE }}" >> .env
+    - name: Install dependencies
+      run: composer install
+    - name: Run migrations
+      run: php artisan migrate
+    - name: Run seeds
+      run: php artisan db:seed
+    - name: Run unit tests
+      id: unit
+      run: php -d extension=pcov.so -d pcov.enabled=1 -d xdebug.profiler_enable=0 -d memory_limit=-1 ./vendor/bin/phpunit --verbose
+    - name: Send coverage report
+      if: steps.unit.outputs.exit-code < 1
+      run: npx codecov test/unit/coverage/lcov.info -t ${{ secrets.CODECOV_TOKEN }}
+    - name: Fail if unit tests did not pass
+      if: steps.unit.outputs.exit-code > 0
+      run: echo "Unit tests failed!"; exit 1

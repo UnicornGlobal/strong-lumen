@@ -1,0 +1,55 @@
+# GitHub Workflow (c) Unicorn Global
+name: Code Style
+on:
+  pull_request:
+    paths:
+    - '**.php'
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Dependency cache
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-composer
+      with:
+        path: ~/.composer
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: Install
+      run: composer install
+      env:
+        CI: true
+    - name: Run phpcs
+      id: lint
+      run: ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1 app bootstrap database routes scripts config resources
+      continue-on-error: true
+    - name: Run phpcbf
+      run: ./vendor/bin/phpcbf app bootstrap database routes scripts config resources
+      continue-on-error: true
+    - name: Check is there are any lint fixes
+      id: changes
+      uses: UnicornGlobal/has-changes-action@master
+    - name: Info
+      run: echo ${{ steps.changes.outputs.changed }}
+    - name: Propose any changes
+      # Check if the PR is not raised by this workflow and the
+      # request is not from a fork of the project
+      if: (startsWith(github.head_ref, 'linting') == false) && github.event.pull_request.head.repo.full_name == github.repository && steps.changes.outputs.changed == 1
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        commit-message: "Lint fixes"
+        title: "Apply style linting changes"
+        labels: style-fixes, bot
+        branch: linting/${{ github.head_ref }}
+    - name: Fail if style check did not pass
+      if: steps.lint.outputs.exit-code > 0 || steps.changes.outputs.changed == 1
+      run: echo "Linting failed. See the 'Run phpcs' and 'Run phpcbf' steps for details. A pull request may have been opened for you with automatic style fixes."; exit 1
