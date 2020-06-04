@@ -63,7 +63,7 @@ class RegistrationController extends BaseController
             'updated_by'   => 1,
         ]);
 
-        $this->addRole(Role::where('name', 'user')->first()->_id, $newUser);
+        $this->addRole('user', $newUser);
 
         DB::commit();
 
@@ -78,54 +78,49 @@ class RegistrationController extends BaseController
 
     public function confirmEmail($token): RedirectResponse
     {
-        try {
-            $user = User::where('confirm_code', $token)->first();
+        $user = User::where('confirm_code', $token)->first();
 
-            if (!$user) {
-                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
-            }
-
-            if (null !== $user->confirmed_at) {
-                return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
-            }
-
-            $user->otp = Uuid::generate(4)->string;
-            $user->otp_created_at = Carbon::now();
-            $user->confirmed_at = date('Y-m-d H:i:s');
-            $user->save();
-
-            Cache::tags([
-                'users',
-            ])->flush();
-
-            return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
-        } catch (\Exception $e) {
-            header(sprintf('refresh:0; url=%s/login?invalidconfirmation=true', env('ADMIN_URL')));
-
-            return false;
+        if (!$user) {
+            return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
         }
+
+        if (null !== $user->confirmed_at) {
+            return redirect(sprintf('%s/login?invalidconfirmation=true', env('ADMIN_URL')));
+        }
+
+        $user->otp = Uuid::generate(4)->string;
+        $user->otp_created_at = Carbon::now();
+        $user->confirmed_at = date('Y-m-d H:i:s');
+        $user->save();
+
+        Cache::tags([
+            'users',
+        ])->flush();
+
+        return redirect(sprintf('%s/confirmed/%s', env('ADMIN_URL'), encrypt($user->otp)));
     }
 
     // Assigning a role to the newly created user
-    public function addRole($roleId, $newUser)
+    public function addRole($roleName, $newUser)
     {
-        try {
-            $role = Role::where('_id', $roleId)->first();
-            $newUser->roles()->syncWithoutDetaching(
-                [
-                    $role->id => [
-                        'created_by' => $newUser->id,
-                        'updated_by' => $newUser->id,
-                    ],
-                ]
-            );
+        $role = Role::getByName($roleName);
 
-            Cache::tags([
-                'users',
-                'roles',
-            ])->flush();
-        } catch (\Exception $e) {
+        if (!$role) {
             $this->throwValidationExceptionMessage('There was a problem assigning the role.');
         }
+
+        $newUser->roles()->syncWithoutDetaching(
+            [
+                $role->id => [
+                    'created_by' => $newUser->id,
+                    'updated_by' => $newUser->id,
+                ],
+            ]
+        );
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 }
