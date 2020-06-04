@@ -2,14 +2,10 @@
 
 use App\Role;
 use App\User;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 use Webpatser\Uuid\Uuid;
 
 class RoleMiddlewareTest extends TestCase
 {
-    // To keep DB clean
-    use DatabaseTransactions;
-
     public function testGoodRole()
     {
         // Admin user
@@ -88,7 +84,64 @@ class RoleMiddlewareTest extends TestCase
             )
         );
 
+        $this->assertResponseStatus(422);
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
+
+        // System ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot assign the system role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // System user
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                Role::getByName('system')->users()->first()->_id,
+                'roles/assign',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot add roles to a system user"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('user')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot assign the user role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID by non-admin
+        $this->actingAs($this->secondUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('admin')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
+        $this->assertResponseStatus(401);
     }
 
     public function testRevokeRole()
@@ -150,8 +203,64 @@ class RoleMiddlewareTest extends TestCase
             )
         );
 
-        $this->assertEquals('OK', $this->response->getContent());
         $this->assertResponseStatus(200);
+        $this->assertEquals('OK', $this->response->getContent());
+
+        // System ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke the system role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // System user
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                Role::getByName('system')->users()->first()->_id,
+                'roles/revoke',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke roles from the system user"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('user')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke the user role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID by non-admin
+        $this->actingAs($this->secondUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('admin')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
+        $this->assertResponseStatus(401);
     }
 
     public function testCreateRole()
@@ -168,6 +277,9 @@ class RoleMiddlewareTest extends TestCase
                 $internId
             )
         );
+
+        // Test a force flush
+        $this->user->flush();
 
         $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
         $roles = json_decode($this->response->getContent());

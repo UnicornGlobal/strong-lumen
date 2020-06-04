@@ -7,12 +7,9 @@ use App\User;
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     public function testResendVerification()
     {
         Mail::fake();

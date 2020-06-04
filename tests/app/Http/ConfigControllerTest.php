@@ -1,11 +1,7 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseTransactions;
-
 class ConfigControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     public function testGetConfig()
     {
         // The test user in our seed

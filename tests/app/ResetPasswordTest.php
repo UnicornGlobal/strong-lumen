@@ -2,12 +2,9 @@
 
 use App\Mail\PasswordResetMessage;
 use Illuminate\Support\Facades\Mail;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ResetPasswordTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /**
      * @return void
      */

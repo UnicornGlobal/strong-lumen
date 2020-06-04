@@ -5,10 +5,12 @@ use App\User;
 use App\UserRole;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Application;
+use Laravel\Lumen\Testing\DatabaseTransactions;
 
 abstract class TestCase extends Laravel\Lumen\Testing\TestCase
 {
     use InteractsWithExceptionHandling;
+    use DatabaseTransactions;
 
     public function setUp(): void
     {

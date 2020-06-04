@@ -7,12 +7,9 @@ use App\Mail\ConfirmAccountMessage;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class RegistrationControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     public static $code;
 
     /**

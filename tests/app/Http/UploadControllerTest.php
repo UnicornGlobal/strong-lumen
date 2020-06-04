@@ -4,12 +4,9 @@ use App\Document;
 use App\ProfilePicture;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UploadControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     public function testProfilePictureUpload()
     {
         Storage::fake('images');

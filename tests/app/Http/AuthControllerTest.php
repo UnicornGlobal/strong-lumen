@@ -1,12 +1,9 @@
 <?php
 
 use App\User;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class AuthControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /**
      * @return void
      */
