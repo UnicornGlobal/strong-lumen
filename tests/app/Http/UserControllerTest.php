@@ -1,13 +1,53 @@
 <?php
 
+use App\Events\ResendVerification;
+use App\Listeners\OnResendVerification;
+use App\Mail\ConfirmAccountMessage;
 use App\User;
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
-use Laravel\Lumen\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Mail;
 
 class UserControllerTest extends TestCase
 {
-    use DatabaseTransactions;
+    public function testResendVerification()
+    {
+        Mail::fake();
+        $this->expectsEvents('App\Events\ResendVerification');
+
+        $this->actingAs($this->user)->get('api/resend/verification');
+        $this->assertResponseStatus(200);
+    }
+
+    public function testResendVerificationEvent()
+    {
+        Mail::fake();
+
+        $listener = new OnResendVerification();
+        $listener->handle(new ResendVerification($this->user));
+
+        Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
+            $this->assertStringContainsString(sprintf('%s/confirm/', env('API_URL')), $mail->link);
+
+            $this->assertRegExp(
+                '/.*\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+                $mail->link
+            );
+
+            $render = $mail->build();
+            $this->assertEquals(sprintf('Confirm Your %s Account', env('APP_NAME')), $render->subject);
+            $this->assertEquals($this->user->email, $render->to[0]['address']);
+
+            $this->get($mail->link);
+
+            $this->assertResponseStatus(302);
+            $this->assertStringContainsString('Redirecting to <a href="', $this->response->getContent());
+            $this->assertStringContainsString('confirmed', $this->response->getContent());
+            $this->assertStringContainsString('refresh', $this->response->getContent());
+
+            return true;
+        });
+    }
 
     public function testGetUser()
     {
@@ -19,7 +59,7 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(8, count($resultArray));
+        $this->assertEquals(10, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
@@ -27,8 +67,7 @@ class UserControllerTest extends TestCase
         // Should have an email
         $this->assertEquals('developer@example.com', $resultObject->email);
 
-        // Response should be a 200
-        $this->assertEquals('200', $this->response->status());
+        $this->assertResponseStatus(200);
     }
 
     public function testGetSelf()
@@ -41,10 +80,15 @@ class UserControllerTest extends TestCase
         $resultObject = json_decode($this->response->getContent());
         $resultArray = json_decode($this->response->getContent(), true);
 
-        $this->assertEquals(9, count($resultArray));
+        $this->assertEquals(12, count($resultArray));
 
         // Should have username `user`
         $this->assertEquals('user', $resultObject->username);
+
+        $this->assertObjectHasAttribute('roles', $resultObject);
+        $this->assertObjectHasAttribute('documents', $resultObject);
+        $this->assertEmpty($resultObject->documents);
+        $this->assertEquals(1, count($resultObject->roles));
 
         // Should have an email
         $this->assertEquals('developer@example.com', $resultObject->email);
@@ -52,8 +96,7 @@ class UserControllerTest extends TestCase
         // Has no role
         $this->assertEquals(1, count($resultArray['roles']));
 
-        // Response should be a 200
-        $this->assertEquals('200', $this->response->status());
+        $this->assertResponseStatus(200);
 
         // Test with admin user to check roles in response
         $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
@@ -76,7 +119,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"There was a problem retrieving the user."}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testGetBadUser()
@@ -87,7 +130,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testGetBadUserFormat()
@@ -99,7 +142,7 @@ class UserControllerTest extends TestCase
 
         $this->assertEquals('{"error":"Invalid User ID"}', $this->response->getContent());
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 
     public function testChangeDetails()
@@ -118,13 +161,24 @@ class UserControllerTest extends TestCase
         $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
 
         $resultObject = json_decode($this->response->getContent());
-        $resultArray = json_decode($this->response->getContent(), true);
-
-        $this->assertEquals(8, count($resultArray));
 
         // Details should have changed
         $this->assertEquals('Changed', $resultObject->first_name);
         $this->assertEquals('Changed', $resultObject->last_name);
+
+        // Update mobile and location
+        $this->actingAs($user)->post('/api/users/'.env('TEST_USER_ID'), [
+            'mobile'    => '+27822222222',
+            'location'  => 'Somewhere',
+        ]);
+
+        $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
+
+        $resultObject = json_decode($this->response->getContent());
+
+        // Details should have changed
+        $this->assertEquals('+27822222222', $resultObject->mobile);
+        $this->assertEquals('Somewhere', $resultObject->location);
     }
 
     public function testChangeBadDetails()
@@ -134,18 +188,31 @@ class UserControllerTest extends TestCase
         $this->assertEquals('Test', $user->first_name);
         $this->assertEquals('User', $user->last_name);
 
-        // Update own details
+        // Invalid
         $this->actingAs($user)->post('/api/users/4', [
             'firstName' => 'Changed',
             'lastName'  => 'Changed',
         ]);
 
+        $this->assertEquals('422', $this->response->status());
+
+        $this->assertEquals(
+            '{"error":"Invalid User ID"}',
+            $this->response->getContent()
+        );
+
+        // Other user
+        $this->actingAs($this->user)->post(sprintf('/api/users/%s', $this->secondUserId), [
+            'firstName' => 'Changed',
+            'lastName'  => 'Changed',
+        ]);
+
+        $this->assertEquals('422', $this->response->status());
+
         $this->assertEquals(
             '{"error":"Illegal attempt to adjust another users details. The suspicious action has been logged."}',
             $this->response->getContent()
         );
-
-        $this->assertEquals('500', $this->response->status());
     }
 
     public function testAdminCanGetAllUsers()

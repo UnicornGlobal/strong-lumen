@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Hash;
+use Webpatser\Uuid\Uuid;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 */
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
-    $username = rand(0, 100000).$faker->email;
+    $username = rand(0, 500).$faker->email;
 
     return [
         'username'     => $username,
@@ -23,7 +24,8 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'last_name'    => $faker->lastName,
         'email'        => $username,
         'mobile'       => $faker->e164PhoneNumber,
-        'confirm_code' => $faker->randomNumber(4),
+        'confirm_code' => Uuid::generate(4),
+        'confirmed_at' => null,
         'created_by'   => 1,
         'updated_by'   => 1,
     ];

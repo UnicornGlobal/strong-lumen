@@ -2,56 +2,53 @@
 
 use App\Role;
 use App\User;
-use Illuminate\Support\Facades\Auth;
 use Webpatser\Uuid\Uuid;
 
 class RoleMiddlewareTest extends TestCase
 {
-    // To keep DB clean
-    use \Laravel\Lumen\Testing\DatabaseTransactions;
-
-    private $testUserId;
-    private $adminUserId;
-
-    private $adminRoleId;
-    private $userRoleId;
-    private $systemRoleId;
-
-    public function setUp(): void
+    public function testGoodRole()
     {
-        parent::setUp();
-        $this->post('/login', [
-            'username' => 'admin',
-            'password' => 'admin',
-        ], ['Debug-Token' => env('DEBUG_TOKEN')]);
+        // Admin user
+        $this->actingAs($this->adminUser)->get(
+            sprintf('users/%s/roles', $this->userId)
+        );
 
-        $this->testUserId = User::where('id', 2)->first()->_id;
-        $this->adminUserId = User::where('id', 3)->first()->_id;
-        $this->actingAs(Auth::user())->get('/roles');
         $roles = json_decode($this->response->getContent());
+        $this->assertEquals(1, count($roles));
 
-        foreach ($roles as $role) {
-            switch ($role->name) {
-                case 'admin':
-                    $this->adminRoleId = $role->_id;
-                    break;
-                case 'user':
-                    $this->userRoleId = $role->_id;
-                    break;
-                case 'system':
-                    $this->systemRoleId = $role->_id;
-            }
-        }
+        $this->assertResponseStatus(200);
+        $this->assertObjectNotHasAttribute('id', $roles[0]);
+        $this->assertObjectNotHasAttribute('created_by', $roles[0]);
+        $this->assertObjectNotHasAttribute('updated_by', $roles[0]);
+        $this->assertObjectNotHasAttribute('updated_at', $roles[0]);
+        $this->assertObjectNotHasAttribute('created_at', $roles[0]);
+        $this->assertObjectNotHasAttribute('deleted_at', $roles[0]);
+        $this->assertObjectHasAttribute('_id', $roles[0]);
+        $this->assertObjectHasAttribute('name', $roles[0]);
+        $this->assertObjectHasAttribute('is_active', $roles[0]);
+
+        // Admin User (own roles)
+        $this->actingAs($this->adminUser)->get(
+            sprintf('users/%s/roles', $this->adminUserId)
+        );
+
+        $roles = json_decode($this->response->getContent());
+        $this->assertResponseStatus(200);
+        $this->assertEquals(2, count($roles));
+
+        // Second User (other users roles)
+        $this->actingAs($this->secondUser)->get(
+            sprintf('users/%s/roles', $this->userId)
+        );
+
+        $this->assertResponseStatus(401);
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
 
     public function testBadRole()
     {
-        // before adding admin role
-        $user = User::loadFromUuid($this->testUserId);
-
-        $this->actingAs($user)->get(
-            sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'),
-            ['Debug-Token' => env('DEBUG_TOKEN')]
+        $this->actingAs($this->user)->get(
+            sprintf('users/%s/roles', $this->userId)
         );
         $this->assertResponseStatus(401);
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
@@ -59,52 +56,109 @@ class RoleMiddlewareTest extends TestCase
 
     public function testAssignRole()
     {
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 $this->adminRoleId
             )
         );
 
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
 
         // Check to see if the role was assigned successfully
         $roles = json_decode($this->response->getContent());
+        $this->assertEquals(2, count($roles));
         $this->assertEquals('admin', $roles[1]->name);
 
-        $this->actingAs(Auth::user())->post(
+        // Bad role ID
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 Uuid::generate(4)->string
             )
         );
 
+        $this->assertResponseStatus(422);
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
+
+        // System ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot assign the system role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // System user
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                Role::getByName('system')->users()->first()->_id,
+                'roles/assign',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot add roles to a system user"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('user')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot assign the user role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID by non-admin
+        $this->actingAs($this->secondUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/assign',
+                Role::getByName('admin')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
+        $this->assertResponseStatus(401);
     }
 
     public function testRevokeRole()
     {
-        $testUser = User::loadFromUuid($this->testUserId);
-
         // Add user_role
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 $this->adminRoleId
             )
         );
 
-        $this->actingAs($testUser)
-               ->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->actingAs($this->adminUser)
+             ->get(sprintf('users/%s/roles', $this->userId));
 
         $roles = json_decode($this->response->getContent());
 
@@ -112,11 +166,11 @@ class RoleMiddlewareTest extends TestCase
         $this->assertTrue(array_search('admin', array_column($roles, 'name')) !== false);
 
         // removing a non-existent role
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/revoke',
                 Uuid::generate(4)->string
             )
@@ -125,11 +179,11 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
 
         // remove the admin role
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/revoke',
                 $this->adminRoleId
             )
@@ -138,51 +192,116 @@ class RoleMiddlewareTest extends TestCase
         $this->assertEquals('OK', $this->response->getContent());
         $this->assertResponseStatus(200);
 
-        $user = User::loadFromUuid($this->testUserId);
-        $this->actingAs($user)->get(sprintf('%s/%s/%s', 'users', $this->adminUserId, 'roles'));
+        // remove the admin role again
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                $this->adminRoleId
+            )
+        );
 
-        // ensure we get access denied error
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(200);
+        $this->assertEquals('OK', $this->response->getContent());
+
+        // System ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke the system role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // System user
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                Role::getByName('system')->users()->first()->_id,
+                'roles/revoke',
+                Role::getByName('system')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke roles from the system user"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID
+        $this->actingAs($this->adminUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('user')->_id
+            )
+        );
+
+        $this->assertEquals('{"error":"Cannot revoke the user role"}', $this->response->getContent());
+        $this->assertResponseStatus(422);
+
+        // User ID by non-admin
+        $this->actingAs($this->secondUser)->post(
+            sprintf(
+                '%s/%s/%s/%s',
+                'users',
+                $this->userId,
+                'roles/revoke',
+                Role::getByName('admin')->_id
+            )
+        );
+
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
+        $this->assertResponseStatus(401);
     }
 
     public function testCreateRole()
     {
-        $this->actingAs(Auth::user())->post('/roles/intern');
-
+        $this->actingAs($this->adminUser)->post('/roles/intern');
         $internId = json_decode($this->response->getContent())->_id;
 
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 $internId
             )
         );
 
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        // Test a force flush
+        $this->user->flush();
+
+        $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
         $roles = json_decode($this->response->getContent());
 
         $this->assertTrue(array_search('intern', array_column($roles, 'name')) !== false);
 
-        $this->actingAs(Auth::user())->post('/roles/mm');
-        $this->assertEquals('Role name invalid', $this->response->getContent());
+        $this->actingAs($this->adminUser)->post('/roles/mm');
+        $this->assertEquals('{"error":"Role name invalid"}', $this->response->getContent());
 
-        $this->actingAs(Auth::user())->post('/roles/intern');
+        $this->actingAs($this->adminUser)->post('/roles/intern');
 
-        $this->assertEquals('Role name invalid', $this->response->getContent());
+        $this->assertEquals('{"error":"Role name invalid"}', $this->response->getContent());
     }
 
     public function testDeleteRole()
     {
-        $this->actingAs(Auth::user())->post('/roles/intern');
+        $this->actingAs($this->adminUser)->post('/roles/intern');
         $internId = json_decode($this->response->getContent())->_id;
 
         $this->assertNotNull(Role::where('name', 'intern')->first());
 
-        $this->actingAs(Auth::user())->delete(sprintf('%s/%s', 'roles', $internId));
+        $this->actingAs($this->adminUser)->delete(sprintf('roles/%s', $internId));
         $this->assertNull(Role::where('name', 'intern')->first());
 
         $this->assertNotNull(Role::withTrashed()->where('name', 'intern')->first());
@@ -190,20 +309,20 @@ class RoleMiddlewareTest extends TestCase
 
     public function testDeleteRoleFail()
     {
-        $this->actingAs(Auth::user())->post('roles/intern');
+        $this->actingAs($this->adminUser)->post('roles/intern');
         $internId = json_decode($this->response->getContent())->_id;
-        $this->assertNotNull(Role::where('name', 'intern')->first());
-        $this->actingAs(Auth::user())->post(
+
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 $internId
             )
         );
 
-        $this->actingAs(Auth::user())->delete(sprintf('%s/%s', 'roles', $internId));
+        $this->actingAs($this->adminUser)->delete(sprintf('roles/%s', $internId));
         $this->assertNotNull(Role::where('name', 'intern')->first());
     }
 
@@ -211,42 +330,42 @@ class RoleMiddlewareTest extends TestCase
     {
         $this->assertEquals(1, Role::loadFromUuid($this->adminRoleId)->is_active);
 
-        $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
+        $this->actingAs($this->adminUser)->get(sprintf('/users/%s/roles', $this->adminUserId));
         $this->assertResponseStatus(200);
 
-        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $this->adminRoleId, 'deactivate'));
+        $this->actingAs($this->adminUser)->post(sprintf('roles/%s/deactivate', $this->adminRoleId));
 
-        $this->actingAs(Auth::user())->get(sprintf('/users/%s/roles', env('ADMIN_USER_ID')));
+        $this->actingAs($this->adminUser)->get(sprintf('/users/%s/roles', $this->adminUserId));
         $this->assertResponseStatus(401);
     }
 
     public function testActivateRole()
     {
-        $this->actingAs(Auth::user())->post('/roles/intern');
+        $this->actingAs($this->adminUser)->post('/roles/intern');
         $internId = json_decode($this->response->getContent())->_id;
-        $this->actingAs(Auth::user())->post(
+        $this->actingAs($this->adminUser)->post(
             sprintf(
                 '%s/%s/%s/%s',
                 'users',
-                $this->testUserId,
+                $this->userId,
                 'roles/assign',
                 $internId
             )
         );
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
         $roles = json_decode($this->response->getContent());
         $this->assertEquals(1, $roles[0]->is_active);
 
-        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $internId, 'deactivate'));
+        $this->actingAs($this->adminUser)->post(sprintf('roles/%s/deactivate', $internId));
 
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
         $roles = json_decode($this->response->getContent());
         $roleIndex = array_search('intern', array_column($roles, 'name'));
         $this->assertEquals(0, $roles[$roleIndex]->is_active);
 
-        $this->actingAs(Auth::user())->post(sprintf('%s/%s/%s', 'roles', $internId, 'activate'));
+        $this->actingAs($this->adminUser)->post(sprintf('roles/%s/activate', $internId));
 
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'users', $this->testUserId, 'roles'));
+        $this->actingAs($this->adminUser)->get(sprintf('users/%s/roles', $this->userId));
         $roles = json_decode($this->response->getContent());
         $this->assertEquals(1, $roles[0]->is_active);
     }
@@ -259,7 +378,22 @@ class RoleMiddlewareTest extends TestCase
                 return 'Test';
             });
         });
-        $this->actingAs(Auth::user())->get('/test');
+        $this->actingAs($this->adminUser)->get('/test');
+        $this->assertEquals('Test', $this->response->getContent());
+    }
+
+    public function testCorrectMultiRole()
+    {
+        $router = $this->app->router;
+        $this->app->router->group(['middleware' => ['role:admin|user']], function () use ($router) {
+            $router->get('/test', function () {
+                return 'Test';
+            });
+        });
+        $this->actingAs($this->adminUser)->get('/test');
+        $this->assertEquals('Test', $this->response->getContent());
+
+        $this->actingAs($this->user)->get('/test');
         $this->assertEquals('Test', $this->response->getContent());
     }
 
@@ -272,7 +406,7 @@ class RoleMiddlewareTest extends TestCase
             });
         });
 
-        $this->actingAs(Auth::user())->get('/test');
+        $this->actingAs($this->adminUser)->get('/test');
         $this->assertResponseStatus(401);
         $this->assertEquals('{"error":"Incorrect Role"}', $this->response->getContent());
     }
@@ -280,7 +414,7 @@ class RoleMiddlewareTest extends TestCase
     public function testNoRole()
     {
         $router = $this->app->router;
-        $this->app->router->group(['middleware' => ['role:admin']], function () use ($router) {
+        $this->app->router->group(['middleware' => ['role:admin|user']], function () use ($router) {
             $router->get('/test', function () {
                 return 'Test';
             });
@@ -297,33 +431,32 @@ class RoleMiddlewareTest extends TestCase
     public function testGetInvalidRole()
     {
         //Getting invalid role
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s', 'roles', Uuid::generate(4)->string));
+        $this->actingAs($this->adminUser)->get(sprintf('%s/%s', 'roles', Uuid::generate(4)->string));
         $this->assertEquals('{"error":"Invalid Role ID"}', $this->response->getContent());
     }
 
     public function testGetRoles()
     {
-        $this->actingAs(Auth::user())->get('/roles');
+        $this->actingAs($this->adminUser)->get('/roles');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('system', $roles[0]->name);
 
-        $this->actingAs(Auth::user())->post('/roles/intern');
+        $this->actingAs($this->adminUser)->post('/roles/intern');
 
-        $this->actingAs(Auth::user())->get('/roles');
+        $this->actingAs($this->adminUser)->get('/roles');
         $roles = json_decode($this->response->getContent());
         $this->assertEquals('intern', $roles[4]->name);
     }
 
     public function testGetUserForRole()
     {
-        $this->actingAs(Auth::user())->get(sprintf('%s/%s/%s', 'roles', $this->adminRoleId, 'users'));
+        $this->actingAs($this->adminUser)->get(sprintf('%s/%s/%s', 'roles', $this->adminRoleId, 'users'));
         $users = json_decode($this->response->getContent());
         $this->assertEquals(env('ADMIN_USER_ID'), $users[0]->_id);
     }
 
     public function testRequestWithoutLogin()
     {
-        $this->post('/logout');
         $this->get('/roles');
         $result = json_decode($this->response->getContent());
         $this->assertEquals('User not logged in.', $result->error);

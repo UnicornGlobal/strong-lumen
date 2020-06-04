@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Role;
+use App\ValidationTrait;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Webpatser\Uuid\Uuid;
 
 class RolesController extends Controller
 {
+    use ValidationTrait;
+
     /**
      * Get Role from name.
      *
@@ -51,10 +55,15 @@ class RolesController extends Controller
             $role->updated_by = Auth::user()->id;
             $role->save();
 
+            Cache::tags([
+                'users',
+                'roles',
+            ])->flush();
+
             return response()->json(['_id' => $role->_id]);
         }
 
-        return response('Role name invalid', 500);
+        $this->throwValidationExceptionMessage('Role name invalid');
     }
 
     /**
@@ -71,10 +80,15 @@ class RolesController extends Controller
         if ($role->users->isEmpty()) {
             $role->delete();
 
-            return response(200, 'OK');
+            Cache::tags([
+                'users',
+                'roles',
+            ])->flush();
+
+            return response()->json(['success' => true]);
         }
 
-        return response('Role has assigned users', 500);
+        $this->throwValidationExceptionMessage('Role has assigned users');
     }
 
     /**
@@ -87,6 +101,11 @@ class RolesController extends Controller
         $role = $this->getRole($roleId);
         $role->is_active = false;
         $role->save();
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 
     /**
@@ -99,6 +118,11 @@ class RolesController extends Controller
         $role = $this->getRole($roleId);
         $role->is_active = true;
         $role->save();
+
+        Cache::tags([
+            'users',
+            'roles',
+        ])->flush();
     }
 
     /**

@@ -2,12 +2,9 @@
 
 use App\Mail\PasswordResetMessage;
 use Illuminate\Support\Facades\Mail;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ResetPasswordTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /**
      * @return void
      */
@@ -32,7 +29,7 @@ class ResetPasswordTest extends TestCase
         ]);
         $this->assertEquals('{"success":false}', $this->response->getContent());
 
-        Mail::assertSent(PasswordResetMessage::class, function ($mail) {
+        Mail::assertQueued(PasswordResetMessage::class, function ($mail) {
             $this->post(sprintf('/reset/%s', $mail->token), [
                 'email'                 => 'developer@example.com',
                 'password'              => '123abc^&*',

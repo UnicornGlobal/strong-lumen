@@ -6,21 +6,26 @@
     "type": "project",
     "require": {
         "php": ">=7.3.0",
-        "laravel/lumen-framework": "6.0.*",
-        "vlucas/phpdotenv": "~3.1",
+        "laravel/lumen-framework": "^7.0",
+        "vlucas/phpdotenv": "^4.0",
         "tymon/jwt-auth": "^1.0.0-rc.3",
         "phpseclib/phpseclib": "^2.0",
-        "barryvdh/laravel-cors": "^0.11.4",
         "webpatser/laravel-uuid": "^3.0",
-        "illuminate/mail": "^6.0",
+        "illuminate/mail": "^7.0",
+        "guzzlehttp/guzzle": "^6.5.4",
+        "ext-json": "*",
+        "doctrine/dbal": "^2.9",
         "intervention/image": "^2.5",
         "league/flysystem": "^1.0",
-        "guzzlehttp/guzzle": "^6.3"
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "predis/predis": "^1.1",
+        "illuminate/redis": "^7.14",
+        "fruitcake/laravel-cors": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.8",
         "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "~8.5",
+        "phpunit/phpunit": "^8.5",
         "laravel/tinker": "^2.4"
     },
     "autoload": {

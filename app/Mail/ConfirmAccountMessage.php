@@ -13,13 +13,17 @@ class ConfirmAccountMessage extends Mailable
     use SerializesModels;
 
     public $user;
+    public $app;
+    public $button;
     public $link;
 
     public function __construct(User $user)
     {
         $this->user = $user;
         $url = env('API_URL');
-        $this->subject = 'Confirm Your Account';
+        $this->app = env('APP_NAME');
+        $this->subject = sprintf('Confirm Your %s Account', env('APP_NAME'));
+        $this->button = 'CONFIRM';
         $this->link = sprintf('%s/confirm/%s', $url, $user->confirm_code);
     }
 
@@ -30,6 +34,6 @@ class ConfirmAccountMessage extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.confirmaccount');
+        return $this->view('mail.confirm-account');
     }
 }

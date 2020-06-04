@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ResendVerification;
 use App\Role;
 use App\User;
 use App\ValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -26,12 +28,14 @@ class UserController extends Controller
     public function getUserById($userId)
     {
         if (!$userId) {
-            throw new \Exception('There was a problem retrieving the user.');
+            $this->throwValidationExceptionMessage('There was a problem retrieving the user.');
         }
 
         $this->isValidUserID($userId);
 
-        $user = User::where('_id', $userId)->first();
+        $user = User::with([
+            'profile_picture',
+        ])->where('_id', $userId)->first();
 
         return response()->json($user);
     }
@@ -45,7 +49,11 @@ class UserController extends Controller
     {
         $userId = Auth::user()->_id;
 
-        $user = User::where('_id', $userId)->with('roles:_id,name')->first();
+        $user = User::where('_id', $userId)->with([
+            'roles:_id,name',
+            'profile_picture',
+            'documents',
+        ])->first();
 
         return response()->json($user);
     }
@@ -55,35 +63,50 @@ class UserController extends Controller
      */
     public function updateUserByUUID(Request $request, $userId)
     {
-        $this->validate($request, [
-            'firstName' => 'required|string',
-            'lastName'  => 'required|string',
-        ]);
+        $this->isValidUserID($userId);
 
         if (Auth::user()->_id !== $userId) {
-            throw new \Exception('Illegal attempt to adjust another users details. '.
-                'The suspicious action has been logged.');
+            $this->throwValidationExceptionMessage('Illegal attempt to adjust another users details. The suspicious action has been logged.');
         }
 
-        $this->isValidUserID($userId);
+        $this->validate($request, [
+            'firstName'   => 'nullable|string',
+            'lastName'    => 'nullable|string',
+            'mobile'      => 'nullable|string|min:4|max:20',
+            'location'    => 'nullable|string',
+        ]);
 
         $fields = $request->only([
             'firstName',
             'lastName',
+            'mobile',
+            'location',
         ]);
 
         $user = Auth::user();
 
-        if (!is_null($fields['firstName'])) {
+        if (isset($fields['firstName']) && null !== $fields['firstName']) {
             $user->first_name = $fields['firstName'];
         }
 
-        if (!is_null($fields['lastName'])) {
+        if (isset($fields['lastName']) && null !== $fields['lastName']) {
             $user->last_name = $fields['lastName'];
+        }
+
+        if (isset($fields['mobile']) && null !== $fields['mobile']) {
+            $user->mobile = $fields['mobile'];
+        }
+
+        if (isset($fields['location']) && null !== $fields['location']) {
+            $user->location = $fields['location'];
         }
 
         $user->updated_by = Auth::user()->id;
         $user->save();
+
+        Cache::tags([
+            'users',
+        ])->flush();
 
         return response('OK', 200);
     }
@@ -110,12 +133,16 @@ class UserController extends Controller
         $user = User::where('username', $fields['username'])->first();
 
         if (!Hash::check($request['password'], $user->password)) {
-            throw new \Exception('There was a problem changing the password.');
+            $this->throwValidationExceptionMessage('There was a problem changing the password.');
         }
 
         $user->password = Hash::make($request['newpassword']);
         $user->updated_by = Auth::user()->id;
         $user->save();
+
+        Cache::tags([
+            'users',
+        ])->flush();
 
         return response('OK', 200);
     }
@@ -146,6 +173,10 @@ class UserController extends Controller
     {
         User::loadFromUuid($userId)->assignRole($roleId);
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
@@ -161,12 +192,19 @@ class UserController extends Controller
     {
         User::loadFromUuid($userId)->revokeRole($roleId);
 
+        Cache::tags([
+            'users',
+        ])->flush();
+
         return response('OK', 200);
     }
 
     public function getAllUsers()
     {
-        $users = User::all();
+        $users = User::with([
+            'roles:_id,name',
+            'profile_picture',
+        ])->get();
 
         return response()->json(compact('users'));
     }
@@ -176,12 +214,23 @@ class UserController extends Controller
         $user = User::loadFromUuid($userId);
 
         if ($user->roles->count() === 1 &&
-            $user->hasRole(Role::where('name', 'user')->first()->_id)) {
+            $user->hasRoleByName('user')) {
             $user->delete();
+
+            Cache::tags([
+                'users',
+            ])->flush();
 
             return response()->json(['success' => true], 202);
         }
 
         return response()->json(['error' => 'User has a role other than \'user\', cannot delete'], 404);
+    }
+
+    public function resendUserVerificationMail()
+    {
+        if (!Auth::user()->confirmed) {
+            event(new ResendVerification(Auth::user()));
+        }
     }
 }

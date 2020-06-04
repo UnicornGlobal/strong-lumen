@@ -1,11 +1,7 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseTransactions;
-
 class ConfigControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     public function testGetConfig()
     {
         // The test user in our seed
@@ -43,6 +39,6 @@ class ConfigControllerTest extends TestCase
             $this->response->getContent()
         );
 
-        $this->assertEquals('500', $this->response->status());
+        $this->assertEquals('422', $this->response->status());
     }
 }

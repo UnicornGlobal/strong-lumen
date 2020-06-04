@@ -3,7 +3,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 try {
-    (Dotenv\Dotenv::create(__DIR__.'/../'))->load();
+    (Dotenv\Dotenv::createImmutable(__DIR__.'/../'))->load();
 } catch (Dotenv\Exception\InvalidPathException $e) {
     //
 }
@@ -72,7 +72,7 @@ $app->routeMiddleware([
     'hideserver' => App\Http\Middleware\ServerHeader::class,
     'security'   => App\Http\Middleware\SecurityHeaders::class,
     'csp'        => App\Http\Middleware\ContentSecurityPolicyHeaders::class,
-    'cors'       => \Barryvdh\Cors\HandleCors::class,
+    'cors'       => \Fruitcake\Cors\HandleCors::class,
     'role'       => \App\Http\Middleware\RolesMiddleware::class,
 ]);
 
@@ -95,7 +95,7 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 // CORS
-$app->register(Barryvdh\Cors\ServiceProvider::class);
+$app->register(\Fruitcake\Cors\CorsServiceProvider::class);
 
 // Mail
 $app->register(\Illuminate\Mail\MailServiceProvider::class);
@@ -107,6 +107,9 @@ $app->register(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 $app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
 $app->configure('filesystems');
 
+// Redis
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+
 $app->configure('cors');
 
 $app->configure('services');
@@ -114,6 +117,10 @@ $app->configure('mail');
 $app->alias('mailer', Illuminate\Mail\Mailer::class);
 $app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
 $app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
+$app->alias('mail.manager', Illuminate\Mail\MailManager::class);
+$app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
+
+$app->make('queue');
 
 /*
 |--------------------------------------------------------------------------
