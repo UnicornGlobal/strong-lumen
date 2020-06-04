@@ -372,7 +372,7 @@ You need to set additional variables in the following files:
 
 ### Label Sync
 
-GitHub labels get synched with the `github_label_setup.yml` file.
+GitHub labels get synced with the `github_label_setup.yml` file.
 
 If you want to change your GH label setup you must change this file.
 
