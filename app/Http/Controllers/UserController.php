@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ConfirmAccountMessage;
+use App\Events\ResendVerification;
 use App\Role;
 use App\User;
 use App\ValidationTrait;
@@ -231,7 +231,7 @@ class UserController extends Controller
     public function resendUserVerificationMail()
     {
         if (!Auth::user()->confirmed) {
-            Mail::to(Auth::user()->email)->queue(new ConfirmAccountMessage(Auth::user()));
+            event(new ResendVerification(Auth::user()));
         }
     }
 }

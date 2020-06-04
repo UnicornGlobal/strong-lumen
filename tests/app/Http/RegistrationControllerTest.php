@@ -138,7 +138,6 @@ class RegistrationControllerTest extends TestCase
     {
         Mail::fake();
 
-        // $this->withoutExceptionHandling();
         $this->expectsEvents('App\Events\UserCreated');
 
         $this->post('/register/email', [

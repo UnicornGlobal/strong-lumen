@@ -1,13 +1,56 @@
 <?php
 
+use App\Events\ResendVerification;
+use App\Listeners\OnResendVerification;
+use App\Mail\ConfirmAccountMessage;
 use App\User;
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public function testResendVerification()
+    {
+        Mail::fake();
+        $this->expectsEvents('App\Events\ResendVerification');
+
+        $this->actingAs($this->user)->get('api/resend/verification');
+        $this->assertResponseStatus(200);
+    }
+
+    public function testResendVerificationEvent()
+    {
+        Mail::fake();
+
+        $listener = new OnResendVerification();
+        $listener->handle(new ResendVerification($this->user));
+
+        Mail::assertQueued(ConfirmAccountMessage::class, function ($mail) {
+            $this->assertStringContainsString(sprintf('%s/confirm/', env('API_URL')), $mail->link);
+
+            $this->assertRegExp(
+                '/.*\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/',
+                $mail->link
+            );
+
+            $render = $mail->build();
+            $this->assertEquals(sprintf('Confirm Your %s Account', env('APP_NAME')), $render->subject);
+            $this->assertEquals($this->user->email, $render->to[0]['address']);
+
+            $this->get($mail->link);
+
+            $this->assertResponseStatus(302);
+            $this->assertStringContainsString('Redirecting to <a href="', $this->response->getContent());
+            $this->assertStringContainsString('confirmed', $this->response->getContent());
+            $this->assertStringContainsString('refresh', $this->response->getContent());
+
+            return true;
+        });
+    }
 
     public function testGetUser()
     {
@@ -27,8 +70,7 @@ class UserControllerTest extends TestCase
         // Should have an email
         $this->assertEquals('developer@example.com', $resultObject->email);
 
-        // Response should be a 200
-        $this->assertEquals('200', $this->response->status());
+        $this->assertResponseStatus(200);
     }
 
     public function testGetSelf()
@@ -57,8 +99,7 @@ class UserControllerTest extends TestCase
         // Has no role
         $this->assertEquals(1, count($resultArray['roles']));
 
-        // Response should be a 200
-        $this->assertEquals('200', $this->response->status());
+        $this->assertResponseStatus(200);
 
         // Test with admin user to check roles in response
         $adminUser = User::where('_id', env('ADMIN_USER_ID'))->first();
@@ -127,6 +168,20 @@ class UserControllerTest extends TestCase
         // Details should have changed
         $this->assertEquals('Changed', $resultObject->first_name);
         $this->assertEquals('Changed', $resultObject->last_name);
+
+        // Update mobile and location
+        $this->actingAs($user)->post('/api/users/'.env('TEST_USER_ID'), [
+            'mobile' => '+27822222222',
+            'location'  => 'Somewhere',
+        ]);
+
+        $this->actingAs($user)->get('/api/users/'.env('TEST_USER_ID'));
+
+        $resultObject = json_decode($this->response->getContent());
+
+        // Details should have changed
+        $this->assertEquals('+27822222222', $resultObject->mobile);
+        $this->assertEquals('Somewhere', $resultObject->location);
     }
 
     public function testChangeBadDetails()

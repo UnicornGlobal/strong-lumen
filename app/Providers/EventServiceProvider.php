@@ -15,5 +15,8 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\UserCreated' => [
             'App\Listeners\OnUserCreated',
         ],
+        'App\Events\ResendVerification' => [
+            'App\Listeners\OnResendVerification',
+        ],
     ];
 }

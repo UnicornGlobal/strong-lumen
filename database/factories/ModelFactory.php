@@ -25,6 +25,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'email'        => $username,
         'mobile'       => $faker->e164PhoneNumber,
         'confirm_code' => Uuid::generate(4),
+        'confirmed_at' => null,
         'created_by'   => 1,
         'updated_by'   => 1,
     ];

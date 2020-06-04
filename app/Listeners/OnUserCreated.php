@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Password;
 
 class OnUserCreated
 {
-    protected $broker = 'users';
+    // protected $broker = 'users';
 
     public function handle(UserCreated $event)
     {
