@@ -179,7 +179,18 @@ Defaults to:
 ```php
 'supportsCredentials' => true,
 'allowedOrigins' => ['*'],
-'allowedHeaders' => ['Content-Type', 'Content-Length', 'Origin', 'X-Requested-With', 'Debug-Token', 'Registration-Access-Key', 'X-CSRF-Token', 'App', 'User-Agent', 'Authorization'],
+'allowedHeaders' => [
+  'Content-Type',
+  'Content-Length',
+  'Origin',
+  'X-Requested-With',
+  'Debug-Token',
+  'Registration-Access-Key',
+  'X-CSRF-Token',
+  'App',
+  'User-Agent',
+  'Authorization'
+],
 'allowedMethods' => ['GET', 'POST', 'PUT',  'DELETE', 'OPTIONS'],
 'exposedHeaders' => ['Authorization'],
 'maxAge' => 0,
@@ -191,7 +202,8 @@ Should support OPTIONS Preflight with Authorization header.
 
 You should use a 512 bit, asymmetrical algo, with certificates.
 
-It is suggested that you use `ES512`, or the `RS512` algo if you are unable to use `ES512`.
+It is suggested that you use `ES512`, or the `RS512` algo if you are
+unable to use `ES512`.
 
 You can make a `ECDSA 512 (ES512)` pair like this:
 
@@ -215,7 +227,8 @@ openssl rsa -pubout -in rsa512-private.pem -out rsa512-public.pem
 
 Make sure you set the appropriate variables in your .env
 
-You may use a symmetrical algo, but then you'll be relying on a secret instead of a keypair. This is not recommended.
+You may use a symmetrical algo, but then you'll be relying on a secret
+instead of a keypair. This is not recommended.
 
 Token is blacklisted on logout.
 
